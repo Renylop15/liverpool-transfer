@@ -2,6 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import emailjs from '@emailjs/browser';
+import { createClient } from '@supabase/supabase-js'; 
+
+const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
+const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 @Component({
   selector: 'app-reserva',
@@ -109,7 +114,7 @@ export class ReservaComponent {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.reservationForm.valid) {
       if (this.cotizacion === null) {
         this.isSubmitting = true;
@@ -130,7 +135,37 @@ export class ReservaComponent {
         } else {
           tipoTraducido = tipoViaje === 'one_way' ? 'Sencillo' : 'Redondo';
         }
+        // NUEVO: GUARDAR EN BASE DE DATOS (SUPABASE)
+        // ==========================================
+        const { error } = await supabase
+          .from('reservas')
+          .insert([
+            {
+              nombres: this.reservationForm.value.nombres,
+              apellidos: this.reservationForm.value.apellidos,
+              email: this.reservationForm.value.email,
+              telefono: `${this.reservationForm.value.codigoPais} ${this.reservationForm.value.telefono}`,
+              aerolinea: this.reservationForm.value.aerolinea,
+              vuelo: this.reservationForm.value.noVuelo,
+              terminal: terminalTexto,
+              fecha_llegada: this.reservationForm.value.fechaLlegada,
+              fecha_salida: this.reservationForm.value.fechaSalida,
+              pasajeros: this.reservationForm.value.pasajeros,
+              tipo_viaje: tipoTraducido,
+              destino: this.reservationForm.value.destino,
+              asistencia: this.reservationForm.value.asistencia || 'Ninguna',
+              cotizacion: this.cotizacion,
+              estatus: 'COTIZADO'
+            }
+          ]);
 
+        if (error) {
+          console.error('Error guardando en la base de datos:', error);
+          alert('Hubo un pequeño error guardando tu registro, pero continuaremos con la cotización.');
+        } else {
+          console.log('¡Registro guardado exitosamente en Supabase!');
+        }
+        //
         const templateParams = {
           nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
           email_destino: this.reservationForm.value.email, 

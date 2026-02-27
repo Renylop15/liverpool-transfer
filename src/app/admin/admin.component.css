@@ -1,0 +1,76 @@
+.admin-container {
+  padding: 40px;
+  background-color: #050505;
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.header {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #111;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #222;
+  font-size: 13px;
+}
+
+th {
+  background-color: #1a1a1a;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+
+tr:hover {
+  background-color: #1a1a1a;
+}
+
+.email, .terminal, .tipo, .pax {
+  color: #888;
+  font-size: 11px;
+}
+
+.price {
+  font-weight: bold;
+  color: #fff;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  background-color: #333;
+  color: #aaa;
+  letter-spacing: 1px;
+}
+
+/* Cuando OpenPay apruebe el pago, el estatus se pondrá verde automáticamente */
+.badge.pagado {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.loading {
+  text-align: center;
+  color: #aaa;
+  margin-top: 50px;
+}
