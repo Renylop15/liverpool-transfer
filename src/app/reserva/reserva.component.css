@@ -1,0 +1,293 @@
+/* --- FONDO GENERAL --- */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Fondo negro por si no carga la imagen */
+  background-color: #000;
+  /* Imagen de fondo con una capa negra semitransparente encima para que se lea el texto */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/assets/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  /* Fuente elegante */
+  font-family: 'Montserrat', sans-serif;
+  padding: 20px;
+}
+
+/* --- TARJETA DE CRISTAL (Glassmorphism) --- */
+.card {
+  /* Fondo negro con mucha transparencia */
+  background: rgba(20, 20, 20, 0.85);
+  /* Efecto borroso detrás de la tarjeta */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px); /* Para Safari en Mac */
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  border-radius: 15px;
+  /* Borde muy sutil gris oscuro */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px rgba(0,0,0, 0.8);
+}
+
+/* --- LOGO Y TÍTULOS --- */
+.header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo-img {
+  height: 60px; /* Ajusta esto según el tamaño de tu logo */
+  margin-bottom: 15px;
+  /* Este filtro vuelve BLANCO cualquier logo negro que subas */
+  filter: brightness(0) invert(1);
+}
+
+.header p {
+  color: #888; /* Gris elegante */
+  font-size: 11px;
+  letter-spacing: 3px; /* Letras separadas estilo ejecutivo */
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* --- CAMPOS DE TEXTO (Inputs) --- */
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  font-size: 10px;
+  color: #aaa;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  /* Fondo del input casi transparente */
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: white; /* Texto blanco */
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box; 
+}
+
+input:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #fff; /* Borde blanco al escribir */
+}
+
+input::placeholder {
+  color: #555;
+}
+
+/* --- ESTRUCTURA --- */
+.row {
+  display: flex;
+  gap: 15px;
+}
+
+.half {
+  flex: 1;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #333, transparent);
+  margin: 30px 0;
+}
+
+/* --- BOTÓN PREMIUM --- */
+.btn-submit {
+  width: 100%;
+  padding: 18px;
+  background-color: #ffffff; /* Blanco puro */
+  color: #000000; /* Texto negro */
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 10px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+
+.btn-submit:hover {
+  background-color: #d4d4d4; /* Gris muy claro al pasar el mouse */
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  background-color: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* --- ESTILO PARA EL SELECTOR --- */
+select.dark-input {
+  width: 100%;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+  box-sizing: border-box;
+  appearance: none; /* Quita la flechita fea de Windows/Mac */
+  cursor: pointer;
+}
+
+select.dark-input:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+}
+
+/* Opciones del menú desplegable */
+select.dark-input option {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+/* --- CAJA DE COTIZACIÓN FINAL --- */
+.quote-box {
+  text-align: center;
+  margin: 25px 0 15px 0;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.quote-box h3 {
+  margin: 0;
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: 2px;
+}
+
+.quote-box .price {
+  font-size: 34px;
+  color: #ffffff;
+  font-weight: 800;
+  margin: 10px 0;
+  letter-spacing: 1px;
+}
+
+.quote-box .terms {
+  font-size: 10px;
+  color: #777;
+  margin: 0;
+}
+
+/* Animación de aparición suave */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* --- SWITCH DE IDIOMA --- */
+/* Posicionamos el switch en la esquina superior derecha de la tarjeta */
+.card {
+  position: relative; /* Agrega esto a tu clase .card existente si no lo tiene */
+}
+
+.lang-switch-container {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+.lang-switch-container span {
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+  transition: 0.3s;
+}
+
+.lang-switch-container span.active {
+  color: #fff; /* Resalta el idioma seleccionado */
+}
+
+/* El botón deslizable */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #2a2a2a;
+  transition: .4s;
+  border-radius: 22px;
+  border: 1px solid #444;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #888;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+/* Cuando está en Inglés (checked) */
+input:checked + .slider {
+  background-color: #e0e0e0;
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+  background-color: #000;
+}
+/* --- GRUPO DE TELÉFONO Y BANDERA --- */
+.phone-group {
+  display: flex;
+  gap: 10px;
+}
+
+.select-codigo {
+  flex: 0 0 45%; /* Ocupa el 35% del espacio */
+  padding: 15px 10px;
+}
+
+.phone-group input {
+  flex: 1; /* Ocupa el espacio sobrante */
+}
+
+/* --- ESTILO PARA EL ICONO DEL CALENDARIO (DARK MODE) --- */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* Vuelve blanco el icono de calendario negro por defecto */
+  cursor: pointer;
+}

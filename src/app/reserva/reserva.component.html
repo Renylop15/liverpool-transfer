@@ -1,0 +1,155 @@
+<div class="container">
+  <div class="card">
+    
+    <div class="lang-switch-container">
+      <span [class.active]="lang === 'es'">ES</span>
+      <label class="switch">
+        <input type="checkbox" (change)="toggleLanguage()">
+        <span class="slider round"></span>
+      </label>
+      <span [class.active]="lang === 'en'">EN</span>
+    </div>
+
+    <div class="header">
+      <img src="/assets/logo.png" alt="Logo Vancity" class="logo-img">
+      <p>{{ textos[lang].titulo }}</p>
+    </div>
+
+    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+      
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].nombres }}</label>
+          <input type="text" formControlName="nombres" placeholder="{{ textos[lang].nombres_ph }}">
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].apellidos }}</label>
+          <input type="text" formControlName="apellidos" placeholder="{{ textos[lang].apellidos_ph }}">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].email }}</label>
+          <input type="email" formControlName="email" placeholder="usuario@liverpool.com.mx">
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].telefono }}</label>
+          <div class="phone-group">
+            <select formControlName="codigoPais" class="dark-input select-codigo">
+              <option value="+52">🇲🇽 +52 (Mexico)</option>
+              
+              <option value="+61">🇦🇺 +61 (Australia)</option>
+              <option value="+43">🇦🇹 +43 (Austria)</option>
+              <option value="+32">🇧🇪 +32 (Belgium)</option>
+              <option value="+1">🇨🇦 +1 (Canada)</option>
+              <option value="+56">🇨🇱 +56 (Chile)</option>
+              <option value="+86">🇨🇳 +86 (China)</option>
+              <option value="+357">🇨🇾 +357 (Cyprus)</option>
+              <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+              <option value="+45">🇩🇰 +45 (Denmark)</option>
+              <option value="+44">🇬🇧 +44 (England)</option>
+              <option value="+372">🇪🇪 +372 (Estonia)</option>
+              <option value="+358">🇫🇮 +358 (Finland)</option>
+              <option value="+33">🇫🇷 +33 (France)</option>
+              <option value="+49">🇩🇪 +49 (Germany)</option>
+              <option value="+30">🇬🇷 +30 (Greece)</option>
+              <option value="+852">🇭🇰 +852 (Hong Kong)</option>
+              <option value="+91">🇮🇳 +91 (India)</option>
+              <option value="+62">🇮🇩 +62 (Indonesia)</option>
+              <option value="+353">🇮🇪 +353 (Ireland)</option>
+              <option value="+39">🇮🇹 +39 (Italy)</option>
+              <option value="+81">🇯🇵 +81 (Japan)</option>
+              <option value="+60">🇲🇾 +60 (Malaysia)</option>
+              <option value="+31">🇳🇱 +31 (Netherlands)</option>
+              <option value="+64">🇳🇿 +64 (New Zealand)</option>
+              <option value="+47">🇳🇴 +47 (Norway)</option>
+              <option value="+63">🇵🇭 +63 (Philippines)</option>
+              <option value="+974">🇶🇦 +974 (Qatar)</option>
+              <option value="+7">🇷🇺 +7 (Russia)</option>
+              <option value="+27">🇿🇦 +27 (South Africa)</option>
+              <option value="+82">🇰🇷 +82 (South Korea)</option>
+              <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+              <option value="+41">🇨🇭 +41 (Switzerland)</option>
+              <option value="+886">🇹🇼 +886 (Taiwan)</option>
+              <option value="+66">🇹🇭 +66 (Thailand)</option>
+              <option value="+90">🇹🇷 +90 (Turkey)</option>
+              <option value="+971">🇦🇪 +971 (United Arab Emirates)</option>
+              <option value="+1">🇺🇸 +1 (United States)</option>
+            </select>
+            <input type="tel" formControlName="telefono" placeholder="55 1234 5678" (keypress)="soloNumeros($event)" maxlength="10">
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].aerolinea }}</label>
+          <input type="text" formControlName="aerolinea" placeholder="{{ textos[lang].aerolinea_ph }}">
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].vuelo }}</label>
+          <input type="text" formControlName="noVuelo" placeholder="AM-405">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].terminal }}</label>
+          <select formControlName="terminal" class="dark-input">
+            <option value="t1">{{ textos[lang].term1 }}</option>
+            <option value="t2">{{ textos[lang].term2 }}</option>
+          </select>
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].fecha_llegada }}</label>
+          <input type="date" formControlName="fechaLlegada" class="dark-input">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].tipo }}</label>
+          <select formControlName="tipoViaje" class="dark-input">
+            <option value="one_way">{{ textos[lang].tipo_sencillo }}</option>
+            <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
+          </select>
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].fecha_salida }}</label>
+          <input type="date" formControlName="fechaSalida" class="dark-input">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].pasajeros }}</label>
+          <input type="number" formControlName="pasajeros" min="1" max="4">
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].destino }}</label>
+          <input type="text" formControlName="destino" placeholder="{{ textos[lang].destino_ph }}">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ textos[lang].asistencia }}</label>
+        <input type="text" formControlName="asistencia" placeholder="{{ textos[lang].asistencia_ph }}">
+      </div>
+
+      <div class="quote-box" *ngIf="cotizacion !== null">
+        <h3>{{ textos[lang].tarifa }}</h3>
+        <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+        <p class="terms">{{ textos[lang].terminos }}</p>
+      </div>
+
+      <button type="submit" [disabled]="!reservationForm.valid || isSubmitting" class="btn-submit">
+        <span *ngIf="cotizacion === null">{{ isSubmitting ? textos[lang].btn_cotizando : textos[lang].btn_cotizar }}</span>
+        <span *ngIf="cotizacion !== null">{{ textos[lang].btn_pagar }}</span>
+      </button>
+
+    </form>
+  </div>
+</div>
