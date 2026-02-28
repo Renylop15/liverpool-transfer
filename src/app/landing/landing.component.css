@@ -1,0 +1,228 @@
+/* --- BASE --- */
+.landing-wrapper {
+  background-color: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- NAV BAR --- */
+.partners-nav {
+  display: flex;
+  align-items: center;
+  padding: 15px 50px;
+  border-bottom: 1px solid #eaeaea;
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+.vancity-logo {
+  max-height: 45px;
+  width: auto;
+}
+
+.event-sponsors {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: 50px;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
+.IGDS-logo, .liverpool-logo {
+  max-height: 250%;
+  width: auto;
+  max-width: 120px;
+}
+
+.x-divider {
+  color: #999999;
+  font-weight: 300;
+  font-size: 18px;
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 140px 20px;
+  /* El fondo oscuro semi-transparente sobre la imagen para que el texto resalte */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('/assets/fondo-landing.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  text-align: center;
+  color: #ffffff;
+}
+
+.dates {
+  color: #aaa;
+  letter-spacing: 3px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.main-title {
+  font-size: 52px;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: 20px;
+  color: #ccc;
+  font-weight: 300;
+  margin-bottom: 40px;
+}
+
+/* --- BOTÓN DINÁMICO EN EL HERO --- */
+.action-container-hero {
+  margin-top: 30px;
+}
+
+.btn-dynamic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: #ffffff;
+  padding: 18px 45px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-dynamic:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, #1a3a6c 0%, #0b1d3a 100%);
+  color: #ffffff;
+}
+
+.btn-dynamic .btn-icon {
+  font-size: 22px;
+  transition: transform 0.3s ease;
+}
+
+.btn-dynamic:hover .btn-icon {
+  transform: translateX(10px);
+}
+
+/* --- SECCIÓN DE INFORMACIÓN DEL SUMMIT --- */
+.summit-info-section {
+  background-color: #ffffff;
+  padding: 80px 20px;
+  color: #333333;
+}
+
+.content-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 40px;
+  letter-spacing: -1px;
+}
+
+.text-content p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444444;
+  margin-bottom: 25px;
+}
+
+/* --- TARJETAS --- */
+.features-grid {
+  display: flex;
+  gap: 20px;
+  margin-top: 50px;
+}
+
+.feature-card {
+  flex: 1;
+  background-color: #0b1d3a; 
+  color: #ffffff;
+  padding: 30px 25px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(11, 29, 58, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.feature-card strong {
+  font-size: 18px;
+  display: block;
+  margin-bottom: 5px;
+  color: #4da8da;
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 992px) {
+  .partners-nav {
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+  }
+  .logo-container, .event-sponsors {
+    margin: 10px 0;
+    justify-content: center;
+  }
+  .nav-links {
+    margin: 15px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 36px;
+  }
+  .section-title {
+    font-size: 32px;
+  }
+  .features-grid {
+    flex-direction: column;
+  }
+  .btn-dynamic {
+    width: 100%;
+  }
+}
