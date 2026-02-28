@@ -195,34 +195,112 @@
 }
 
 /* --- RESPONSIVO --- */
+/* =========================================
+   --- RESPONSIVO (CELULARES Y TABLETS) --- 
+   ========================================= */
+
+/* Evita que la página se mueva hacia los lados (el efecto chueco) */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.landing-wrapper {
+  overflow-x: hidden; 
+}
+
+/* --- TABLETS (Pantallas medianas) --- */
 @media (max-width: 992px) {
   .partners-nav {
     flex-direction: column;
-    padding: 20px;
-    text-align: center;
+    padding: 15px;
+    gap: 15px;
   }
-  .logo-container, .event-sponsors {
-    margin: 10px 0;
-    justify-content: center;
+  .logo-container {
+    margin: 0 auto;
   }
   .nav-links {
-    margin: 15px 0;
     flex-wrap: wrap;
+    gap: 15px;
     justify-content: center;
+  }
+  .event-sponsors {
+    margin: 0 auto;
   }
 }
 
+/* --- CELULARES (Pantallas pequeñas) --- */
 @media (max-width: 768px) {
+  
+  /* Ajuste de la barra superior */
+  .partners-nav {
+    padding: 15px 10px;
+  }
+
+  .nav-links {
+    font-size: 13px; /* Texto del menú más pequeño */
+    gap: 10px;
+  }
+
+  .IGDS-logo, .liverpool-logo {
+    max-width: 80px; /* Logos más pequeños para que quepan juntos */
+  }
+
+  .x-divider {
+    font-size: 14px;
+  }
+
+  /* Ajuste de la imagen principal y título */
+  .hero-section {
+    padding: 80px 15px; /* Menos espacio arriba y a los lados */
+  }
+
   .main-title {
-    font-size: 36px;
+    font-size: 32px; /* Título encogido para celular */
+    margin-bottom: 10px;
   }
-  .section-title {
-    font-size: 32px;
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 30px;
   }
-  .features-grid {
-    flex-direction: column;
-  }
+
+  /* Ajuste del botón para que no se salga de la pantalla */
   .btn-dynamic {
     width: 100%;
+    padding: 15px 15px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+
+  .btn-icon {
+    font-size: 18px;
+  }
+
+  /* Ajuste de los textos del evento */
+  .summit-info-section {
+    padding: 50px 15px;
+  }
+
+  .section-title {
+    font-size: 28px;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  .text-content p {
+    font-size: 15px;
+    text-align: justify; /* Hace que el texto se vea como un bloque perfecto */
+  }
+
+  /* Ajuste de las tarjetas azules (una debajo de la otra) */
+  .features-grid {
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .feature-card {
+    padding: 20px 15px;
   }
 }

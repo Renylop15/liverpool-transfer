@@ -74,3 +74,28 @@ tr:hover {
   color: #aaa;
   margin-top: 50px;
 }
+/* =========================================
+   --- RESPONSIVO CELULARES (ADMIN) --- 
+   ========================================= */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 20px 10px; /* Reducimos los márgenes gigantes */
+  }
+
+  .header h2 {
+    font-size: 22px;
+  }
+
+  /* Hacemos la letra un poco más pequeña para que quepa más info */
+  th, td {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  /* Magia pura: permite deslizar la tabla con el dedo en el celular */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 5px;
+  }
+}

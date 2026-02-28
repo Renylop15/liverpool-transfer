@@ -291,3 +291,32 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1); /* Vuelve blanco el icono de calendario negro por defecto */
   cursor: pointer;
 }
+/* =========================================
+   --- RESPONSIVO CELULARES (RESERVA) --- 
+   ========================================= */
+@media (max-width: 768px) {
+  /* Evita que el fondo o el contenedor se salga de la pantalla */
+  html, body {
+    overflow-x: hidden;
+  }
+  
+  /* Ajusta los espacios en blanco a los lados */
+  .container, .form-wrapper { /* Asumiendo que usas un contenedor general */
+    padding: 20px 15px !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Si tienes campos uno al lado del otro, esto los apila hacia abajo */
+  .row, .form-group-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Hace que el botón de cotizar abarque todo el ancho de la pantalla */
+  button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+  }
+}
