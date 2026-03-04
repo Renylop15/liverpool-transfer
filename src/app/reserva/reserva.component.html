@@ -38,7 +38,6 @@
           <div class="phone-group">
             <select formControlName="codigoPais" class="dark-input select-codigo">
               <option value="+52">🇲🇽 +52 (Mexico)</option>
-              
               <option value="+61">🇦🇺 +61 (Australia)</option>
               <option value="+43">🇦🇹 +43 (Austria)</option>
               <option value="+32">🇧🇪 +32 (Belgium)</option>
@@ -76,7 +75,7 @@
               <option value="+90">🇹🇷 +90 (Turkey)</option>
               <option value="+971">🇦🇪 +971 (United Arab Emirates)</option>
               <option value="+1">🇺🇸 +1 (United States)</option>
-            </select>
+              </select>
             <input type="tel" formControlName="telefono" placeholder="55 1234 5678" (keypress)="soloNumeros($event)" maxlength="10">
           </div>
         </div>
@@ -104,22 +103,25 @@
           </select>
         </div>
         <div class="form-group half">
-          <label>{{ textos[lang].fecha_llegada }}</label>
-          <input type="date" formControlName="fechaLlegada" class="dark-input">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="form-group half">
           <label>{{ textos[lang].tipo }}</label>
           <select formControlName="tipoViaje" class="dark-input">
             <option value="one_way">{{ textos[lang].tipo_sencillo }}</option>
             <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
           </select>
         </div>
+        
+      </div>
+
+      <div class="row">
         <div class="form-group half">
-          <label>{{ textos[lang].fecha_salida }}</label>
-          <input type="date" formControlName="fechaSalida" class="dark-input">
+          <label>{{ textos[lang].fecha_llegada }}</label>
+          <input type="date" formControlName="fechaLlegada" class="dark-input">
+        </div>
+        <div class="form-group half">
+          <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'round_trip'">
+            <label>{{ textos[lang].fecha_salida }}</label>
+            <input type="date" formControlName="fechaSalida" class="dark-input">
+          </ng-container>
         </div>
       </div>
 

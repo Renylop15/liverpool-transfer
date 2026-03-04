@@ -65,10 +65,11 @@
   align-items: center;
   padding: 140px 20px;
   /* El fondo oscuro semi-transparente sobre la imagen para que el texto resalte */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url('/assets/fondo-landing.jpg');
+  background-image: url('/assets/landing-vancity.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
   text-align: center;
   color: #ffffff;
 }
@@ -235,6 +236,7 @@ html, body {
   /* Ajuste de la barra superior */
   .partners-nav {
     padding: 15px 10px;
+    background-attachment: scroll;
   }
 
   .nav-links {

@@ -4,31 +4,29 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  /* Fondo negro por si no carga la imagen */
-  background-color: #000;
-  /* Imagen de fondo con una capa negra semitransparente encima para que se lea el texto */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/assets/fondo.jpg');
+  background-color: #f8f9fa; /* Fondo gris claro de respaldo */
+  /* Mantén tu imagen de fondo original */
+  background-image: url('/assets/fondo.jpg');
   background-size: cover;
   background-position: center;
-  /* Fuente elegante */
   font-family: 'Montserrat', sans-serif;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
-/* --- TARJETA DE CRISTAL (Glassmorphism) --- */
+/* --- TARJETA DE CRISTAL CLARA (Light Glassmorphism) --- */
 .card {
-  /* Fondo negro con mucha transparencia */
-  background: rgba(20, 20, 20, 0.85);
-  /* Efecto borroso detrás de la tarjeta */
+  /* Fondo blanco con mucha transparencia */
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px); /* Para Safari en Mac */
+  -webkit-backdrop-filter: blur(15px);
   width: 100%;
-  max-width: 450px;
+  max-width: 500px; /* Un poco más ancha para respirar mejor */
   padding: 40px;
   border-radius: 15px;
-  /* Borde muy sutil gris oscuro */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px rgba(0,0,0, 0.8);
+  /* Borde muy sutil blanco y sombra elegante */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 /* --- LOGO Y TÍTULOS --- */
@@ -38,22 +36,22 @@
 }
 
 .logo-img {
-  height: 60px; /* Ajusta esto según el tamaño de tu logo */
+  height: 50px;
   margin-bottom: 15px;
-  /* Este filtro vuelve BLANCO cualquier logo negro que subas */
-  filter: brightness(0) invert(1);
+  /* Quitamos el filtro invertido para que el logo se vea en su color original (negro/azul) */
+  filter: none; 
 }
 
 .header p {
-  color: #888; /* Gris elegante */
+  color: #555; /* Gris medio, más legible en fondo claro */
   font-size: 11px;
-  letter-spacing: 3px; /* Letras separadas estilo ejecutivo */
+  letter-spacing: 3px;
   text-transform: uppercase;
   margin: 0;
   font-weight: 600;
 }
 
-/* --- CAMPOS DE TEXTO (Inputs) --- */
+/* --- CAMPOS DE TEXTO (Inputs Claros) --- */
 .form-group {
   margin-bottom: 20px;
 }
@@ -61,34 +59,52 @@
 label {
   display: block;
   font-size: 10px;
-  color: #aaa;
+  color: #333; /* Texto casi negro */
   letter-spacing: 1px;
   margin-bottom: 8px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
-input {
+input, select.dark-input {
   width: 100%;
   padding: 15px;
-  /* Fondo del input casi transparente */
-  background-color: rgba(255, 255, 255, 0.07);
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: white; /* Texto blanco */
+  /* Fondo blanco casi sólido para los campos */
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ccc; /* Borde gris claro */
+  border-radius: 6px;
+  color: #000; /* Texto negro al escribir */
   font-size: 14px;
   outline: none;
   transition: 0.3s;
   box-sizing: border-box; 
 }
 
-input:focus {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: #fff; /* Borde blanco al escribir */
+input:focus, select.dark-input:focus {
+  background-color: #fff;
+  border-color: #0b1d3a; /* Borde azul corporativo al seleccionar */
+  box-shadow: 0 0 0 2px rgba(11, 29, 58, 0.1);
 }
 
 input::placeholder {
-  color: #555;
+  color: #888;
+}
+
+/* Ajustes específicos para el selector (select) */
+select.dark-input {
+  appearance: none;
+  cursor: pointer;
+  /* Vuelve a poner un fondo blanco a las opciones desplegadas */
+}
+select.dark-input option {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Icono de calendario oscuro (ya no lo invertimos) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  cursor: pointer;
 }
 
 /* --- ESTRUCTURA --- */
@@ -103,86 +119,66 @@ input::placeholder {
 
 .divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, #333, transparent);
+  /* Línea divisoria gris claro */
+  background: linear-gradient(to right, transparent, #ddd, transparent);
   margin: 30px 0;
 }
 
-/* --- BOTÓN PREMIUM --- */
+/* --- BOTÓN PREMIUM (Azul Vancity) --- */
 .btn-submit {
   width: 100%;
   padding: 18px;
-  background-color: #ffffff; /* Blanco puro */
-  color: #000000; /* Texto negro */
+  /* Degradado azul corporativo */
+  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 4px;
-  font-size: 13px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 1px;
   cursor: pointer;
   margin-top: 10px;
   text-transform: uppercase;
   transition: all 0.3s;
+  box-shadow: 0 5px 15px rgba(11, 29, 58, 0.3);
 }
 
 .btn-submit:hover {
-  background-color: #d4d4d4; /* Gris muy claro al pasar el mouse */
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(11, 29, 58, 0.4);
+  filter: brightness(1.1);
 }
 
 .btn-submit:disabled {
-  background-color: #333;
-  color: #666;
+  background: #ccc;
+  color: #888;
+  box-shadow: none;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* --- ESTILO PARA EL SELECTOR --- */
-select.dark-input {
-  width: 100%;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.07);
-  border: 1px solid #333;
-  border-radius: 4px;
-  color: white;
-  font-size: 14px;
-  outline: none;
-  transition: 0.3s;
-  box-sizing: border-box;
-  appearance: none; /* Quita la flechita fea de Windows/Mac */
-  cursor: pointer;
-}
-
-select.dark-input:focus {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-color: #fff;
-}
-
-/* Opciones del menú desplegable */
-select.dark-input option {
-  background-color: #1a1a1a;
-  color: #fff;
-}
-
-/* --- CAJA DE COTIZACIÓN FINAL --- */
+/* --- CAJA DE COTIZACIÓN FINAL (Clara) --- */
 .quote-box {
   text-align: center;
   margin: 25px 0 15px 0;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
+  /* Fondo muy sutilmente azulado/grisáceo */
+  background: rgba(11, 29, 58, 0.03);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(11, 29, 58, 0.1);
   animation: fadeIn 0.5s ease-in-out;
 }
 
 .quote-box h3 {
   margin: 0;
   font-size: 11px;
-  color: #aaa;
+  color: #555;
   letter-spacing: 2px;
 }
 
 .quote-box .price {
   font-size: 34px;
-  color: #ffffff;
+  color: #0b1d3a; /* Precio en azul corporativo */
   font-weight: 800;
   margin: 10px 0;
   letter-spacing: 1px;
@@ -194,17 +190,12 @@ select.dark-input option {
   margin: 0;
 }
 
-/* Animación de aparición suave */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* --- SWITCH DE IDIOMA --- */
-/* Posicionamos el switch en la esquina superior derecha de la tarjeta */
-.card {
-  position: relative; /* Agrega esto a tu clase .card existente si no lo tiene */
-}
 
+/* --- SWITCH DE IDIOMA (Modo Claro) --- */
 .lang-switch-container {
   position: absolute;
   top: 25px;
@@ -216,17 +207,16 @@ select.dark-input option {
 }
 
 .lang-switch-container span {
-  color: #555;
+  color: #888;
   font-size: 11px;
   font-weight: 700;
   transition: 0.3s;
 }
 
 .lang-switch-container span.active {
-  color: #fff; /* Resalta el idioma seleccionado */
+  color: #000; /* Texto activo en negro */
 }
 
-/* El botón deslizable */
 .switch {
   position: relative;
   display: inline-block;
@@ -244,33 +234,32 @@ select.dark-input option {
   position: absolute;
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #2a2a2a;
+  background-color: #ccc; /* Gris claro apagado */
   transition: .4s;
   border-radius: 22px;
-  border: 1px solid #444;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   left: 3px;
   bottom: 3px;
-  background-color: #888;
+  background-color: #fff; /* Bolita blanca */
   transition: .4s;
   border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Cuando está en Inglés (checked) */
 input:checked + .slider {
-  background-color: #e0e0e0;
+  background-color: #0b1d3a; /* Azul Vancity encendido */
 }
 
 input:checked + .slider:before {
   transform: translateX(18px);
-  background-color: #000;
 }
+
 /* --- GRUPO DE TELÉFONO Y BANDERA --- */
 .phone-group {
   display: flex;
@@ -278,45 +267,38 @@ input:checked + .slider:before {
 }
 
 .select-codigo {
-  flex: 0 0 45%; /* Ocupa el 35% del espacio */
-  padding: 15px 10px;
+  flex: 0 0 45%;
 }
 
 .phone-group input {
-  flex: 1; /* Ocupa el espacio sobrante */
+  flex: 1;
 }
 
-/* --- ESTILO PARA EL ICONO DEL CALENDARIO (DARK MODE) --- */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1); /* Vuelve blanco el icono de calendario negro por defecto */
-  cursor: pointer;
-}
 /* =========================================
    --- RESPONSIVO CELULARES (RESERVA) --- 
    ========================================= */
 @media (max-width: 768px) {
-  /* Evita que el fondo o el contenedor se salga de la pantalla */
   html, body {
     overflow-x: hidden;
   }
   
-  /* Ajusta los espacios en blanco a los lados */
-  .container, .form-wrapper { /* Asumiendo que usas un contenedor general */
-    padding: 20px 15px !important;
-    width: 100% !important;
-    margin: 0 !important;
+  .container {
+    padding: 15px !important;
+  }
+  
+  .card {
+    padding: 30px 20px;
   }
 
-  /* Si tienes campos uno al lado del otro, esto los apila hacia abajo */
-  .row, .form-group-row {
+  .row {
     display: flex;
     flex-direction: column;
+    gap: 0; /* Quitamos el gap porque los márgenes de form-group ya separan */
   }
 
-  /* Hace que el botón de cotizar abarque todo el ancho de la pantalla */
-  button[type="submit"] {
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
+  /* El botón de idioma lo ajustamos para que no se encime en celulares */
+  .lang-switch-container {
+    top: 15px;
+    right: 15px;
   }
 }
