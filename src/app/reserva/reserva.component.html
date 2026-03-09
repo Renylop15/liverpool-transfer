@@ -75,7 +75,7 @@
               <option value="+90">🇹🇷 +90 (Turkey)</option>
               <option value="+971">🇦🇪 +971 (United Arab Emirates)</option>
               <option value="+1">🇺🇸 +1 (United States)</option>
-              </select>
+            </select>
             <input type="tel" formControlName="telefono" placeholder="55 1234 5678" (keypress)="soloNumeros($event)" maxlength="10">
           </div>
         </div>
@@ -83,6 +83,30 @@
 
       <div class="divider"></div>
       
+      <div class="row">
+        <div class="form-group half">
+          <label>{{ textos[lang].tipo }}</label>
+          <select formControlName="tipoViaje" class="dark-input">
+            <option value="one_way">{{ textos[lang].tipo_sencillo }}</option>
+            <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
+          </select>
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].pasajeros }}</label>
+          <input type="number" formControlName="pasajeros" min="1" max="4">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group half" style="width: 100%;">
+          <label>{{ textos[lang].destino }}</label>
+          <input type="text" formControlName="destino" readonly style="color: #9ca3af; cursor: not-allowed; opacity: 0.8;">
+        </div>
+      </div>
+
+      <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">
+        {{ textos[lang].titulo_llegada }}
+      </h4>
       <div class="row">
         <div class="form-group half">
           <label>{{ textos[lang].aerolinea }}</label>
@@ -103,38 +127,42 @@
           </select>
         </div>
         <div class="form-group half">
-          <label>{{ textos[lang].tipo }}</label>
-          <select formControlName="tipoViaje" class="dark-input">
-            <option value="one_way">{{ textos[lang].tipo_sencillo }}</option>
-            <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
-          </select>
-        </div>
-        
-      </div>
-
-      <div class="row">
-        <div class="form-group half">
           <label>{{ textos[lang].fecha_llegada }}</label>
           <input type="date" formControlName="fechaLlegada" class="dark-input">
         </div>
-        <div class="form-group half">
-          <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'round_trip'">
-            <label>{{ textos[lang].fecha_salida }}</label>
-            <input type="date" formControlName="fechaSalida" class="dark-input">
-          </ng-container>
-        </div>
       </div>
 
-      <div class="row">
-        <div class="form-group half">
-          <label>{{ textos[lang].pasajeros }}</label>
-          <input type="number" formControlName="pasajeros" min="1" max="4">
+      <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'round_trip'">
+        <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">
+          {{ textos[lang].titulo_salida }}
+        </h4>
+        <div class="row">
+          <div class="form-group half">
+            <label>{{ textos[lang].aerolinea }}</label>
+            <input type="text" formControlName="aerolineaSalida" placeholder="{{ textos[lang].aerolinea_ph }}">
+          </div>
+          <div class="form-group half">
+            <label>{{ textos[lang].vuelo }}</label>
+            <input type="text" formControlName="noVueloSalida" placeholder="AM-405">
+          </div>
         </div>
-        <div class="form-group half">
-          <label>{{ textos[lang].destino }}</label>
-          <input type="text" formControlName="destino" placeholder="{{ textos[lang].destino_ph }}">
+  
+        <div class="row">
+          <div class="form-group half">
+            <label>{{ textos[lang].terminal }}</label>
+            <select formControlName="terminalSalida" class="dark-input">
+              <option value="t1">{{ textos[lang].term1 }}</option>
+              <option value="t2">{{ textos[lang].term2 }}</option>
+            </select>
+          </div>
+          <div class="form-group half">
+            <label>{{ textos[lang].fecha_salida }}</label>
+            <input type="date" formControlName="fechaSalida" class="dark-input">
+          </div>
         </div>
-      </div>
+      </ng-container>
+
+      <div class="divider"></div>
 
       <div class="form-group">
         <label>{{ textos[lang].asistencia }}</label>
