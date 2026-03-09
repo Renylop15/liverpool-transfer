@@ -30,8 +30,7 @@ serve(async (req) => {
       },
       send_email: false,
       // ESTA ES LA LÍNEA CORREGIDA (Nota los backticks ` y la coma al final)
-      redirect_url: `http://localhost:4200/reserva`
-    };
+      redirect_url: "https://vancity-igdsmxcity.netlify.app/reserva"    };
 
     const openpayResponse = await fetch(`https://sandbox-api.openpay.mx/v1/${MERCHANT_ID}/checkouts`, {
       method: 'POST',
