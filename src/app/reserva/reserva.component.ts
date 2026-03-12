@@ -244,8 +244,8 @@ export class ReservaComponent implements OnInit {
             mensajeWA += `♿ *Asistencia:* ${this.reservationForm.value.asistencia || 'Ninguna'}\n\n💰 *TARIFA ESTIMADA: $${this.cotizacion} MXN*\n\nQuedo en espera de instrucciones para el pago.`;
           }          
 
-          const urlWhatsApp = `https://wa.me/525536365421?text=${encodeURIComponent(mensajeWA)}`;
-          window.open(urlWhatsApp, '_blank');
+          //const urlWhatsApp = `https://wa.me/525536365421?text=${encodeURIComponent(mensajeWA)}`;
+          //window.open(urlWhatsApp, '_blank');
 
         } catch (fatalError) {
           console.error("Error crítico:", fatalError);
