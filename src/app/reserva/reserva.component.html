@@ -4,7 +4,7 @@
     <div class="lang-switch-container">
       <span [class.active]="lang === 'es'">ES</span>
       <label class="switch">
-        <input type="checkbox" (change)="toggleLanguage()">
+        <input type="checkbox" (change)="toggleLanguage()" [checked]="lang === 'en'">
         <span class="slider round"></span>
       </label>
       <span [class.active]="lang === 'en'">EN</span>

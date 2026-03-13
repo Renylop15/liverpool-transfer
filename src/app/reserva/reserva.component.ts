@@ -19,7 +19,7 @@ export class ReservaComponent implements OnInit {
   reservationForm: FormGroup;
   isSubmitting = false;
   cotizacion: number | null = null;
-  lang: 'es' | 'en' = 'es'; 
+  lang: 'es' | 'en' = 'en'; 
 
   textos = {
     es: {
