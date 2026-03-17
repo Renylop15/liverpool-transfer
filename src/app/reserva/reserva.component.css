@@ -302,3 +302,60 @@ input:checked + .slider:before {
     right: 15px;
   }
 }
+/* Agrega o reemplaza esto en tu admin.component.css */
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stats {
+  background: #1a1a1a;
+  padding: 8px 15px;
+  border-radius: 5px;
+  color: #fff;
+}
+
+.date-cell span {
+  color: #666;
+  font-size: 10px;
+}
+
+.flight-info {
+  line-height: 1.4;
+}
+
+.airline {
+  color: #aaa;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.vuelo-date {
+  color: #ffc107; /* Un tono ámbar para resaltar fecha/hora del vuelo */
+  font-size: 11px;
+}
+
+.no-data {
+  color: #444;
+  font-style: italic;
+  font-size: 11px;
+}
+
+.dest-text {
+  font-weight: 500;
+  color: #efefef;
+}
+
+.phone {
+  color: #4caf50; /* Verde para el teléfono, útil para WhatsApp */
+  font-size: 11px;
+}
+
+/* Badge mejorado */
+.badge {
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+}

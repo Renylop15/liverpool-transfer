@@ -21,6 +21,40 @@ export class ReservaComponent implements OnInit {
   cotizacion: number | null = null;
   lang: 'es' | 'en' = 'en'; 
 
+  aerolineasPopulares = [
+  // MÉXICO Y LATAM
+  "Aeroméxico", "Volaris", "Viva Aerobus", "Copa Airlines", "Avianca", "LATAM Airlines", 
+  "Aerolíneas Argentinas", "Sky Airline", "JetSmart", "TAG Airlines", "AeroMéxico Connect",
+  
+  // ESTADOS UNIDOS Y CANADÁ
+  "American Airlines", "Delta Airlines", "United Airlines", "Southwest Airlines", 
+  "Alaska Airlines", "JetBlue Airways", "Spirit Airlines", "Frontier Airlines", 
+  "Allegiant Air", "Hawaiian Airlines", "Sun Country Airlines", "Air Canada", 
+  "WestJet", "Air Transat", "Porter Airlines", "Flair Airlines",
+
+  // EUROPA
+  "Lufthansa", "Air France", "Iberia", "British Airways", "KLM", "Swiss International", 
+  "Austrian Airlines", "TAP Air Portugal", "Alitalia", "ITA Airways", "Turkish Airlines", 
+  "Aeroflot", "SAS Scandinavian", "Finnair", "Brussels Airlines", "Virgin Atlantic", 
+  "Icelandair", "LOT Polish Airlines", "Air Europa", "Norwegian Air", "Ryanair", 
+  "EasyJet", "Vueling", "Wizz Air", "Eurowings", "Condor",
+
+  // ASIA Y MEDIO ORIENTE
+  "Emirates", "Qatar Airways", "Etihad Airways", "Singapore Airlines", "Cathay Pacific", 
+  "All Nippon Airways (ANA)", "Japan Airlines (JAL)", "Korean Air", "Asiana Airlines", 
+  "China Southern Airlines", "China Eastern Airlines", "Air China", "Hainan Airlines", 
+  "Thai Airways", "Malaysia Airlines", "Vietnam Airlines", "Garuda Indonesia", 
+  "Philippine Airlines", "Eva Air", "Air India", "IndiGo", "Saudia", "El Al", 
+  "Turkish Airlines", "Royal Jordanian", "Oman Air",
+
+  // OCEANÍA Y ÁFRICA
+  "Qantas", "Air New Zealand", "Virgin Australia", "Jetstar", "Ethiopian Airlines", 
+  "South African Airways", "EgyptAir", "Kenya Airways", "Royal Air Maroc",
+
+  // PRIVADOS / OTROS
+  "NetJets", "Flexjet", "VistaJet", "Wheels Up", "Charter Privado", "Vuelo Privado"
+].sort(); // El .sort() las ordena alfabéticamente de la A a la Z automáticamente
+
   textos = {
     es: {
       titulo: 'Servicio Ejecutivo Sedán',
@@ -47,13 +81,15 @@ export class ReservaComponent implements OnInit {
       asistencia: 'ASISTENCIA ESPECIAL (Opcional)',
       asistencia_ph: 'Ej. Silla de ruedas, asiento para bebé...',
       tarifa: 'TARIFA ESTIMADA',
-      terminos: '* Incluye IVA (16%). Servicio hasta por 10 horas.',
+      terminos: '* Incluye IVA (16%).',
       btn_cotizando: 'CALCULANDO...',
       btn_cotizar: 'COTIZAR VIAJE',
       btn_pagar: 'PROCEDER AL PAGO SEGURO',
       alerta: '¡Listo para cobrar $',
       titulo_llegada: 'DATOS DE VUELO DE LLEGADA',
-      titulo_salida: 'DATOS DE VUELO DE SALIDA'
+      titulo_salida: 'DATOS DE VUELO DE SALIDA',
+      hora_llegada: 'HORA DE LLEGADA',
+      hora_salida: 'HORA DE SALIDA'
     },
     en: {
       titulo: 'Executive Sedan Service',
@@ -80,13 +116,15 @@ export class ReservaComponent implements OnInit {
       asistencia: 'SPECIAL ASSISTANCE (Optional)',
       asistencia_ph: 'E.g. Wheelchair, baby seat...',
       tarifa: 'ESTIMATED FARE',
-      terminos: '* Tax included (16%). Up to 10 hours service.',
+      terminos: '* Tax included (16%). ',
       btn_cotizando: 'CALCULATING...',
       btn_cotizar: 'GET QUOTE',
       btn_pagar: 'PROCEED TO SECURE PAYMENT',
       alerta: 'Ready to charge $',
       titulo_llegada: 'ARRIVAL FLIGHT DETAILS',
-      titulo_salida: 'DEPARTURE FLIGHT DETAILS'
+      titulo_salida: 'DEPARTURE FLIGHT DETAILS',
+      hora_llegada: 'ARRIVAL TIME',
+      hora_salida: 'DEPARTURE TIME',
     }
   };
 
@@ -109,11 +147,13 @@ export class ReservaComponent implements OnInit {
       noVuelo: ['', Validators.required],
       terminal: ['t1', Validators.required],
       fechaLlegada: ['', Validators.required],
+      horaLlegada: ['', Validators.required],
       
       aerolineaSalida: [''],
       noVueloSalida: [''],
       terminalSalida: ['t1'],
       fechaSalida: [''], 
+      horaSalida: [''],
       
       asistencia: [''] 
     });
@@ -162,99 +202,122 @@ export class ReservaComponent implements OnInit {
     }
   }
 
-  async onSubmit() {
-    if (this.reservationForm.valid) {
+async onSubmit() {
+  if (this.reservationForm.valid) {
+    // 1. Declaramos las variables una sola vez al inicio
+    const form = this.reservationForm.value;
+    const isRound = form.tipoViaje === 'round_trip';
+    const terminalTexto = form.terminal.toUpperCase();
+    const terminalSalidaTexto = form.terminalSalida ? form.terminalSalida.toUpperCase() : '';
+    const nombreCompleto = `${form.nombres} ${form.apellidos}`;
+    let telLimpio = `${form.codigoPais}${form.telefono}`.replace('+', '').replace(/\s/g, '');
+    if (telLimpio.startsWith('521')) telLimpio = '52' + telLimpio.substring(3);
+
+    // CASO 1: COTIZACIÓN
+    if (this.cotizacion === null) {
+      this.isSubmitting = true; 
       
-      if (this.cotizacion === null) {
-        this.isSubmitting = true; 
-        
-        try {
-          const tipoViaje = this.reservationForm.value.tipoViaje;
-          const isRound = tipoViaje === 'round_trip';
+      try {
+        this.cotizacion = isRound ? 3328.00 : 1914.00;
+        let tipoTraducido = isRound ? (this.lang === 'en' ? 'Round Trip' : 'Redondo') : (this.lang === 'en' ? 'One Way' : 'Sencillo');
 
-          if (tipoViaje === 'one_way') {
-            this.cotizacion = 1914.00;
-          } else if (tipoViaje === 'round_trip') {
-            this.cotizacion = 3328.00;
-          }
-
-          let tipoTraducido = isRound ? (this.lang === 'en' ? 'Round Trip' : 'Redondo') : (this.lang === 'en' ? 'One Way' : 'Sencillo');
-          const terminalTexto = this.reservationForm.value.terminal.toUpperCase();
-          const terminalSalidaTexto = this.reservationForm.value.terminalSalida.toUpperCase();
-
-          const aerolineaGuardar = isRound ? `Ida: ${this.reservationForm.value.aerolinea} | Vuelta: ${this.reservationForm.value.aerolineaSalida || 'N/A'}` : this.reservationForm.value.aerolinea;
-          const vueloGuardar = isRound ? `Ida: ${this.reservationForm.value.noVuelo} | Vuelta: ${this.reservationForm.value.noVueloSalida || 'N/A'}` : this.reservationForm.value.noVuelo;
-          const terminalGuardar = isRound ? `Ida: ${terminalTexto} | Vuelta: ${terminalSalidaTexto}` : terminalTexto;
-
-          const { error } = await supabase.from('reservas').insert([{
-              nombres: this.reservationForm.value.nombres,
-              apellidos: this.reservationForm.value.apellidos,
-              email: this.reservationForm.value.email,
-              telefono: `${this.reservationForm.value.codigoPais} ${this.reservationForm.value.telefono}`,
-              aerolinea: aerolineaGuardar,
-              vuelo: vueloGuardar,
-              terminal: terminalGuardar,
-              fecha_llegada: this.reservationForm.value.fechaLlegada,
-              fecha_salida: this.reservationForm.value.fechaSalida ? this.reservationForm.value.fechaSalida : null,
-              pasajeros: this.reservationForm.value.pasajeros,
-              tipo_viaje: tipoTraducido,
-              destino: this.reservationForm.value.destino,
-              asistencia: this.reservationForm.value.asistencia || 'Ninguna',
-              cotizacion: this.cotizacion,
-              estatus: 'COTIZADO'
-          }]);
-
-          if (error) console.error('Error en Supabase:', error);
-
-          // Aquí empacamos los datos con los textos de COTIZACIÓN
-          const templateParams = {
-            titulo_mensaje: this.lang === 'en' ? 'Your Trip Quote' : 'Tu Cotización de Viaje',
-            mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested quote.' : 'Aquí están los detalles de la cotización solicitada.',
-            nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
-            email_destino: this.reservationForm.value.email, 
-            destino: this.reservationForm.value.destino,
-            vuelo: vueloGuardar,
-            terminal: terminalGuardar,
-            pasajeros: this.reservationForm.value.pasajeros,
-            tipo: tipoTraducido,
+        // 2. Inserción en Base de Datos
+        const { error: dbError } = await supabase.from('reservas').insert([{
+            nombres: form.nombres,
+            apellidos: form.apellidos,
+            email: form.email,
+            telefono: `${form.codigoPais} ${form.telefono}`,
+            destino: form.destino,
+            asistencia: form.asistencia || 'Ninguna',
             cotizacion: this.cotizacion,
-            telefono_completo: `${this.reservationForm.value.codigoPais} ${this.reservationForm.value.telefono}`,
-            aerolinea: aerolineaGuardar,
-            fecha_llegada: this.reservationForm.value.fechaLlegada,
-            fecha_salida: this.reservationForm.value.fechaSalida,
-            asistencia: this.reservationForm.value.asistencia || 'Ninguna'
-          };
+            estatus: 'COTIZADO',
+            tipo_viaje: tipoTraducido,
+            pasajeros: form.pasajeros,
+            aerolinea_ida: form.aerolinea,
+            vuelo_ida: form.noVuelo,
+            terminal_ida: terminalTexto,
+            fecha_ida: form.fechaLlegada,
+            hora_ida: form.horaLlegada,
+            aerolinea_vuelta: isRound ? form.aerolineaSalida : null,
+            vuelo_vuelta: isRound ? form.noVueloSalida : null,
+            terminal_vuelta: isRound ? terminalSalidaTexto : null,
+            fecha_vuelta: isRound ? form.fechaSalida : null,
+            hora_vuelta: isRound ? form.horaSalida : null
+        }]);
 
-          // GUARDAMOS LA MOCHILA PARA USARLA DESPUÉS DEL PAGO
-          localStorage.setItem('reserva_vancity', JSON.stringify(templateParams));
-          localStorage.setItem('idioma_vancity', this.lang);
+        if (dbError) throw dbError;
 
+        // 3. Preparar bloques HTML para el correo
+        // ✈️ BLOQUE DE IDA (Traducción dinámica)
+        const detalleIdaHTML = `
+          <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;">
+            <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">
+              ${this.lang === 'en' ? '✈️ Arrival Flight (One Way)' : '✈️ Vuelo de Llegada (Ida)'}
+            </h3>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airline' : 'Aerolínea'}:</strong> ${form.aerolinea}</p>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Flight' : 'Vuelo'}:</strong> ${form.noVuelo} (T${terminalTexto})</p>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaLlegada} | ${form.horaLlegada} hrs</p>
+          </div>`;
+
+        // ✈️ BLOQUE DE VUELTA (Traducción dinámica)
+        const detalleVueltaHTML = isRound ? `
+          <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #555;">
+            <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">
+              ${this.lang === 'en' ? '✈️ Departure Flight (Return)' : '✈️ Vuelo de Salida (Regreso)'}
+            </h3>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airline' : 'Aerolínea'}:</strong> ${form.aerolineaSalida}</p>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Flight' : 'Vuelo'}:</strong> ${form.noVueloSalida} (T${terminalSalidaTexto})</p>
+            <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaSalida} | ${form.horaSalida} hrs</p>
+          </div>` : '';
+
+          const cotizacionFormateada = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }).format(this.cotizacion);
+
+        const templateParams = {
+          titulo_mensaje: this.lang === 'en' ? 'Your Trip Quote' : 'Tu Cotización de Viaje',
+          mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested quote.' : 'Aquí están los detalles de la cotización solicitada.',
+
+          nombre: nombreCompleto,
+          email_destino: form.email, 
+          destino: form.destino,
+          cotizacion: cotizacionFormateada,
+          pasajeros: form.pasajeros,
+          tipo: tipoTraducido,
+          asistencia: form.asistencia || 'Ninguna',
+          detalle_ida: detalleIdaHTML,
+          detalle_vuelta: detalleVueltaHTML 
+        };
+
+        // Guardar para uso posterior
+        localStorage.setItem('reserva_vancity', JSON.stringify(templateParams));
+        localStorage.setItem('idioma_vancity', this.lang);
+
+        // 4. Enviar Email y disparar WhatsApp automático
           const templateId = this.lang === 'en' ? 'template_dcmxpi5' : 'template_s5rm6yu';
           emailjs.send('service_jzr70mc', templateId, templateParams, 'AW3xttKiA-x-8jgoP')
             .catch((err) => console.error('Error al enviar el correo:', err));
 
-          let mensajeWA = '';
-          if (this.lang === 'en') {
-            mensajeWA = `Hello Vancity 🚐✨\nI would like to confirm my trip reservation to *${this.reservationForm.value.destino}*.\n\n✅ *QUOTE DETAILS:*\n👤 *Name:* ${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}\n📞 *Phone:* ${this.reservationForm.value.codigoPais} ${this.reservationForm.value.telefono}\n👥 *Passengers:* ${this.reservationForm.value.pasajeros}\n🚗 *Type:* ${tipoTraducido}\n\n🛬 *ARRIVAL FLIGHT:*\n✈️ ${this.reservationForm.value.aerolinea} ${this.reservationForm.value.noVuelo} (Terminal ${terminalTexto})\n📅 ${this.reservationForm.value.fechaLlegada}\n\n`;
-            if (isRound) mensajeWA += `🛫 *DEPARTURE FLIGHT:*\n✈️ ${this.reservationForm.value.aerolineaSalida} ${this.reservationForm.value.noVueloSalida} (Terminal ${terminalSalidaTexto})\n📅 ${this.reservationForm.value.fechaSalida}\n\n`;
-            mensajeWA += `♿ *Assistance:* ${this.reservationForm.value.asistencia || 'None'}\n\n💰 *ESTIMATED FARE: $${this.cotizacion} MXN*\n\nI await payment instructions.`;
-          } else {
-            mensajeWA = `Hola Vancity 🚐✨\nMe gustaría confirmar mi reserva de viaje a *${this.reservationForm.value.destino}*.\n\n✅ *DETALLES DE LA COTIZACIÓN:*\n👤 *Nombre:* ${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}\n📞 *Teléfono:* ${this.reservationForm.value.codigoPais} ${this.reservationForm.value.telefono}\n👥 *Pasajeros:* ${this.reservationForm.value.pasajeros}\n🚗 *Tipo:* ${tipoTraducido}\n\n🛬 *VUELO DE LLEGADA:*\n✈️ ${this.reservationForm.value.aerolinea} ${this.reservationForm.value.noVuelo} (Terminal ${terminalTexto})\n📅 ${this.reservationForm.value.fechaLlegada}\n\n`;
-            if (isRound) mensajeWA += `🛫 *VUELO DE SALIDA:*\n✈️ ${this.reservationForm.value.aerolineaSalida} ${this.reservationForm.value.noVueloSalida} (Terminal ${terminalSalidaTexto})\n📅 ${this.reservationForm.value.fechaSalida}\n\n`;
-            mensajeWA += `♿ *Asistencia:* ${this.reservationForm.value.asistencia || 'Ninguna'}\n\n💰 *TARIFA ESTIMADA: $${this.cotizacion} MXN*\n\nQuedo en espera de instrucciones para el pago.`;
-          }          
+        await supabase.functions.invoke('openpay-checkout', {
+          body: { 
+            tipoAccion: 'WHATSAPP_COTIZACION',
+            nombre: nombreCompleto,
+            monto: this.cotizacion,
+            descripcion: form.destino,
+            telefono: telLimpio,
+            idioma: this.lang
+          }
+        });
 
-          //const urlWhatsApp = `https://wa.me/525536365421?text=${encodeURIComponent(mensajeWA)}`;
-          //window.open(urlWhatsApp, '_blank');
+      } catch (error) {
+        console.error("Error crítico:", error);
+      } finally {
+        this.isSubmitting = false; 
+        this.cdr.detectChanges(); 
+      }
 
-        } catch (fatalError) {
-          console.error("Error crítico:", fatalError);
-        } finally {
-          this.isSubmitting = false; 
-          this.cdr.detectChanges(); 
-        }
-
-      } else {
+    } else {
         this.isSubmitting = true; 
         this.cdr.detectChanges(); 
         

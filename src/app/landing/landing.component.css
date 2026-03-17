@@ -65,7 +65,7 @@
   align-items: center;
   padding: 140px 20px;
   /* El fondo oscuro semi-transparente sobre la imagen para que el texto resalte */
-  background-image: url('/assets/landing-vancity.jpg');
+  background-image: url('/assets/angel.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -75,7 +75,7 @@
 }
 
 .dates {
-  color: #aaa;
+  color: #ccc;
   letter-spacing: 3px;
   font-size: 14px;
   margin-bottom: 20px;
@@ -92,7 +92,7 @@
 .subtitle {
   font-size: 20px;
   color: #ccc;
-  font-weight: 300;
+  font-weight: 500;
   margin-bottom: 40px;
 }
 

@@ -7,6 +7,7 @@ const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co';
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -18,14 +19,17 @@ export class AdminComponent implements OnInit {
   reservas: any[] = [];
   cargando = true;
 
-  // 2. Traemos al "cadenero" que obliga a la pantalla a actualizarse
   constructor(private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
-    await this.cargarReservas();
+    // Le damos un pequeño respiro a Angular para que termine de "hidratar"
+    setTimeout(() => {
+      this.cargarReservas();
+    }, 100);
   }
 
   async cargarReservas() {
+    console.log("--- INTENTANDO CARGAR RESERVAS ---");
     try {
       const { data, error } = await supabase
         .from('reservas')
@@ -33,16 +37,19 @@ export class AdminComponent implements OnInit {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error de Supabase cargando los datos:', error);
+        console.error('ERROR DE SUPABASE:', error.message);
       } else {
+        // Asignamos los datos
         this.reservas = data || [];
+        console.log("DATOS OBTENIDOS:", this.reservas);
       }
     } catch (err) {
-      console.error('Error inesperado de conexión:', err);
+      console.error('ERROR DE CONEXIÓN:', err);
     } finally {
-      // 3. Esto asegura que el mensaje "Cargando..." se quite PASE LO QUE PASE
+      // Forzamos el cambio de estado y la actualización de la vista
       this.cargando = false;
-      this.cdr.detectChanges(); // Obligamos a la pantalla a refrescarse
+      this.cdr.detectChanges(); 
+      console.log("VISTA ACTUALIZADA. Cargando es:", this.cargando);
     }
   }
 }

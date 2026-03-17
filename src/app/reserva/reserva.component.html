@@ -9,9 +9,10 @@
       </label>
       <span [class.active]="lang === 'en'">EN</span>
     </div>
-
     <div class="header">
+<a href="https://vancity-igdsmxcity.netlify.app/" target="_blank" class="logo-group-link">
       <img src="/assets/logo.png" alt="Logo Vancity" class="logo-img">
+</a>      
       <p>{{ textos[lang].titulo }}</p>
     </div>
 
@@ -110,7 +111,7 @@
       <div class="row">
         <div class="form-group half">
           <label>{{ textos[lang].aerolinea }}</label>
-          <input type="text" formControlName="aerolinea" placeholder="{{ textos[lang].aerolinea_ph }}">
+          <input type="text" formControlName="aerolinea" list="listaAerolineas" placeholder="{{ textos[lang].aerolinea_ph }}">
         </div>
         <div class="form-group half">
           <label>{{ textos[lang].vuelo }}</label>
@@ -126,9 +127,15 @@
             <option value="t2">{{ textos[lang].term2 }}</option>
           </select>
         </div>
+      </div>
+      <div class="row">
         <div class="form-group half">
           <label>{{ textos[lang].fecha_llegada }}</label>
           <input type="date" formControlName="fechaLlegada" class="dark-input">
+        </div>
+        <div class="form-group half">
+          <label>{{ textos[lang].hora_llegada }}</label>
+          <input type="time" formControlName="horaLlegada" class="dark-input">
         </div>
       </div>
 
@@ -139,7 +146,7 @@
         <div class="row">
           <div class="form-group half">
             <label>{{ textos[lang].aerolinea }}</label>
-            <input type="text" formControlName="aerolineaSalida" placeholder="{{ textos[lang].aerolinea_ph }}">
+            <input type="text" formControlName="aerolineaSalida" list="listaAerolineas" placeholder="{{ textos[lang].aerolinea_ph }}">
           </div>
           <div class="form-group half">
             <label>{{ textos[lang].vuelo }}</label>
@@ -155,9 +162,15 @@
               <option value="t2">{{ textos[lang].term2 }}</option>
             </select>
           </div>
+        </div>
+        <div class="row">
           <div class="form-group half">
             <label>{{ textos[lang].fecha_salida }}</label>
             <input type="date" formControlName="fechaSalida" class="dark-input">
+          </div>
+          <div class="form-group half">
+            <label>{{ textos[lang].hora_salida }}</label>
+            <input type="time" formControlName="horaSalida" class="dark-input">
           </div>
         </div>
       </ng-container>
@@ -179,7 +192,9 @@
         <span *ngIf="cotizacion === null">{{ isSubmitting ? textos[lang].btn_cotizando : textos[lang].btn_cotizar }}</span>
         <span *ngIf="cotizacion !== null">{{ textos[lang].btn_pagar }}</span>
       </button>
-
+      <datalist id="listaAerolineas">
+        <option *ngFor="let aero of aerolineasPopulares" [value]="aero"></option>
+      </datalist>
     </form>
   </div>
 </div>

@@ -1,43 +1,81 @@
 <div class="admin-container">
   <div class="header">
-    <h2>Centro de Control Vancity</h2>
-    <p>Total de registros: {{ reservas.length }}</p>
+    <div class="header-content">
+      <h2>Centro de Control Vancity 🚐</h2>
+      <p class="stats">Total de registros: <strong>{{ reservas.length }}</strong></p>
+    </div>
   </div>
 
   <div class="table-wrapper">
-    <p *ngIf="cargando" class="loading">Cargando base de datos...</p>
+    <p *ngIf="cargando" class="loading">Conectando con la base de datos...</p>
 
-    <table *ngIf="!cargando">
+    <table *ngIf="!cargando && reservas.length > 0">
       <thead>
         <tr>
-          <th>Fecha</th>
-          <th>Cliente</th>
-          <th>Contacto</th>
-          <th>Vuelo y Terminal</th>
-          <th>Destino</th>
+          <th>Registro</th>
+          <th>Cliente / Contacto</th>
+          <th>Llegada (Ida)</th>
+          <th>Salida (Vuelta)</th>
+          <th>Destino / Pax</th>
           <th>Tarifa</th>
           <th>Estatus</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let res of reservas">
-          <td>{{ res.created_at | date:'dd/MMM/yy HH:mm' }}</td>
-          <td><strong>{{ res.nombres }} {{ res.apellidos }}</strong><br>
-              <span class="pax">{{ res.pasajeros }} Pasajero(s)</span>
+          <td class="date-cell">
+            {{ res.created_at | date:'dd/MMM/yy' }}<br>
+            <span>{{ res.created_at | date:'HH:mm' }} hrs</span>
           </td>
-          <td>{{ res.telefono }}<br>
-              <span class="email">{{ res.email }}</span>
+          
+          <td>
+            <strong>{{ res.nombres }} {{ res.apellidos }}</strong><br>
+            <span class="email">{{ res.email }}</span><br>
+            <span class="phone">{{ res.telefono }}</span>
           </td>
-          <td>{{ res.aerolinea }} {{ res.vuelo }}<br>
-              <span class="terminal">Term: {{ res.terminal }}</span>
+
+          <td class="flight-cell">
+            <div class="flight-info">
+              <span class="airline">{{ res.aerolinea_ida }}</span><br>
+              <strong>{{ res.vuelo_ida }}</strong> (T{{ res.terminal_ida }})<br>
+              <span class="vuelo-date">
+                {{ res.fecha_ida ? (res.fecha_ida | date:'dd/MM/yy') : '---' }} | {{ res.hora_ida || '--:--' }}
+              </span>
+            </div>
           </td>
-          <td>{{ res.destino }}<br>
-              <span class="tipo">{{ res.tipo_viaje }}</span>
+
+          <td class="flight-cell">
+            <div *ngIf="res.aerolinea_vuelta" class="flight-info">
+              <span class="airline">{{ res.aerolinea_vuelta }}</span><br>
+              <strong>{{ res.vuelo_vuelta }}</strong> (T{{ res.terminal_vuelta }})<br>
+              <span class="vuelo-date">
+                {{ res.fecha_vuelta ? (res.fecha_vuelta | date:'dd/MM/yy') : '---' }} | {{ res.hora_vuelta || '--:--' }}
+              </span>
+            </div>
+            <span *ngIf="!res.aerolinea_vuelta" class="no-data">— Sencillo —</span>
           </td>
-          <td class="price">${{ res.cotizacion | number:'1.2-2' }}</td>
-          <td><span class="badge" [class.pagado]="res.estatus === 'PAGADO'">{{ res.estatus }}</span></td>
+
+          <td>
+            <span class="dest-text">{{ res.destino }}</span><br>
+            <span class="tipo">{{ res.tipo_viaje }}</span><br>
+            <span class="pax">{{ res.pasajeros }} Pasajeros</span>
+          </td>
+
+          <td class="price">
+            ${{ (res.cotizacion || 0) | number:'1.2-2' }}
+          </td>
+
+          <td>
+            <span class="badge" [class.pagado]="res.estatus === 'PAGADO'">
+              {{ res.estatus }}
+            </span>
+          </td>
         </tr>
       </tbody>
     </table>
+
+    <div *ngIf="!cargando && reservas.length === 0" class="no-results">
+      <p>No se encontraron reservaciones en la base de datos.</p>
+    </div>
   </div>
 </div>
