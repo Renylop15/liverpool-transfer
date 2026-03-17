@@ -71,3 +71,61 @@
   </section>
 
 </div>
+<footer class="vancity-footer">
+  <div class="footer-container">
+    
+    <div class="footer-column">
+      <h3>VANCITY MX</h3>
+      <ul>
+        <li><a (click)="openModal('terminos')">Términos y condiciones</a></li>
+        <li><a (click)="openModal('privacidad')">Aviso de privacidad</a></li>
+        <li><a (click)="openModal('faq')">Preguntas frecuentes</a></li>
+      </ul>
+      <div class="payment-methods">
+        <img src="https://img.icons8.com/color/48/visa.png" alt="Visa">
+        <img src="https://img.icons8.com/color/48/mastercard.png" alt="Mastercard">
+        <img src="https://img.icons8.com/color/48/amex.png" alt="Amex">
+        <p class="openpay-mention">Pagos procesados por <strong>Openpay</strong></p>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h3>Ubicaciones</h3>
+      <p>CDMX / QRO / GDL</p>
+      
+      <h3>Horario de oficina</h3>
+      <p>Lunes a Jueves: 08:00 a 17:00 hrs.<br>
+         Viernes: 08:00 a 15:00 hrs.</p>
+    </div>
+
+    <div class="footer-column">
+      <h3>Dirección</h3>
+      <p>1º de Abril 20 Col. Lázaro Cárdenas<br>
+         Cuautitlán Estado de México<br>
+         C.P. 54870</p>
+      
+      <h3>Contacto</h3>
+      <p>
+        <a href="mailto:admin@vancity.mx">admin@vancity.mx</a><br>
+        +52 442 128 7124
+      </p>
+    </div>
+
+  </div>
+  <div class="footer-bottom">
+    © 2026 VANCITY MX. Todos los derechos reservados.
+  </div>
+</footer>
+<div class="modal-overlay" *ngIf="modalAbierto" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ tituloModal }}</h3>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" [innerHTML]="contenidoModal">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-close-modal" (click)="closeModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
