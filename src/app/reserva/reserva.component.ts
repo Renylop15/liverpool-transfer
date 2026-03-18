@@ -303,6 +303,7 @@ async onSubmit() {
           body: { 
             tipoAccion: 'WHATSAPP_COTIZACION',
             nombre: nombreCompleto,
+            email: form.email,
             monto: this.cotizacion,
             descripcion: form.destino,
             telefono: telLimpio,
