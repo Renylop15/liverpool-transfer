@@ -14,8 +14,8 @@ serve(async (req) => {
     const { monto, nombre, email, descripcion } = await req.json()
 
     // 🔑 TUS LLAVES (Asegúrate de que tus llaves reales estén aquí)
-    const MERCHANT_ID = "m9tls2avkrnkk9ijxjpt"; 
-    const PRIVATE_KEY = "sk_039ca482b80044d5a0e27c0a57392358"; 
+    const MERCHANT_ID = "mmiruuvaltiosz1xkyye"; 
+    const PRIVATE_KEY = "sk_16ec05dcc77a4f33a7b9e28179a255e9"; 
 
     const authBase64 = btoa(PRIVATE_KEY + ":");
 
@@ -30,7 +30,7 @@ serve(async (req) => {
       },
       send_email: false,
       // ESTA ES LA LÍNEA CORREGIDA (Nota los backticks ` y la coma al final)
-      redirect_url: "https://vancity-igdsmxcity.netlify.app/reserva"    };
+      redirect_url: "http://localhost:4200/reserva"    };
 
     const openpayResponse = await fetch(`https://sandbox-api.openpay.mx/v1/${MERCHANT_ID}/checkouts`, {
       method: 'POST',
