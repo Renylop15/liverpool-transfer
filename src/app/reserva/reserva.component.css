@@ -54,30 +54,40 @@
 /* --- CAMPOS DE TEXTO (Inputs Claros) --- */
 .form-group {
   margin-bottom: 20px;
+  width: 100%; /* Aseguramos que el contenedor no se rompa */
+  box-sizing: border-box;
 }
 
 label {
   display: block;
   font-size: 10px;
-  color: #333; /* Texto casi negro */
+  color: #333; 
   letter-spacing: 1px;
   margin-bottom: 8px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
-input, select.dark-input {
+/* Aplicamos a TODOS los tipos de input por seguridad */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select.dark-input {
   width: 100%;
+  max-width: 100%; /* Freno de emergencia */
   padding: 15px;
-  /* Fondo blanco casi sólido para los campos */
   background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #ccc; /* Borde gris claro */
+  border: 1px solid #ccc;
   border-radius: 6px;
-  color: #000; /* Texto negro al escribir */
+  color: #000;
   font-size: 14px;
   outline: none;
   transition: 0.3s;
+  /* ESTO ES LO MÁS IMPORTANTE PARA QUE NO SE SALGA NADA */
   box-sizing: border-box; 
+  margin: 0; /* Quitamos márgenes fantasmas del navegador */
 }
 
 input:focus, select.dark-input:focus {
@@ -264,16 +274,19 @@ input:checked + .slider:before {
 .phone-group {
   display: flex;
   gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .select-codigo {
-  flex: 0 0 45%;
+  flex: 0 0 35%; /* Reducimos el ancho del selector de país un poco */
+  min-width: 0;
 }
 
 .phone-group input {
   flex: 1;
+  min-width: 0;
 }
-
 /* =========================================
    --- RESPONSIVO CELULARES (RESERVA) --- 
    ========================================= */
@@ -297,11 +310,41 @@ input:checked + .slider:before {
   }
 
   /* El botón de idioma lo ajustamos para que no se encime en celulares */
+  /* El botón de idioma lo ajustamos para que no se encime en celulares */
   .lang-switch-container {
-    top: 15px;
-    right: 15px;
+    top: 12px;   /* He reducido un poco más la esquina */
+    right: 12px;
+  }
+  
+  /* --- NUEVAS REGLAS PARA ARREGLAR EL ENCOMIENTO --- */
+  
+  /* 1. Encogemos el logo solo en celular para que no estorbe */
+  .logo-img {
+    height: 35px !important;  /* Antes media 50px */
+    margin-bottom: 10px !important;
+  }
+  
+  /* 2. Reducimos el tamaño de las letras ES/EN para que quepan mejor */
+  .lang-switch-container span {
+    font-size: 10px !important;
+  }
+  
+  /* 3. Reducimos el tamaño del switch para que sea más sutil */
+  .switch {
+    width: 32px !important;
+    height: 18px !important;
+  }
+  .slider:before {
+    height: 12px !important;
+    width: 12px !important;
+    left: 3px !important;
+    bottom: 3px !important;
+  }
+  input:checked + .slider:before {
+    transform: translateX(14px) !important; /* Ajuste para el nuevo tamaño */
   }
 }
+
 /* Agrega o reemplaza esto en tu admin.component.css */
 
 .header-content {
@@ -364,12 +407,15 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%; /* Forzamos el ancho */
+  box-sizing: border-box;
 }
 
 .time-picker-custom select {
-  flex: 1; /* Hace que midan lo mismo */
+  flex: 1; 
   text-align: center;
   cursor: pointer;
+  min-width: 0; /* TRUCO: Evita que el select se expanda de más en flexbox */
 }
 
 .dos-puntos {
