@@ -135,7 +135,19 @@
         </div>
         <div class="form-group half">
           <label>{{ textos[lang].hora_llegada }}</label>
-          <input type="time" formControlName="horaLlegada" class="dark-input">
+          <div class="time-picker-custom">
+            <select #hLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input">
+              <option value="" disabled selected>HH</option>
+              <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+            </select>
+            
+            <span class="dos-puntos">:</span>
+            
+            <select #mLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input">
+              <option value="" disabled selected>MM</option>
+              <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -170,7 +182,19 @@
           </div>
           <div class="form-group half">
             <label>{{ textos[lang].hora_salida }}</label>
-            <input type="time" formControlName="horaSalida" class="dark-input">
+            <div class="time-picker-custom">
+              <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input">
+                <option value="" disabled selected>HH</option>
+                <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+              </select>
+              
+              <span class="dos-puntos">:</span>
+              
+              <select #mSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input">
+                <option value="" disabled selected>MM</option>
+                <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+              </select>
+            </div>
           </div>
         </div>
       </ng-container>
@@ -179,7 +203,13 @@
 
       <div class="form-group">
         <label>{{ textos[lang].asistencia }}</label>
-        <input type="text" formControlName="asistencia" placeholder="{{ textos[lang].asistencia_ph }}">
+        <select formControlName="asistencia" class="dark-input">
+          <option value="ninguna">{{ textos[lang].asistencia_opciones.ninguna }}</option>
+          <option value="silla_ruedas">{{ textos[lang].asistencia_opciones.silla }}</option>
+          <option value="asiento_bebe">{{ textos[lang].asistencia_opciones.bebe }}</option>
+          <option value="mascota">{{ textos[lang].asistencia_opciones.mascota }}</option>
+          <option value="otro">{{ textos[lang].asistencia_opciones.otro }}</option>
+        </select>
       </div>
 
       <div class="quote-box" *ngIf="cotizacion !== null">

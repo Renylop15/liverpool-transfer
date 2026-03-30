@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import emailjs from '@emailjs/browser';
 import { createClient } from '@supabase/supabase-js'; 
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 
 const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
@@ -11,7 +12,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 @Component({
   selector: 'app-reserva',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule,NgxMaterialTimepickerModule],
   templateUrl: './reserva.component.html',
   styleUrl: './reserva.component.css'
 })
@@ -20,6 +21,8 @@ export class ReservaComponent implements OnInit {
   isSubmitting = false;
   cotizacion: number | null = null;
   lang: 'es' | 'en' = 'en'; 
+  horas: string[] = [];
+  minutos: string[] = [];
 
   aerolineasPopulares = [
   // MÉXICO Y LATAM
@@ -78,8 +81,13 @@ export class ReservaComponent implements OnInit {
       pasajeros: 'PASAJEROS (Max 4)',
       destino: 'DESTINO / HOTEL',
       destino_ph: 'Ubicación de llegada',
-      asistencia: 'ASISTENCIA ESPECIAL (Opcional)',
-      asistencia_ph: 'Ej. Silla de ruedas, asiento para bebé...',
+      asistencia: 'ASISTENCIA ESPECIAL',
+      asistencia_opciones: {
+      ninguna: 'Ninguna',
+      silla: 'Silla de Ruedas',
+      bebe: 'Asiento para Bebé',
+      mascota: 'Mascota en Transportadora',
+      otro: 'Otro (Especificar en notas)'},
       tarifa: 'TARIFA ESTIMADA',
       terminos: '* Incluye IVA (16%).',
       btn_cotizando: 'CALCULANDO...',
@@ -113,8 +121,13 @@ export class ReservaComponent implements OnInit {
       pasajeros: 'PASSENGERS (Max 4)',
       destino: 'DESTINATION / HOTEL',
       destino_ph: 'Drop-off location',
-      asistencia: 'SPECIAL ASSISTANCE (Optional)',
-      asistencia_ph: 'E.g. Wheelchair, baby seat...',
+      asistencia: 'SPECIAL ASSISTANCE',
+      asistencia_opciones: {
+      ninguna: 'None',
+      silla: 'Wheelchair',
+      bebe: 'Baby Seat',
+      mascota: 'Pet in Carrier',
+      otro: 'Other (Specify in notes)'},
       tarifa: 'ESTIMATED FARE',
       terminos: '* Tax included (16%). ',
       btn_cotizando: 'CALCULATING...',
@@ -155,7 +168,7 @@ export class ReservaComponent implements OnInit {
       fechaSalida: [''], 
       horaSalida: [''],
       
-      asistencia: [''] 
+      asistencia: ['ninguna'] 
     });
 
     this.reservationForm.valueChanges.subscribe(() => {
@@ -163,7 +176,10 @@ export class ReservaComponent implements OnInit {
     });
   }
 
+  
+
   ngOnInit() {
+
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); // OpenPay lo manda como ?id=XXX
@@ -199,6 +215,14 @@ export class ReservaComponent implements OnInit {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
+    }
+    // 2. Llenamos las 24 horas (00 a 23)
+    for (let i = 0; i < 24; i++) {
+      this.horas.push(i.toString().padStart(2, '0'));
+    }
+    // Llenamos los 60 minutos (00 a 59)
+    for (let i = 0; i < 60; i++) {
+      this.minutos.push(i.toString().padStart(2, '0'));
     }
   }
 
@@ -349,6 +373,21 @@ async onSubmit() {
       }
     }
   }
+
+actualizarHoraLlegada(h: string, m: string) {
+    if (h && m) {
+      this.reservationForm.patchValue({ horaLlegada: `${h}:${m}` });
+    }
+  }
+
+  actualizarHoraSalida(h: string, m: string) {
+    if (h && m) {
+      this.reservationForm.patchValue({ horaSalida: `${h}:${m}` });
+    }
+  }
+
+  
+
 
   soloNumeros(event: KeyboardEvent) {
     const tecla = event.key;

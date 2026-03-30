@@ -359,3 +359,21 @@ input:checked + .slider:before {
   min-width: 80px;
   text-align: center;
 }
+
+.time-picker-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-picker-custom select {
+  flex: 1; /* Hace que midan lo mismo */
+  text-align: center;
+  cursor: pointer;
+}
+
+.dos-puntos {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18px;
+}
