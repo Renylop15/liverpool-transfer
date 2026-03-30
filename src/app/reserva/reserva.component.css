@@ -377,3 +377,50 @@ input:checked + .slider:before {
   font-weight: bold;
   font-size: 18px;
 }
+/* =========================================
+   PARCHE RESPONSIVO PARA MÓVILES (CELULARES)
+   ========================================= */
+@media screen and (max-width: 768px) {
+  
+  /* 1. ARREGLO DEL FONDO (QUITA EL ZOOM FANTASMA EN IPHONE) */
+  .container { /* O cambia '.container' por la clase que tenga tu imagen de fondo */
+    background-attachment: scroll !important; /* Esto salva la vida en iOS */
+    background-size: cover !important;
+    background-position: center top !important;
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* 2. ARREGLO DE LOS INPUTS QUE SE SALEN DE LA PANTALLA */
+  .dark-input, 
+  input[type="date"], 
+  input[type="text"], 
+  input[type="email"], 
+  input[type="tel"], 
+  select {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important; /* Obliga al padding a quedarse adentro */
+  }
+
+  /* 3. ASEGURAR QUE LAS COLUMNAS SE HAGAN FILAS EN EL CELULAR */
+  .row {
+    display: flex;
+    flex-direction: column; /* Pone un campo debajo del otro */
+    width: 100%;
+  }
+
+  .form-group.half {
+    width: 100% !important; /* Los campos "mitad" ahora ocupan todo el ancho */
+    margin-bottom: 15px;
+  }
+
+  /* Opcional: Ajusta los paddings de la tarjeta principal para que respire más en celular */
+  .card {
+    padding: 20px !important;
+    width: 90% !important;
+    box-sizing: border-box;
+    margin: 20px auto;
+  }
+}

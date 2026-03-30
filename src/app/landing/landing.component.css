@@ -255,6 +255,11 @@ html, body {
   /* Ajuste de la imagen principal y título */
   .hero-section {
     padding: 80px 15px; /* Menos espacio arriba y a los lados */
+    /* ESTO ARREGLA LA IMAGEN DEL FONDO EN IPHONE/ANDROID */
+    background-attachment: scroll !important; 
+    background-size: cover !important;
+    background-position: center top !important;
+    min-height: 100vh;
   }
 
   .main-title {
