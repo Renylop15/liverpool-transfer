@@ -1,3 +1,8 @@
+/* RESET GLOBAL DE TAMAÑO (Poner al principio de tu CSS general, antes de todo) */
+* {
+  box-sizing: border-box;
+}
+
 /* --- FONDO GENERAL --- */
 .container {
   display: flex;
@@ -437,6 +442,13 @@ input:checked + .slider:before {
     width: 100vw;
     overflow-x: hidden;
   }
+  /* 1. Obliga a los contenedores a dejarse encoger */
+  .row, .form-group, .form-group.half, .time-picker-custom {
+    min-width: 0 !important; 
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
 
   /* 2. ARREGLO DE LOS INPUTS QUE SE SALEN DE LA PANTALLA */
   .dark-input, 
@@ -445,23 +457,13 @@ input:checked + .slider:before {
   input[type="email"], 
   input[type="tel"], 
   select {
+    -webkit-appearance: none !important; /* Vital para Safari */
+    appearance: none !important;
+    min-width: 0 !important; /* Permite que el input se encoja más que su tamaño por defecto */
     width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important; /* Obliga al padding a quedarse adentro */
   }
 
-  /* 3. ASEGURAR QUE LAS COLUMNAS SE HAGAN FILAS EN EL CELULAR */
-  .row {
-    display: flex;
-    flex-direction: column; /* Pone un campo debajo del otro */
-    width: 100%;
-  }
-
-  .form-group.half {
-    width: 100% !important; /* Los campos "mitad" ahora ocupan todo el ancho */
-    margin-bottom: 15px;
-  }
-
+  
   /* Opcional: Ajusta los paddings de la tarjeta principal para que respire más en celular */
   .card {
     padding: 20px !important;
