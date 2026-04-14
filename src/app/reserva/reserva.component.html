@@ -101,8 +101,8 @@
         <label>{{ textos[lang].vehiculo }}</label>
         <select formControlName="vehiculo" class="dark-input">
           <option value="" disabled selected>{{ textos[lang].vehiculo_ph }}</option>
-          <option value="Sedan">Sedan (Like Corolla, Prius, and others)</option>
-          <option value="SUV">SUV (Like Highlander, Sienna, and others)</option>
+          <option value="Sedan">Sedan ( Corolla, Prius, or similar)</option>
+          <option value="SUV">SUV ( Highlander, Sienna, or similar)</option>
         </select>
       </div>
       <div class="row">
@@ -227,11 +227,7 @@
         </p>
         <p class="terms">{{ textos[lang].terminos }}</p>
       </div>
-      <div style="background: black; color: lime; padding: 10px; font-family: monospace;">
-        ESTADO DEL FORMULARIO: {{ reservationForm.status }} <br><br>
-        DATOS ACTUALES: <br>
-        <pre style="color: white;">{{ reservationForm.value | json }}</pre>
-      </div>
+      
       <button type="submit" [disabled]="(cotizacion === null && reservationForm.invalid) || isSubmitting || pagoIniciado" class="btn-submit">
   
         <span *ngIf="cotizacion === null">
