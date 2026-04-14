@@ -19,6 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 export class ReservaComponent implements OnInit {
   reservationForm: FormGroup;
   isSubmitting = false;
+  pagoIniciado = false;
   cotizacion: number | null = null;
   lang: 'es' | 'en' = 'en'; 
   horas: string[] = [];
@@ -81,6 +82,8 @@ export class ReservaComponent implements OnInit {
       pasajeros: 'PASAJEROS (Max 4)',
       destino: 'DESTINO / HOTEL',
       destino_ph: 'Ubicación de llegada',
+      vehiculo: 'VEHÍCULO PREFERIDO',
+      vehiculo_ph: 'Selecciona un auto',
       asistencia: 'ASISTENCIA ESPECIAL',
       asistencia_opciones: {
       ninguna: 'Ninguna',
@@ -121,6 +124,8 @@ export class ReservaComponent implements OnInit {
       pasajeros: 'PASSENGERS (Max 4)',
       destino: 'DESTINATION / HOTEL',
       destino_ph: 'Drop-off location',
+      vehiculo: 'PREFERRED VEHICLE',
+      vehiculo_ph: 'Select a car',
       asistencia: 'SPECIAL ASSISTANCE',
       asistencia_opciones: {
       ninguna: 'None',
@@ -154,6 +159,7 @@ export class ReservaComponent implements OnInit {
       telefono: ['', Validators.required],
       tipoViaje: ['one_way', Validators.required],
       pasajeros: [1, [Validators.required, Validators.min(1), Validators.max(4)]],
+      vehiculo: ['', Validators.required], // <-- AÑADIR ESTA LÍNEA
       destino: ['Hotel Hyatt Regency Mexico City', Validators.required],
       
       aerolinea: ['', Validators.required],
@@ -227,26 +233,40 @@ export class ReservaComponent implements OnInit {
   }
 
 async onSubmit() {
-  if (this.reservationForm.valid) {
-    // 1. Declaramos las variables una sola vez al inicio
-    const form = this.reservationForm.value;
-    const isRound = form.tipoViaje === 'round_trip';
-    const terminalTexto = form.terminal.toUpperCase();
-    const terminalSalidaTexto = form.terminalSalida ? form.terminalSalida.toUpperCase() : '';
-    const nombreCompleto = `${form.nombres} ${form.apellidos}`;
-    let telLimpio = `${form.codigoPais}${form.telefono}`.replace('+', '').replace(/\s/g, '');
-    if (telLimpio.startsWith('521')) telLimpio = '52' + telLimpio.substring(3);
+    if (this.reservationForm.valid) {
+      // 1. Declaramos las variables
+      const form = this.reservationForm.value;
+      const isRound = form.tipoViaje === 'round_trip';
+      const terminalTexto = form.terminal.toUpperCase();
+      const terminalSalidaTexto = form.terminalSalida ? form.terminalSalida.toUpperCase() : '';
+      const nombreCompleto = `${form.nombres} ${form.apellidos}`;
+      let telLimpio = `${form.codigoPais}${form.telefono}`.replace('+', '').replace(/\s/g, '');
+      if (telLimpio.startsWith('521')) telLimpio = '52' + telLimpio.substring(3);
 
-    // CASO 1: COTIZACIÓN
-    if (this.cotizacion === null) {
-      this.isSubmitting = true; 
-      
-      try {
-        this.cotizacion = isRound ? 3328.00 : 1914.00;
+      // ==================================================
+      // CASO 1: COTIZACIÓN (¡AHORA ES INSTANTÁNEA!)
+      // ==================================================
+      if (this.cotizacion === null) {
+        
+        // 1. Calculamos el precio inmediatamente
+        const tipoAuto = form.vehiculo ? form.vehiculo.toLowerCase() : '';
+        if (tipoAuto.includes('suv')) {
+          this.cotizacion = isRound ? 4330.00 : 2500.00;
+        } else {
+          this.cotizacion = isRound ? 3328.00 : 1914.00;
+        }
+
+        // 2. ¡DESBLOQUEAMOS LA PANTALLA AL INSTANTE!
+        // No usamos 'await', liberamos el botón en 1 milisegundo
+        this.isSubmitting = false; 
+        this.cdr.detectChanges(); 
+
+        // 3. TAREAS EN SEGUNDO PLANO (BACKGROUND)
+        // Todo esto se ejecutará "escondido" sin congelar la pantalla del cliente
         let tipoTraducido = isRound ? (this.lang === 'en' ? 'Round Trip' : 'Redondo') : (this.lang === 'en' ? 'One Way' : 'Sencillo');
 
-        // 2. Inserción en Base de Datos
-        const { error: dbError } = await supabase.from('reservas').insert([{
+        // Guardamos en Supabase en el fondo
+        supabase.from('reservas').insert([{
             nombres: form.nombres,
             apellidos: form.apellidos,
             email: form.email,
@@ -256,6 +276,7 @@ async onSubmit() {
             cotizacion: this.cotizacion,
             estatus: 'COTIZADO',
             tipo_viaje: tipoTraducido,
+            vehiculo: form.vehiculo,
             pasajeros: form.pasajeros,
             aerolinea_ida: form.aerolinea,
             vuelo_ida: form.noVuelo,
@@ -267,12 +288,9 @@ async onSubmit() {
             terminal_vuelta: isRound ? terminalSalidaTexto : null,
             fecha_vuelta: isRound ? form.fechaSalida : null,
             hora_vuelta: isRound ? form.horaSalida : null
-        }]);
+        }]).then(); // <- Usamos .then() en vez de await
 
-        if (dbError) throw dbError;
-
-        // 3. Preparar bloques HTML para el correo
-        // ✈️ BLOQUE DE IDA (Traducción dinámica)
+        // Preparamos HTML para Email
         const detalleIdaHTML = `
           <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;">
             <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">
@@ -283,7 +301,6 @@ async onSubmit() {
             <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaLlegada} | ${form.horaLlegada} hrs</p>
           </div>`;
 
-        // ✈️ BLOQUE DE VUELTA (Traducción dinámica)
         const detalleVueltaHTML = isRound ? `
           <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #555;">
             <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">
@@ -294,82 +311,64 @@ async onSubmit() {
             <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaSalida} | ${form.horaSalida} hrs</p>
           </div>` : '';
 
-          const cotizacionFormateada = new Intl.NumberFormat('en-US', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
+        const cotizacionFormateada = new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: 2, maximumFractionDigits: 2
         }).format(this.cotizacion);
 
         const templateParams = {
           titulo_mensaje: this.lang === 'en' ? 'Your Trip Quote' : 'Tu Cotización de Viaje',
           mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested quote.' : 'Aquí están los detalles de la cotización solicitada.',
-
-          nombre: nombreCompleto,
-          email_destino: form.email, 
-          destino: form.destino,
-          cotizacion: cotizacionFormateada,
-          pasajeros: form.pasajeros,
-          tipo: tipoTraducido,
-          asistencia: form.asistencia || 'Ninguna',
-          detalle_ida: detalleIdaHTML,
-          detalle_vuelta: detalleVueltaHTML 
+          nombre: nombreCompleto, email_destino: form.email, destino: form.destino,
+          cotizacion: cotizacionFormateada, pasajeros: form.pasajeros,
+          tipo: tipoTraducido, asistencia: form.asistencia || 'Ninguna',
+          detalle_ida: detalleIdaHTML, detalle_vuelta: detalleVueltaHTML 
         };
 
-        // Guardar para uso posterior
         localStorage.setItem('reserva_vancity', JSON.stringify(templateParams));
         localStorage.setItem('idioma_vancity', this.lang);
 
-        // 4. Enviar Email y disparar WhatsApp automático
-          const templateId = this.lang === 'en' ? 'template_dcmxpi5' : 'template_s5rm6yu';
-          emailjs.send('service_jzr70mc', templateId, templateParams, 'AW3xttKiA-x-8jgoP')
-            .catch((err) => console.error('Error al enviar el correo:', err));
+        // Mandamos correo en el fondo sin 'await'
+        const templateId = this.lang === 'en' ? 'template_dcmxpi5' : 'template_s5rm6yu';
+        emailjs.send('service_jzr70mc', templateId, templateParams, 'AW3xttKiA-x-8jgoP')
+          .catch((err) => console.error('Error Email:', err));
 
-        await supabase.functions.invoke('openpay-checkout', {
-          body: { 
-            tipoAccion: 'WHATSAPP_COTIZACION',
-            nombre: nombreCompleto,
-            email: form.email,
-            monto: this.cotizacion,
-            descripcion: form.destino,
-            telefono: telLimpio,
-            idioma: this.lang
-          }
-        });
+        // Mandamos WhatsApp en el fondo sin 'await'
+        supabase.functions.invoke('openpay-checkout', {
+          body: { tipoAccion: 'WHATSAPP_COTIZACION', nombre: nombreCompleto, email: form.email, monto: this.cotizacion, descripcion: form.destino, telefono: telLimpio, idioma: this.lang }
+        }).catch(err => console.error('Error WA:', err));
 
-      } catch (error) {
-        console.error("Error crítico:", error);
-      } finally {
-        this.isSubmitting = false; 
-        this.cdr.detectChanges(); 
-      }
 
-    } else {
-        this.isSubmitting = true; 
-        this.cdr.detectChanges(); 
-        
-        try {
-          const datosPago = {
-            monto: this.cotizacion,
-            nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
-            email: this.reservationForm.value.email,
-            descripcion: `Traslado Ejecutivo Vancity`
-          };
+      // ==================================================
+      // CASO 2: PROCEDER AL PAGO
+      // ==================================================
+      } else {
+          this.pagoIniciado = true; // Activa el letrero "CONECTANDO AL BANCO"
+          this.cdr.detectChanges(); 
+          
+          try {
+            const datosPago = {
+              monto: this.cotizacion,
+              nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
+              email: this.reservationForm.value.email,
+              descripcion: `Traslado Ejecutivo Vancity`
+            };
 
-          const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
+            const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
 
-          if (error || (data && data.error)) {
-            alert('Hubo un detalle al conectar con el banco. Intenta dar clic de nuevo.');
-            this.isSubmitting = false;
+            if (error || (data && data.error)) {
+              alert('Hubo un error con el banco. Intenta dar clic de nuevo.');
+              this.pagoIniciado = false;
+              this.cdr.detectChanges();
+              return;
+            }
+
+            window.location.href = data.checkoutLink; 
+
+          } catch (fatalError) {
+            console.error('Error de conexión:', fatalError);
+            this.pagoIniciado = false;
             this.cdr.detectChanges();
-            return;
           }
-
-          window.location.href = data.checkoutLink; 
-
-        } catch (fatalError) {
-          console.error('Error de conexión:', fatalError);
-          this.isSubmitting = false;
-          this.cdr.detectChanges();
-        }
       }
     }
   }

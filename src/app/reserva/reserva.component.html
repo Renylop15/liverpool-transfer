@@ -97,7 +97,14 @@
           <input type="number" formControlName="pasajeros" min="1" max="4">
         </div>
       </div>
-
+      <div class="form-group half">
+        <label>{{ textos[lang].vehiculo }}</label>
+        <select formControlName="vehiculo" class="dark-input">
+          <option value="" disabled selected>{{ textos[lang].vehiculo_ph }}</option>
+          <option value="Sedan">Sedan (Like Corolla, Prius, and others)</option>
+          <option value="SUV">SUV (Like Highlander, Sienna, and others)</option>
+        </select>
+      </div>
       <div class="row">
         <div class="form-group half" style="width: 100%;">
           <label>{{ textos[lang].destino }}</label>
@@ -215,12 +222,25 @@
       <div class="quote-box" *ngIf="cotizacion !== null">
         <h3>{{ textos[lang].tarifa }}</h3>
         <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+        <p style="color: #9ca3af; font-size: 11px; margin-top: -10px; margin-bottom: 10px;">
+          {{ lang === 'en' ? 'Prices in Mexican Pesos' : 'Precios en Pesos Mexicanos' }}
+        </p>
         <p class="terms">{{ textos[lang].terminos }}</p>
       </div>
+      <div style="background: black; color: lime; padding: 10px; font-family: monospace;">
+        ESTADO DEL FORMULARIO: {{ reservationForm.status }} <br><br>
+        DATOS ACTUALES: <br>
+        <pre style="color: white;">{{ reservationForm.value | json }}</pre>
+      </div>
+      <button type="submit" [disabled]="(cotizacion === null && reservationForm.invalid) || isSubmitting || pagoIniciado" class="btn-submit">
+  
+        <span *ngIf="cotizacion === null">
+          {{ textos[lang].btn_cotizar }}
+        </span>
 
-      <button type="submit" [disabled]="!reservationForm.valid || isSubmitting" class="btn-submit">
-        <span *ngIf="cotizacion === null">{{ isSubmitting ? textos[lang].btn_cotizando : textos[lang].btn_cotizar }}</span>
-        <span *ngIf="cotizacion !== null">{{ textos[lang].btn_pagar }}</span>
+        <span *ngIf="cotizacion !== null">
+          {{ pagoIniciado ? 'CONECTANDO CON EL BANCO...' : textos[lang].btn_pagar }}
+        </span>
       </button>
       <datalist id="listaAerolineas">
         <option *ngFor="let aero of aerolineasPopulares" [value]="aero"></option>

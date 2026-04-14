@@ -65,7 +65,7 @@
   align-items: center;
   padding: 140px 20px;
   /* El fondo oscuro semi-transparente sobre la imagen para que el texto resalte */
-  background-image: url('/assets/angel.jpg');
+  background-image: url('/assets/angel4.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -116,6 +116,60 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* Contenedor para alinear los dos botones */
+.buttons-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  flex-wrap: wrap; /* Para que en celular se pongan uno debajo del otro si no caben */
+}
+
+/* Estilo del botón de Experiencias */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: transparent;
+  color: #ffffff;
+  padding: 16px 40px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  border: 2px solid #ffffff;
+  transition: all 0.4s ease;
+}
+
+.btn-secondary:hover {
+  background: #ffffff;
+  color: #0b1d3a;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary .btn-icon {
+  font-size: 22px;
+  transition: transform 0.3s ease;
+}
+
+.btn-secondary:hover .btn-icon {
+  transform: translateX(5px);
+}
+
+/* Ajuste para celulares */
+@media (max-width: 768px) {
+  .buttons-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .btn-dynamic, .btn-secondary {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 .btn-dynamic:hover {

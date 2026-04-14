@@ -1,0 +1,298 @@
+/* =========================================
+   1. BASE & WRAPPER
+   ========================================= */
+.landing-wrapper {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+/* =========================================
+   2. NAV BAR
+   ========================================= */
+.partners-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.vancity-logo {
+  max-height: 45px;
+}
+
+.btn-back {
+  color: #0b1d3a;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn-back:hover { color: #1a3a6c; }
+
+/* =========================================
+   3. HERO SECTION
+   ========================================= */
+.hero-experiences {
+  background-image: url('/assets/luchas.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect */
+  position: relative;
+  text-align: center;
+  color: #ffffff;
+}
+
+.hero-overlay {
+  background: rgba(11, 29, 58, 0.75); 
+  padding: 100px 20px;
+  min-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-title {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 18px;
+  max-width: 650px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* =========================================
+   4. PACKAGES GRID & CARDS
+   ========================================= */
+.tours-section {
+  padding: 80px 20px;
+}
+
+.packages-grid {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.package-card {
+  background: white;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.package-card:hover {
+  transform: translateY(-10px);
+}
+
+.package-content {
+  padding: 30px;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.package-content h3 {
+  color: #0b1d3a;
+  font-size: 24px;
+  margin: 15px 0 5px 0;
+}
+
+.package-content p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba(11, 29, 58, 0.1);
+  color: #0b1d3a;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  align-self: center;
+}
+
+/* =========================================
+   5. CAROUSEL (Inside Cards)
+   ========================================= */
+.carousel-container {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+}
+
+.tour-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel-controls {
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px; /* <--- Cambiamos de 15px a 25px para meterlas más al centro */
+  pointer-events: none;
+  box-sizing: border-box; /* <--- Vital para que el padding no estire el contenedor */
+}
+
+.carousel-btn {
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  border: none;
+  width: 32px;  /* <--- Reducimos de 35px a 32px */
+  height: 32px; /* <--- Reducimos de 35px a 32px */
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px; /* <--- Ajustamos el tamaño del símbolo ❯ */
+}
+
+.carousel-btn:hover { background: #0b1d3a; }
+
+/* =========================================
+   6. BUTTONS
+   ========================================= */
+.btn-info {
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: 2px solid #0b1d3a;
+  color: #0b1d3a;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+  letter-spacing: 1px;
+}
+
+.btn-info:hover {
+  background: #0b1d3a;
+  color: white;
+}
+
+/* =========================================
+   7. MODAL STYLES
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(11, 29, 58, 0.9);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: white;
+  width: 100%; max-width: 750px;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+  position: absolute; top: 15px; right: 20px;
+  font-size: 35px; border: none; background: none; cursor: pointer; color: #999;
+}
+
+.modal-sub {
+  color: #1a3a6c;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.modal-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 40px; margin: 30px 0;
+  text-align: left;
+}
+
+.info-column h4 { color: #0b1d3a; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
+.info-column ul { list-style: none; padding: 0; }
+.info-column li { margin-bottom: 10px; font-size: 14px; display: flex; align-items: flex-start; gap: 8px; }
+
+/* Estilo para los checks de lo incluido */
+.check-list li::before { content: '✓'; color: #27ae60; font-weight: bold; }
+
+.exclusions {
+  background: #fdf2f2;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.exclusions h4 { color: #c0392b; margin-bottom: 10px; font-size: 14px; }
+.exclusions p { font-size: 13px; color: #666; line-height: 1.5; }
+
+.btn-book-modal {
+  display: block; text-align: center;
+  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: white;
+  padding: 20px; border-radius: 8px;
+  text-decoration: none; font-weight: 800;
+  box-shadow: 0 10px 20px rgba(11, 29, 58, 0.2);
+  transition: 0.3s;
+}
+
+.btn-book-modal:hover { transform: translateY(-3px); filter: brightness(1.2); }
+
+/* =========================================
+   8. RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  .partners-nav { padding: 15px 20px; }
+  .main-title { font-size: 32px; }
+  .modal-grid { grid-template-columns: 1fr; gap: 20px; }
+  .package-card { max-width: 100%; }
+  .hero-experiences { background-attachment: scroll !important; } /* iPhone Fix */
+  .hero-overlay { padding: 60px 20px; }
+}

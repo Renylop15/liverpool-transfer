@@ -99,3 +99,23 @@ tr:hover {
     border-radius: 5px;
   }
 }
+.car-info {
+  display: inline-block;
+  background-color: #f1f5f9; /* Un gris muy claro */
+  color: #0b1d3a;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin: 4px 0;
+  border: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+
+.tipo {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+}
