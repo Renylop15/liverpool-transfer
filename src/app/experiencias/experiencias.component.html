@@ -1,7 +1,6 @@
 <div class="landing-wrapper">
   <nav class="partners-nav">
     <img src="/assets/logo.png" alt="Vancity" class="vancity-logo">
-    
     <a routerLink="/" class="btn-back">⬅ Back to Home</a>
   </nav>
 
@@ -16,6 +15,7 @@
   <section class="tours-section">
     <div class="content-container">
       <div class="packages-grid">
+        
         <div class="package-card" *ngFor="let pkg of packages">
           <div class="carousel-container">
             <img [src]="pkg.images[pkg.currentImageIndex]" class="tour-carousel-image">
@@ -24,44 +24,89 @@
               <button (click)="nextImage(pkg, $event)" class="carousel-btn">❯</button>
             </div>
           </div>
+          
           <div class="package-content">
             <span class="badge">{{ pkg.duration }}</span>
             <h3>{{ pkg.title }}</h3>
-            <p>{{ pkg.subtitle }}</p>
-            <button class="btn-info" (click)="openInfo(pkg)">MORE INFO</button>
+            <p class="subtitle">{{ pkg.subtitle }}</p>
+            
+            <div class="inclusions-row">
+              <div class="inclusion-column">
+                <h4>✓ Included</h4>
+                <ul class="check-list">
+                  <li *ngFor="let inc of pkg.includes">{{ inc }}</li>
+                </ul>
+              </div>
+              <div class="inclusion-column">
+                <h4>✕ Not Included</h4>
+                <ul class="list">
+                  <li *ngFor="let inc of pkg.notIncludes">{{ inc }}</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="itineraries-visual-section">
+              <h4>Suggested Itineraries (Click to view details)</h4>
+              <div class="itinerary-visual-list">
+                
+                <div class="itin-card" *ngFor="let itin of pkg.recommendationsDetailed" (click)="openItineraryDetail(itin, $event)">
+  
+                  <div class="itin-cover-wrapper">
+                    <img [src]="itin.images[0]" class="itin-cover-img">
+                  </div>
+                  
+                  <div class="itin-info">
+                    <h3 class="itin-title">{{ itin.title }}</h3>
+                    <p class="itin-price">{{ itin.priceText }}</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <div class="modal-overlay" *ngIf="selectedPackage" (click)="closeInfo()">
+  <div class="modal-overlay" *ngIf="selectedItinerary" (click)="closeItineraryDetail()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <button class="close-modal" (click)="closeInfo()">×</button>
-      <h2>{{ selectedPackage.title }}</h2>
-      <p class="modal-sub">{{ selectedPackage.duration }} Disposal Service</p>
+      <button class="close-modal" (click)="closeItineraryDetail()">×</button>
+      
+      <div class="itinerary-modal-header">
+        <h1>{{ selectedItinerary.title }}</h1>
+        <p class="itinerary-modal-meta">{{ selectedItinerary.locationText }}</p>
+      </div>
 
-      <div class="modal-grid">
-        <div class="info-column">
-          <h4>💡 Suggested Itineraries</h4>
-          <ul>
-            <li *ngFor="let rec of selectedPackage.recommendations">{{ rec }}</li>
-          </ul>
-        </div>
-        <div class="info-column">
-          <h4>✅ Included</h4>
-          <ul class="check-list">
-            <li *ngFor="let inc of selectedPackage.includes">{{ inc }}</li>
-          </ul>
+      <div class="itinerary-modal-images-grid">
+        <img [src]="selectedItinerary.images[0]" class="itin-img-modal-big">
+        <div class="itin-img-modal-small-grid">
+            <img [src]="selectedItinerary.images[1]" class="itin-img-modal-small">
+            <img [src]="selectedItinerary.images[2]" class="itin-img-modal-small">
+            <img [src]="selectedItinerary.images[3]" class="itin-img-modal-small">
+            <img [src]="selectedItinerary.images[4]" class="itin-img-modal-small">
         </div>
       </div>
 
-      <div class="exclusions">
-        <h4>❌ Not Included</h4>
-        <p>{{ selectedPackage.notIncludes.join(' • ') }}</p>
+      <div class="itinerary-modal-main">
+        <div class="itinerary-modal-left">
+            <p class="itinerary-description">{{ selectedItinerary.description }}</p>
+            <div class="itinerary-details-extra">
+                <div class="itin-extra-item" *ngFor="let detail of selectedItinerary.extraDetails">
+                    <span class="itin-extra-icon">{{ detail.icon }}</span>
+                    <span class="itin-extra-text">{{ detail.text }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="itinerary-modal-right">
+            <div class="itinerary-booking-card">
+                <p class="itin-price-modal">From ${{ selectedItinerary.priceNumeric | number:'1.0-0' }} MXN <br><span>per unit</span></p>
+                <a routerLink="/reserva-experiencia" class="itin-book-btn">BOOK THIS SERVICE</a>
+            </div>
+        </div>
       </div>
-
-      <a routerLink="/reserva-experiencia" class="btn-book-modal">BOOK THIS SERVICE</a>
     </div>
   </div>
 </div>
