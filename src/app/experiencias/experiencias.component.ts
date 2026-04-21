@@ -42,7 +42,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       title: 'Half Day Service',
       subtitle: 'Executive Private Disposal',
       duration: 'Up to 6 Hours',
-      priceBase: 3500,
+      priceBase: 3950,
       images: [
         '/assets/angel4.jpg', 
         '/assets/images/tours/centro-1.jpg',
@@ -63,8 +63,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/centro-4.jpg',
             '/assets/images/tours/centro-5.jpg'
           ],
-          priceText: 'From $1,800 MXN per unit',
-          priceNumeric: 1800,
+          priceText: 'From $3,950.00 MXN per unit',
+          priceNumeric: 3950,
           description: 'Explore the heart of Mexico City, visiting the Zócalo, the Metropolitan Cathedral, and the Palace of Fine Arts.',
           locationText: 'Mexico City, Mexico',
           extraDetails: [
@@ -80,8 +80,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/coyoacan-4.jpg',
             '/assets/images/tours/coyoacan-5.jpg'
           ],
-          priceText: 'From $1,900 MXN per unit',
-          priceNumeric: 1900,
+          priceText: 'From $3,950.00 MXN per unit',
+          priceNumeric: 3950,
           description: 'Stroll through the cobblestone streets of Coyoacán, visit the Frida Kahlo Museum, and enjoy the bohemian atmosphere.',
           locationText: 'Coyoacán, Mexico City',
           extraDetails: [
@@ -97,8 +97,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/luchas-3.jpg',
             '/assets/images/tours/luchas-4.jpg'
           ],
-          priceText: 'From $1,700 MXN per unit',
-          priceNumeric: 1700,
+          priceText: 'From $3,950.00 MXN per unit',
+          priceNumeric: 3950,
           description: 'Immerse yourself in Mexican culture with a night of Lucha Libre, tacos, and beers at Arena Mexico.',
           locationText: 'Arena Mexico, Mexico City',
           extraDetails: [
@@ -114,8 +114,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/night-4.jpg',
             '/assets/images/tours/night-5.jpg'
           ],
-          priceText: 'From $1,600 MXN per unit',
-          priceNumeric: 1600,
+          priceText: 'From $3,950.00 MXN per unit',
+          priceNumeric: 3950,
           description: 'Enjoy the vibrant nightlife of Mexico City in the best terraces, bars, and restaurants.',
           locationText: 'Roma-Condesa, Mexico City',
           extraDetails: [
@@ -129,7 +129,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       title: 'Full Day Service',
       subtitle: 'Premium Private Disposal',
       duration: 'Up to 12 Hours',
-      priceBase: 6500,
+      priceBase: 4950,
       images: [
         '/assets/images/tours/teo-1.jpg', 
         '/assets/images/tours/teo-2.jpg',
@@ -150,8 +150,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/teo-4.jpg',
             '/assets/images/tours/teo-5.jpg'
           ],
-          priceText: 'From $3,200 MXN per unit',
-          priceNumeric: 3200,
+          priceText: 'From $4950.00 MXN per unit',
+          priceNumeric: 4950,
           description: 'Visit the majestic archaeological site of Teotihuacán, including the Pyramids of the Sun and the Moon.',
           locationText: 'San Juan Teotihuacán, Mexico',
           extraDetails: [
@@ -167,8 +167,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/coyo-4.jpg',
             '/assets/images/tours/coyo-5.jpg'
           ],
-          priceText: 'From $2,800 MXN per unit',
-          priceNumeric: 2800,
+          priceText: 'From $4,950.00 MXN per unit',
+          priceNumeric: 4950,
           description: 'Ride a trajinera through the colorful canals of Xochimilco and enjoy mariachis, food, and drinks.',
           locationText: 'Xochimilco, Mexico City',
           extraDetails: [
@@ -184,8 +184,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/paseo-4.webp',
             '/assets/images/tours/paseo-1.webp'
           ],
-          priceText: 'From $3,500 MXN per unit',
-          priceNumeric: 3500,
+          priceText: 'From $4,950.00 MXN per unit',
+          priceNumeric: 4950,
           description: 'Enjoy breathtaking views of the Popocatépetl and Iztaccíhuatl volcanoes from the legendary Paso de Cortés.',
           locationText: 'Izta-Popo National Park, Mexico',
           extraDetails: [
@@ -201,8 +201,8 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/night-4.jpg',
             '/assets/images/tours/night-5.jpg'
           ],
-          priceText: 'From $1,600 MXN per unit',
-          priceNumeric: 1600,
+          priceText: 'From $4,950.00 MXN per unit',
+          priceNumeric: 4950,
           description: 'Enjoy a complete nightlife experience in Mexico City with guaranteed private transportation.',
           locationText: 'Multiple areas, Mexico City',
           extraDetails: [

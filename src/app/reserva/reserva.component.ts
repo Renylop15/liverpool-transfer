@@ -61,7 +61,7 @@ export class ReservaComponent implements OnInit {
 
   textos = {
     es: {
-      titulo: 'Servicio Ejecutivo Sedán',
+      titulo: 'Servicio Ejecutivo de Vehículos',
       nombres: 'NOMBRE(S)',
       apellidos: 'APELLIDOS',
       nombres_ph: 'Ej. Roberto',
@@ -103,7 +103,7 @@ export class ReservaComponent implements OnInit {
       hora_salida: 'HORA DE SALIDA'
     },
     en: {
-      titulo: 'Executive Sedan Service',
+      titulo: 'Executive Vehicle Service',
       nombres: 'FIRST NAME',
       apellidos: 'LAST NAME',
       nombres_ph: 'E.g. Robert',
@@ -197,17 +197,21 @@ export class ReservaComponent implements OnInit {
         if (datosGuardados) {
           const datosCorreo = JSON.parse(datosGuardados);
 
-          // Limpiamos el texto para que el Folio se vea perfecto
-          datosCorreo.titulo_mensaje = idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado';
-          
-          // Usamos solo el openpayId que atrapamos de la URL
-          datosCorreo.mensaje_principal = idiomaGuardado === 'en' 
-            ? `Your payment was successful. Folio: ${openpayId}. Your unit is reserved.` 
-            : `Hemos recibido tu pago exitosamente. Folio: ${openpayId}. Tu unidad está reservada.`;
-
-          const templateId = idiomaGuardado === 'en' ? 'template_dcmxpi5' : 'template_s5rm6yu';
-          emailjs.send('service_jzr70mc', templateId, datosCorreo, 'AW3xttKiA-x-8jgoP')
-            .catch(() => {});
+          // =========================================================
+          // TEMPLATE 2: CORREO DE CONFIRMACIÓN DE PAGO
+          // =========================================================
+          const templatePagoParams = {
+            titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
+            mensaje_principal: idiomaGuardado === 'en' 
+              ? 'Thank you! Your payment was successful and your unit is reserved.' 
+              : '¡Gracias! Hemos recibido tu pago exitosamente. Tu unidad está reservada.',
+            nombre: datosCorreo.nombre,
+            email_destino: datosCorreo.email_destino,
+            folio: openpayId,
+            tipo_servicio: datosCorreo.tipo_servicio, // Extraído del localStorage
+            monto: datosCorreo.cotizacion
+          };
+          emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx')            .catch(() => {});
 
           supabase.from('reservas').update({ estatus: 'PAGADO' })
             .eq('email', datosCorreo.email_destino)
@@ -315,22 +319,30 @@ async onSubmit() {
           minimumFractionDigits: 2, maximumFractionDigits: 2
         }).format(this.cotizacion);
 
-        const templateParams = {
+        // =========================================================
+        // TEMPLATE 1: CORREO DE COTIZACIÓN
+        // =========================================================
+        const templateCotizacionParams = {
           titulo_mensaje: this.lang === 'en' ? 'Your Trip Quote' : 'Tu Cotización de Viaje',
           mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested quote.' : 'Aquí están los detalles de la cotización solicitada.',
-          nombre: nombreCompleto, email_destino: form.email, destino: form.destino,
-          cotizacion: cotizacionFormateada, pasajeros: form.pasajeros,
-          tipo: tipoTraducido, asistencia: form.asistencia || 'Ninguna',
-          detalle_ida: detalleIdaHTML, detalle_vuelta: detalleVueltaHTML 
+          nombre: nombreCompleto, 
+          email_destino: form.email, 
+          destino: form.destino,
+          cotizacion: cotizacionFormateada, 
+          pasajeros: form.pasajeros,
+          tipo_servicio: `${form.vehiculo} - ${tipoTraducido}`, // Esto lo usamos para el template de pago
+          asistencia: form.asistencia || 'Ninguna',
+          detalle_ida: detalleIdaHTML, 
+          detalle_vuelta: detalleVueltaHTML 
         };
 
-        localStorage.setItem('reserva_vancity', JSON.stringify(templateParams));
+        localStorage.setItem('reserva_vancity', JSON.stringify(templateCotizacionParams));
         localStorage.setItem('idioma_vancity', this.lang);
 
         // Mandamos correo en el fondo sin 'await'
         const templateId = this.lang === 'en' ? 'template_dcmxpi5' : 'template_s5rm6yu';
-        emailjs.send('service_jzr70mc', templateId, templateParams, 'AW3xttKiA-x-8jgoP')
-          .catch((err) => console.error('Error Email:', err));
+        emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx')       
+         .catch((err) => console.error('Error Email:', err));
 
         // Mandamos WhatsApp en el fondo sin 'await'
         supabase.functions.invoke('openpay-checkout', {
@@ -350,7 +362,8 @@ async onSubmit() {
               monto: this.cotizacion,
               nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
               email: this.reservationForm.value.email,
-              descripcion: `Traslado Ejecutivo Vancity`
+              descripcion: `Traslado Ejecutivo Vancity`,
+              redirectUrl: "https://igdsmxcity.vancity.mx/reserva" // <-- AÑADE ESTO
             };
 
             const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });

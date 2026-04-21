@@ -1,5 +1,6 @@
 <div class="container">
   <div class="card">
+
     
     <div class="lang-switch-container">
       <span [class.active]="lang === 'es'">ES</span>
@@ -10,7 +11,7 @@
       <span [class.active]="lang === 'en'">EN</span>
     </div>
     <div class="header">
-<a href="https://vancity-igdsmxcity.netlify.app/" target="_blank" class="logo-group-link">
+<a href="/"  class="logo-group-link">
       <img src="/assets/logo.png" alt="Logo Vancity" class="logo-img">
 </a>      
       <p>{{ textos[lang].titulo }}</p>
@@ -97,13 +98,23 @@
           <input type="number" formControlName="pasajeros" min="1" max="4">
         </div>
       </div>
-      <div class="form-group half">
+      <div class="form-group" style="width: 100%;">
         <label>{{ textos[lang].vehiculo }}</label>
         <select formControlName="vehiculo" class="dark-input">
           <option value="" disabled selected>{{ textos[lang].vehiculo_ph }}</option>
           <option value="Sedan">Sedan ( Corolla, Prius, or similar)</option>
           <option value="SUV">SUV ( Highlander, Sienna, or similar)</option>
         </select>
+
+        <div class="vehicle-image-container" *ngIf="reservationForm.get('vehiculo')?.value">
+          
+          <img *ngIf="reservationForm.get('vehiculo')?.value === 'Sedan'" 
+               src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
+               
+          <img *ngIf="reservationForm.get('vehiculo')?.value === 'SUV'" 
+               src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
+               
+        </div>
       </div>
       <div class="row">
         <div class="form-group half" style="width: 100%;">

@@ -1,0 +1,144 @@
+/* Contenedor global flotante */
+.wa-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 99999; /* Siempre por encima de todo */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* El botón circular verde */
+.wa-fab {
+  background-color: #25D366;
+  border: none;
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.wa-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+}
+
+/* La ventana del formulario */
+.wa-popup {
+  background: white;
+  width: 320px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  overflow: hidden;
+  margin-bottom: 15px; /* Separación si pusieras el botón abajo */
+  animation: slideUp 0.3s ease-out;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cabecera verde */
+.wa-header {
+  background-color: #075E54;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wa-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.wa-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Cuerpo del formulario */
+.wa-body {
+  padding: 20px;
+}
+
+.wa-subtitle {
+  color: #25D366;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.wa-instructions {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.wa-input-group {
+  margin-bottom: 15px;
+}
+
+.wa-input-group input,
+.wa-input-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.wa-input-group input:focus,
+.wa-input-group textarea:focus {
+  border-color: #25D366;
+  background-color: #fff;
+}
+
+.wa-submit-btn {
+  width: 100%;
+  background-color: #25D366;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 5px;
+}
+
+.wa-submit-btn:hover {
+  background-color: #1EBE5D;
+}
+
+/* Ajustes para celular */
+@media (max-width: 480px) {
+  .wa-container {
+    bottom: 20px;
+    right: 20px;
+  }
+  .wa-popup {
+    width: calc(100vw - 40px);
+  }
+}

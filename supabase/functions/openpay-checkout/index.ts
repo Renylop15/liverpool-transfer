@@ -11,9 +11,10 @@ serve(async (req) => {
   }
 
   try {
-    const { monto, nombre, email, descripcion } = await req.json()
+    // NUEVO: Ahora recibimos la URL de redirección desde Angular
+    const { monto, nombre, email, descripcion, redirectUrl } = await req.json()
 
-    // 🔑 TUS LLAVES (Asegúrate de que tus llaves reales estén aquí)
+    // 🚨 1. PON TUS LLAVES DE SANDBOX AQUÍ (Las encuentras en el panel de Openpay activando el Modo Pruebas)
     const MERCHANT_ID = "mmiruuvaltiosz1xkyye"; 
     const PRIVATE_KEY = "sk_3ab0983a6e8740918045fa2acabc09ec"; 
 
@@ -29,9 +30,11 @@ serve(async (req) => {
         email: email
       },
       send_email: false,
-      // ESTA ES LA LÍNEA CORREGIDA (Nota los backticks ` y la coma al final)
-      redirect_url: "https://igdsmxcity.vancity.mx/reserva"};
+      // 🚨 2. REDIRECCIÓN DINÁMICA
+      redirect_url: redirectUrl || "https://igdsmxcity.vancity.mx/reserva" 
+    };
 
+    // 🚨 3. CAMBIAMOS LA URL A "sandbox-api.openpay.mx"
     const openpayResponse = await fetch(`https://api.openpay.mx/v1/${MERCHANT_ID}/checkouts`, {
       method: 'POST',
       headers: {

@@ -64,13 +64,32 @@
             <option value="full-day">{{ texts[lang].fullDay }}</option>
           </select>
         </div>
+        
+        
+      </div>
+        <div class="input-group">
+          <label>{{ lang === 'en' ? 'Preferred Vehicle' : 'Vehículo Preferido' }}</label>
+          <select formControlName="vehiculo">
+            <option value="" disabled selected>{{ lang === 'en' ? 'Select a car...' : 'Selecciona un auto...' }}</option>
+            <option value="Sedan">Sedan (Corolla, Prius, or similar)</option>
+            <option value="SUV">SUV (Highlander, Sienna, or similar)</option>
+          </select>
+
+          <div class="vehicle-image-container" *ngIf="reservaForm.get('vehiculo')?.value">
+            <img *ngIf="reservaForm.get('vehiculo')?.value === 'Sedan'" 
+                 src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
+                 
+            <img *ngIf="reservaForm.get('vehiculo')?.value === 'SUV'" 
+                 src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
+          </div>
+        </div>
+      
+
+      <div class="form-row">
         <div class="input-group">
           <label>{{ lang === 'en' ? 'Date of Service' : 'Fecha del Servicio' }}</label>
           <input type="date" formControlName="fecha_servicio">
         </div>
-      </div>
-
-      <div class="form-row">
         <div class="input-group">
           <label>{{ texts[lang].pickup_time }}</label>
           <div class="time-picker-custom">
@@ -89,11 +108,12 @@
           <input type="hidden" formControlName="hora_recogida">
         </div>
 
-        <div class="input-group">
+        
+      </div>
+      <div class="input-group">
           <label>{{ texts[lang].pickup }}</label>
           <input type="text" formControlName="lugar_recogida" [placeholder]="lang === 'en' ? 'Hotel or Address' : 'Hotel o Dirección'">
         </div>
-      </div>
 
       <h3 class="section-title">3. {{ lang === 'en' ? 'Desired Itinerary (Optional)' : 'Itinerario Deseado (Opcional)' }}</h3>
       <div class="input-group">
@@ -101,8 +121,28 @@
         <textarea formControlName="itinerario_notas" rows="4" [placeholder]="lang === 'en' ? 'Tell us about the places you\'d like to explore...' : 'Cuéntanos sobre los lugares que te gustaría explorar...'"></textarea>
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid">
-        {{ loading ? '...' : texts[lang].submit }}
+      <div class="quote-box" *ngIf="cotizacion !== null">
+        <h3>{{ lang === 'en' ? 'ESTIMATED FARE' : 'TARIFA ESTIMADA' }}</h3>
+        <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+        <p style="color: #9ca3af; font-size: 11px; margin-top: -10px; margin-bottom: 10px;">
+          {{ lang === 'en' ? 'Prices in Mexican Pesos' : 'Precios en Pesos Mexicanos' }}
+        </p>
+        <p class="terms">{{ lang === 'en' ? '* Tax included (16%).' : '* Incluye IVA (16%).' }}</p>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid || pagoIniciado">
+        
+        <span *ngIf="cotizacion === null">
+          {{ lang === 'en' ? 'GET QUOTE' : 'COTIZAR EXPERIENCIA' }}
+        </span>
+
+        <span *ngIf="cotizacion !== null">
+          {{ pagoIniciado ? 
+             (lang === 'en' ? 'CONNECTING TO BANK...' : 'CONECTANDO AL BANCO...') : 
+             (lang === 'en' ? 'PROCEED TO SECURE PAYMENT' : 'PROCEDER AL PAGO SEGURO') 
+          }}
+        </span>
+
       </button>
       
     </form>
