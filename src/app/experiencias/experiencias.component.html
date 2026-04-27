@@ -26,9 +26,21 @@
           </div>
           
           <div class="package-content">
-            <span class="badge">{{ pkg.duration }}</span>
-            <h3>{{ pkg.title }}</h3>
-            <p class="subtitle">{{ pkg.subtitle }}</p>
+            
+            <div class="package-top-row">
+              
+              <div class="package-titles">
+                <span class="badge">{{ pkg.duration }}</span>
+                <h3>{{ pkg.title }}</h3>
+                <p class="subtitle">{{ pkg.subtitle }}</p>
+              </div>
+              
+              <div class="package-price-box">
+                <span class="price-value">From ${{ pkg.price }}</span>
+                <span class="price-currency">MXN</span>
+              </div>
+              
+            </div>
             
             <div class="inclusions-row">
               <div class="inclusion-column">
@@ -57,7 +69,6 @@
                   
                   <div class="itin-info">
                     <h3 class="itin-title">{{ itin.title }}</h3>
-                    <p class="itin-price">{{ itin.priceText }}</p>
                   </div>
                 </div>
 
@@ -102,7 +113,6 @@
         
         <div class="itinerary-modal-right">
             <div class="itinerary-booking-card">
-                <p class="itin-price-modal">From ${{ selectedItinerary.priceNumeric | number:'1.0-0' }} MXN <br><span>per unit</span></p>
                 <a routerLink="/reserva-experiencia" class="itin-book-btn">BOOK THIS SERVICE</a>
             </div>
         </div>

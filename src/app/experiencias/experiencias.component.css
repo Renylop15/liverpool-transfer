@@ -73,8 +73,6 @@
 
 /* CONTENIDO DE LA TARJETA */
 .package-content { padding: 30px; text-align: left; }
-.package-content h3 { color: #0b1d3a; font-size: 26px; margin: 10px 0 5px 0; font-weight: 800; }
-.package-content .subtitle { color: #666; font-size: 15px; margin-bottom: 20px; }
 .badge {
   background: rgba(11, 29, 58, 0.1); color: #0b1d3a; padding: 5px 15px;
   border-radius: 20px; font-size: 12px; font-weight: bold;
@@ -245,4 +243,74 @@
   .itin-img-modal-small-grid { display: none; } /* Esconde las fotos chiquitas en el celular */
   .inclusions-row { flex-direction: column; gap: 10px; }
   .itinerary-booking-card { position: static; margin-top: 15px; }
+}
+/* =========================================
+   --- CABECERA DE LA TARJETA Y PRECIO --- 
+   ========================================= */
+.package-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Centra verticalmente el precio con los títulos */
+  margin-bottom: 20px;
+}
+
+.package-titles {
+  flex: 1;
+  padding-right: 15px; /* Separación para que el texto no choque con la caja */
+}
+
+.package-titles h3 { 
+  color: #0b1d3a; 
+  font-size: 26px; 
+  margin: 10px 0 5px 0; 
+  font-weight: 800; 
+  line-height: 1.1; 
+}
+
+.package-titles .subtitle { 
+  color: #666; 
+  font-size: 14px; 
+  margin: 0; 
+  line-height: 1.4; 
+}
+
+/* CAJA DEL PRECIO */
+.package-price-box {
+  text-align: right;
+  background: #f8fafc; /* Gris muy clarito/azulado */
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  min-width: 140px; /* Asegura que la caja siempre tenga un buen tamaño */
+}
+
+.package-price-box .price-value {
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0b1d3a;
+  letter-spacing: -0.5px;
+}
+
+.package-price-box .price-currency {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Ajuste Responsivo para Celulares */
+@media (max-width: 600px) {
+  .package-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .package-price-box {
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
 }

@@ -1,512 +1,183 @@
-/* RESET GLOBAL DE TAMAÑO (Poner al principio de tu CSS general, antes de todo) */
+/* RESET GLOBAL DE TAMAÑO */
 * {
   box-sizing: border-box;
 }
 
-/* --- FONDO GENERAL --- */
-.container {
+/* =========================================
+   --- NAVBAR (HEADER) --- 
+   ========================================= */
+.vancity-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+  z-index: 1000;
+}
+
+.navbar-logo img { height: 40px; object-fit: contain; }
+.navbar-actions { display: flex; align-items: center; gap: 20px; }
+
+.lang-segmented {
+  display: flex; background: #f1f5f9; border-radius: 20px; padding: 4px; gap: 5px;
+}
+.lang-segmented button {
+  border: none; background: transparent; padding: 6px 16px; border-radius: 15px;
+  font-size: 11px; font-weight: 800; color: #64748b; cursor: pointer; transition: all 0.3s ease;
+}
+.lang-segmented button.active {
+  background: #0b1d3a; color: white; box-shadow: 0 2px 8px rgba(11, 29, 58, 0.2);
+}
+
+.btn-back {
+  background: transparent; border: none; color: #0b1d3a; font-weight: 800;
+  font-size: 13px; cursor: pointer; display: flex; align-items: center; transition: color 0.3s;
+}
+.btn-back:hover { color: #1a3a6c; }
+
+/* =========================================
+   --- LAYOUT SPLIT CARD (EL EFECTO QUE BUSCAS) --- 
+   ========================================= */
+.page-backdrop {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f8f9fa; /* Fondo gris claro de respaldo */
-  /* Mantén tu imagen de fondo original */
-  background-image: url('/assets/fondo1.jpg');
-  background-size: cover;
-  background-position: center;
+  /* Fondo general de la pantalla (puedes usar un color sólido o un degradado sutil) */
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); 
+  padding: 100px 20px 40px 20px; /* Espacio para el navbar */
   font-family: 'Montserrat', sans-serif;
-  padding: 40px 20px;
 }
 
-/* --- TARJETA DE CRISTAL CLARA (Light Glassmorphism) --- */
-.card {
-  /* Fondo blanco con mucha transparencia */
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+.split-card {
+  display: flex;
   width: 100%;
-  max-width: 500px; /* Un poco más ancha para respirar mejor */
-  padding: 40px;
-  border-radius: 15px;
-  /* Borde muy sutil blanco y sombra elegante */
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  max-width: 1100px; /* Ancho máximo de la tarjeta completa */
+  height: 85vh; /* ALTURA FIJA: Esto es lo que permite que el scroll funcione adentro */
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden; /* Corta las esquinas redondeadas */
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* LA MITAD DE LA IMAGEN (FIJA) */
+.image-side {
+  flex: 1; /* Toma el 50% del espacio */
+  background-image: url('/assets/fondo1.jpg'); /* Tu imagen */
+  background-size: cover;
+  background-position: center;
   position: relative;
 }
 
-/* --- LOGO Y TÍTULOS --- */
-.header {
-  text-align: center;
-  margin-bottom: 35px;
+/* Opcional: Texto sobre la imagen */
+.image-overlay {
+  position: absolute;
+  bottom: 40px; left: 40px; right: 40px;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.image-overlay h2 { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: 2px; }
+.image-overlay p { margin: 5px 0 0 0; font-size: 16px; opacity: 0.9; }
+
+/* LA MITAD DEL FORMULARIO (SCROLLABLE) */
+.form-side {
+  flex: 1.1; /* Un poquito más ancha que la imagen para que respiren los inputs */
+  padding: 50px;
+  background: #ffffff;
+  /* MAGIA AQUÍ: Permite el scroll vertical solo en esta área */
+  overflow-y: auto; 
 }
 
-.logo-img {
-  height: 50px;
-  margin-bottom: 15px;
-  /* Quitamos el filtro invertido para que el logo se vea en su color original (negro/azul) */
-  filter: none; 
-}
+/* Estilo de la barra de scroll (para que no se vea fea) */
+.form-side::-webkit-scrollbar { width: 8px; }
+.form-side::-webkit-scrollbar-track { background: #f1f1f1; }
+.form-side::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+.form-side::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-.header p {
-  color: #555; /* Gris medio, más legible en fondo claro */
-  font-size: 11px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin: 0;
-  font-weight: 600;
-}
 
-/* --- CAMPOS DE TEXTO (Inputs Claros) --- */
-.form-group {
-  margin-bottom: 20px;
-  width: 100%; /* Aseguramos que el contenedor no se rompa */
-  box-sizing: border-box;
-}
+/* =========================================
+   --- ESTILOS INTERNOS DEL FORMULARIO --- 
+   ========================================= */
+.header { text-align: center; margin-bottom: 35px; }
+.logo-img { height: 45px; margin-bottom: 15px; }
+.header p { color: #555; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin: 0; font-weight: 600; }
 
-label {
-  display: block;
-  font-size: 10px;
-  color: #333; 
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
+.form-group { margin-bottom: 20px; width: 100%; }
+label { display: block; font-size: 10px; color: #333; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
 
-/* Aplicamos a TODOS los tipos de input por seguridad */
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="number"],
-input[type="date"],
-select.dark-input {
-  width: 100%;
-  max-width: 100%; /* Freno de emergencia */
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  color: #000;
-  font-size: 14px;
-  outline: none;
-  transition: 0.3s;
-  /* ESTO ES LO MÁS IMPORTANTE PARA QUE NO SE SALGA NADA */
-  box-sizing: border-box; 
-  margin: 0; /* Quitamos márgenes fantasmas del navegador */
+input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], select.dark-input {
+  width: 100%; padding: 14px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+  color: #000; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box;
 }
 
 input:focus, select.dark-input:focus {
-  background-color: #fff;
-  border-color: #0b1d3a; /* Borde azul corporativo al seleccionar */
-  box-shadow: 0 0 0 2px rgba(11, 29, 58, 0.1);
+  background-color: #fff; border-color: #0b1d3a; box-shadow: 0 0 0 3px rgba(11, 29, 58, 0.1);
 }
 
-input::placeholder {
-  color: #888;
-}
+.row { display: flex; gap: 15px; }
+.half { flex: 1; }
+.divider { height: 1px; background: linear-gradient(to right, transparent, #ddd, transparent); margin: 30px 0; }
 
-/* Ajustes específicos para el selector (select) */
-select.dark-input {
-  appearance: none;
-  cursor: pointer;
-  /* Vuelve a poner un fondo blanco a las opciones desplegadas */
-}
-select.dark-input option {
-  background-color: #fff;
-  color: #000;
-}
-
-/* Icono de calendario oscuro (ya no lo invertimos) */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: none;
-  cursor: pointer;
-}
-
-/* --- ESTRUCTURA --- */
-.row {
-  display: flex;
-  gap: 15px;
-}
-
-.half {
-  flex: 1;
-}
-
-.divider {
-  height: 1px;
-  /* Línea divisoria gris claro */
-  background: linear-gradient(to right, transparent, #ddd, transparent);
-  margin: 30px 0;
-}
-
-/* --- BOTÓN PREMIUM (Azul Vancity) --- */
 .btn-submit {
-  width: 100%;
-  padding: 18px;
-  /* Degradado azul corporativo */
-  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  cursor: pointer;
-  margin-top: 10px;
-  text-transform: uppercase;
-  transition: all 0.3s;
-  box-shadow: 0 5px 15px rgba(11, 29, 58, 0.3);
+  width: 100%; padding: 18px; background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 800;
+  letter-spacing: 1px; cursor: pointer; margin-top: 10px; text-transform: uppercase; transition: all 0.3s;
 }
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(11, 29, 58, 0.3); }
 
-.btn-submit:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(11, 29, 58, 0.4);
-  filter: brightness(1.1);
-}
-
-.btn-submit:disabled {
-  background: #ccc;
-  color: #888;
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* --- CAJA DE COTIZACIÓN FINAL (Clara) --- */
 .quote-box {
-  text-align: center;
-  margin: 25px 0 15px 0;
-  padding: 20px;
-  /* Fondo muy sutilmente azulado/grisáceo */
-  background: rgba(11, 29, 58, 0.03);
-  border-radius: 8px;
-  border: 1px solid rgba(11, 29, 58, 0.1);
-  animation: fadeIn 0.5s ease-in-out;
+  text-align: center; margin: 25px 0; padding: 20px; background: #f8fafc;
+  border-radius: 8px; border: 1px solid #e2e8f0;
 }
+.quote-box h3 { margin: 0; font-size: 11px; color: #555; letter-spacing: 2px; }
+.quote-box .price { font-size: 34px; color: #0b1d3a; font-weight: 800; margin: 10px 0; }
 
-.quote-box h3 {
-  margin: 0;
-  font-size: 11px;
-  color: #555;
-  letter-spacing: 2px;
-}
+.phone-group { display: flex; gap: 10px; }
+.select-codigo { flex: 0 0 35%; }
 
-.quote-box .price {
-  font-size: 34px;
-  color: #0b1d3a; /* Precio en azul corporativo */
-  font-weight: 800;
-  margin: 10px 0;
-  letter-spacing: 1px;
+.vehicle-image-container {
+  margin-top: 15px; text-align: center; background: #f8fafc; border-radius: 8px; padding: 10px; border: 1px solid #e2e8f0;
 }
+.vehicle-img { max-width: 100%; height: auto; max-height: 160px; object-fit: contain; }
 
-.quote-box .terms {
-  font-size: 10px;
-  color: #777;
-  margin: 0;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- SWITCH DE IDIOMA (Modo Claro) --- */
-.lang-switch-container {
-  position: absolute;
-  top: 25px;
-  right: 30px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 10;
-}
-
-.lang-switch-container span {
-  color: #888;
-  font-size: 11px;
-  font-weight: 700;
-  transition: 0.3s;
-}
-
-.lang-switch-container span.active {
-  color: #000; /* Texto activo en negro */
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 22px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc; /* Gris claro apagado */
-  transition: .4s;
-  border-radius: 22px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: #fff; /* Bolita blanca */
-  transition: .4s;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-input:checked + .slider {
-  background-color: #0b1d3a; /* Azul Vancity encendido */
-}
-
-input:checked + .slider:before {
-  transform: translateX(18px);
-}
-
-/* --- GRUPO DE TELÉFONO Y BANDERA --- */
-.phone-group {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.select-codigo {
-  flex: 0 0 35%; /* Reducimos el ancho del selector de país un poco */
-  min-width: 0;
-}
-
-.phone-group input {
-  flex: 1;
-  min-width: 0;
-}
 /* =========================================
-   --- RESPONSIVO CELULARES (RESERVA) --- 
+   --- RESPONSIVO (CELULARES) --- 
    ========================================= */
 @media (max-width: 768px) {
-  html, body {
-    overflow-x: hidden;
-  }
+  .vancity-navbar { padding: 0 20px; height: 70px; }
+  .navbar-logo img { height: 30px; }
+  .lang-segmented button { padding: 5px 10px; font-size: 10px; }
   
-  .container {
-    padding: 15px !important;
-  }
-  
-  .card {
-    padding: 30px 20px;
+  .page-backdrop {
+    padding: 80px 10px 20px 10px;
+    height: auto; /* En celular dejamos que la página fluya normal */
+    display: block;
   }
 
-  .row {
-    display: flex;
-    flex-direction: column;
-    gap: 0; /* Quitamos el gap porque los márgenes de form-group ya separan */
+  .split-card {
+    flex-direction: column; /* Apilamos la imagen arriba y el form abajo */
+    height: auto; /* Quitamos la altura fija en celular */
   }
 
-  /* El botón de idioma lo ajustamos para que no se encime en celulares */
-  /* El botón de idioma lo ajustamos para que no se encime en celulares */
-  .lang-switch-container {
-    top: 12px;   /* He reducido un poco más la esquina */
-    right: 12px;
-  }
-  
-  /* --- NUEVAS REGLAS PARA ARREGLAR EL ENCOMIENTO --- */
-  
-  /* 1. Encogemos el logo solo en celular para que no estorbe */
-  .logo-img {
-    height: 35px !important;  /* Antes media 50px */
-    margin-bottom: 10px !important;
-  }
-  
-  /* 2. Reducimos el tamaño de las letras ES/EN para que quepan mejor */
-  .lang-switch-container span {
-    font-size: 10px !important;
-  }
-  
-  /* 3. Reducimos el tamaño del switch para que sea más sutil */
-  .switch {
-    width: 32px !important;
-    height: 18px !important;
-  }
-  .slider:before {
-    height: 12px !important;
-    width: 12px !important;
-    left: 3px !important;
-    bottom: 3px !important;
-  }
-  input:checked + .slider:before {
-    transform: translateX(14px) !important; /* Ajuste para el nuevo tamaño */
-  }
-}
-
-/* Agrega o reemplaza esto en tu admin.component.css */
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.stats {
-  background: #1a1a1a;
-  padding: 8px 15px;
-  border-radius: 5px;
-  color: #fff;
-}
-
-.date-cell span {
-  color: #666;
-  font-size: 10px;
-}
-
-.flight-info {
-  line-height: 1.4;
-}
-
-.airline {
-  color: #aaa;
-  font-size: 10px;
-  text-transform: uppercase;
-}
-
-.vuelo-date {
-  color: #ffc107; /* Un tono ámbar para resaltar fecha/hora del vuelo */
-  font-size: 11px;
-}
-
-.no-data {
-  color: #444;
-  font-style: italic;
-  font-size: 11px;
-}
-
-.dest-text {
-  font-weight: 500;
-  color: #efefef;
-}
-
-.phone {
-  color: #4caf50; /* Verde para el teléfono, útil para WhatsApp */
-  font-size: 11px;
-}
-
-/* Badge mejorado */
-.badge {
-  display: inline-block;
-  min-width: 80px;
-  text-align: center;
-}
-
-.time-picker-custom {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%; /* Forzamos el ancho */
-  box-sizing: border-box;
-}
-
-.time-picker-custom select {
-  flex: 1; 
-  text-align: center;
-  cursor: pointer;
-  min-width: 0; /* TRUCO: Evita que el select se expanda de más en flexbox */
-}
-
-.dos-puntos {
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 18px;
-}
-/* =========================================
-   PARCHE RESPONSIVO PARA MÓVILES (CELULARES)
-   ========================================= */
-@media screen and (max-width: 768px) {
-  
-  /* 1. ARREGLO DEL FONDO (QUITA EL ZOOM FANTASMA EN IPHONE) */
-  .container { /* O cambia '.container' por la clase que tenga tu imagen de fondo */
-    background-attachment: scroll !important; /* Esto salva la vida en iOS */
-    background-size: cover !important;
-    background-position: center top !important;
-    min-height: 100vh;
-    width: 100vw;
-    overflow-x: hidden;
-  }
-  /* 1. Obliga a los contenedores a dejarse encoger */
-  .row, .form-group, .form-group.half, .time-picker-custom {
-    min-width: 0 !important; 
-    max-width: 100% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+  .image-side {
+    height: 200px; /* Hacemos la imagen un banner superior en celulares */
+    flex: none;
   }
 
-  /* 2. ARREGLO DE LOS INPUTS QUE SE SALEN DE LA PANTALLA */
-  .dark-input, 
-  input[type="date"], 
-  input[type="text"], 
-  input[type="email"], 
-  input[type="tel"], 
-  select {
-    -webkit-appearance: none !important; /* Vital para Safari */
-    appearance: none !important;
-    min-width: 0 !important; /* Permite que el input se encoja más que su tamaño por defecto */
-    width: 100% !important;
+  .image-overlay { bottom: 20px; left: 20px; }
+  .image-overlay h2 { font-size: 24px; }
+
+  .form-side {
+    padding: 25px 20px;
+    overflow-y: visible; /* En celular el scroll lo hace toda la página, es más natural */
   }
 
-  
-  /* Opcional: Ajusta los paddings de la tarjeta principal para que respire más en celular */
-  .card {
-    padding: 20px !important;
-    width: 90% !important;
-    box-sizing: border-box;
-    margin: 20px auto;
-  }
-}
-
-/* =========================================
-   --- IMÁGENES DINÁMICAS DE VEHÍCULOS ---
-   ========================================= */
-.vehicle-image-container {
-  margin-top: 15px;
-  text-align: center;
-  /* Un fondo muy sutil para resaltar la foto dentro del glassmorphism */
-  background: rgba(255, 255, 255, 0.4); 
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.vehicle-img {
-  max-width: 100%;
-  height: auto;
-  max-height: 160px; /* Límite para que no empuje demasiado el formulario hacia abajo */
-  object-fit: contain;
-  border-radius: 4px;
-}
-
-/* Animación para que aparezca suavemente */
-.fadeIn {
-  animation: fadeInVehicle 0.4s ease-out forwards;
-}
-
-@keyframes fadeInVehicle {
-  from { 
-    opacity: 0; 
-    transform: translateY(-10px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+  .row { flex-direction: column; gap: 0; }
+  .row, .form-group, .half { width: 100% !important; }
 }
