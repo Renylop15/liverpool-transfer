@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { RouterModule } from '@angular/router'; // <-- 1. Agrega esto
 
+
 const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -13,7 +14,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 @Component({
   selector: 'app-reserva',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,NgxMaterialTimepickerModule,RouterModule],
+  imports: [CommonModule, ReactiveFormsModule,NgxMaterialTimepickerModule, RouterModule],
   templateUrl: './reserva.component.html',
   styleUrl: './reserva.component.css'
 })

@@ -56,7 +56,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       notIncludes: ['Entry Fees to Attractions', 'Meals and Beverages', 'Tour Guides', 'Gratuities'],
       recommendationsDetailed: [
         {
-          title: 'Historic Downtown',
+          title: 'Historic Center: Bellas Artes, Cathedral, Zócalo, Palacio Nacional & Templo Mayor',
           images: [
             '/assets/images/tours/centro-1.jpg',
             '/assets/images/tours/centro-2.jpg',
@@ -65,14 +65,14 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/centro-5.jpg'
           ],
           priceNumeric: 3950,
-          description: 'Explore the heart of Mexico City, visiting the Zócalo, the Metropolitan Cathedral, and the Palace of Fine Arts.',
+          description: 'Explore the Historic Center’s core, where the Palacio de Bellas Artes’ marble elegance and the Metropolitan Cathedral’s colonial majesty frame the iconic Zócalo; here, you can admire the Palacio Nacional’s historic murals and uncover the Templo Mayor, the sacred heart of the Aztec empire.',
           locationText: 'Mexico City, Mexico',
           extraDetails: [
             { icon: '📍', text: 'Central Mexico City. Mexico City, Mexico' }
           ]
         },
         {
-          title: 'Coyoacán District',
+          title: 'Coyoacán: The Blue House & Anahuacalli Museum',
           images: [
             '/assets/images/tours/coyoacan-1.jpg',
             '/assets/images/tours/coyoacan-2.jpg',
@@ -81,42 +81,42 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/coyoacan-5.jpg'
           ],
           priceNumeric: 3950,
-          description: 'Stroll through the cobblestone streets of Coyoacán, visit the Frida Kahlo Museum, and enjoy the bohemian atmosphere.',
+          description: ' Experience the dual heart of Mexican art. Step into The Blue House, the vibrant sanctuary where Frida Kahlo’s intimate universe comes to life, then discover the Anahuacalli, a breathtaking architectural "templo" designed by Diego Rivera to stage the indigenous cosmos. Enjoy a seamless two-for-one experience: Your admission to the Frida Kahlo Museum grants you access to the Anahuacalli Museum.',
           locationText: 'Coyoacán, Mexico City',
           extraDetails: [
             { icon: '📍', text: 'Coyoacán Neighborhood. Mexico City' }
           ]
         },
         {
-          title: 'Lucha Libre Experience',
+          title: 'Chapultepec Castle',
           images: [
-            '/assets/luchas.jpg',
-            '/assets/images/tours/luchas-1.jpg',
-            '/assets/images/tours/luchas-2.jpg',
-            '/assets/images/tours/luchas-3.jpg',
-            '/assets/images/tours/luchas-4.jpg'
+            '/assets/castle-2.jpg',
+            '/assets/castle-1.jpg',
+            '/assets/castle-3.jpg',
+            '/assets/castle-4.jpg',
+            '/assets/castle-5.jpg'
           ],
           priceNumeric: 3950,
-          description: 'Immerse yourself in Mexican culture with a night of Lucha Libre, tacos, and beers at Arena Mexico.',
-          locationText: 'Arena Mexico, Mexico City',
+          description: 'Travel through time at this stunning hilltop palace. Explore 12 permanent halls tracing, Mexico’s history from the Conquest to the, Revolution, and wander through 22 majestic, rooms that recreate the imperial life of Maximilian and Carlota, the presidency of Porfirio Díaz, and the heroic defense of the castle. From its breathtaking terraces to its epic murals, this castle is a living masterpiece offering the best views of Mexico City.',
+          locationText: 'Chapultepec, Mexico City',
           extraDetails: [
-            { icon: '📍', text: 'Doctores Neighborhood. Arena Mexico' }
+            { icon: '📍', text: 'Chapultepec, Mexico City' }
           ]
         },
         {
-          title: 'City Nightlife (Half Day)',
+          title: 'Basilica of Guadalupe',
           images: [
-            '/assets/images/tours/night-1.jpg',
-            '/assets/images/tours/night-2.jpg',
-            '/assets/images/tours/night-3.jpg',
-            '/assets/images/tours/night-4.jpg',
-            '/assets/images/tours/night-5.jpg'
+            '/assets/images/tours/guap-4.jpg',
+            '/assets/images/tours/guap-1.jpg',
+            '/assets/images/tours/guap-5.jpg',
+            '/assets/images/tours/guap-3.jpg',
+            '/assets/images/tours/guap-1.jpg'
           ],
           priceNumeric: 3950,
-          description: 'Enjoy the vibrant nightlife of Mexico City in the best terraces, bars, and restaurants.',
-          locationText: 'Roma-Condesa, Mexico City',
+          description: 'It is one of the most awe-inspiring cultural and historical epicenters in the Americas. In this complex, the bold modernity of the New Basilica, an engineering marvel designed so the Virgin’s mantle is visible from every possible angle, coexists in exquisite contrast with the Baroque heritage of the Templo Expiatorio. Take a moment to admire Juan Diego’s iconic Tilma, a symbol that transcends religion to define the very heart of Mexican identity. Afterward, wander through the Tepeyac gardens toward the Capilla del Cerrito; from there, you´ll be treated to a stunning panoramic view of the metropolis, the perfect spot to take it all in and truly grasp the sheer scale of this city.',
+          locationText: 'Gustavo a Madero, Mexico City',
           extraDetails: [
-            { icon: '📍', text: 'Roma & Condesa. Mexico City' }
+            { icon: '📍', text: 'Gustavo a Madero, Mexico City' }
           ]
         }
       ]
@@ -156,7 +156,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
           ]
         },
         {
-          title: 'Xochimilco Canals',
+          title: 'Xochimilco: Cuemanco Wharf',
           images: [
             '/assets/images/tours/coyo-7.jpg',
             '/assets/images/tours/coyo-1.jpg',
@@ -165,30 +165,30 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             '/assets/images/tours/coyo-5.jpg'
           ],
           priceNumeric: 4950,
-          description: 'Ride a trajinera through the colorful canals of Xochimilco and enjoy mariachis, food, and drinks.',
+          description: 'Discover the sanctuary where ancient chinampas and 54 hectares of restored canals showcase the seamless fusion of Aztec engineering and modern conservation.',
           locationText: 'Xochimilco, Mexico City',
           extraDetails: [
             { icon: '📍', text: 'Nuevo Nativitas Pier. Xochimilco' }
           ]
         },
         {
-          title: 'Paso de Cortés',
+          title: 'Luis Barragan’s House & Studio',
           images: [
-            '/assets/images/tours/paseo-5.jpg',
-            '/assets/images/tours/paseo-2.webp',
-            '/assets/images/tours/paseo-3.webp',
-            '/assets/images/tours/paseo-4.webp',
-            '/assets/images/tours/paseo-1.webp'
+            '/assets/images/tours/casa-3.jpg',
+            '/assets/images/tours/casa-2.jpg',
+            '/assets/images/tours/casa-4.jpg',
+            '/assets/images/tours/casa-5.jpg',
+            '/assets/images/tours/casa-1.jpg'
           ],
           priceNumeric: 4950,
-          description: 'Enjoy breathtaking views of the Popocatépetl and Iztaccíhuatl volcanoes from the legendary Paso de Cortés.',
-          locationText: 'Izta-Popo National Park, Mexico',
+          description: 'Step into the only individual residence in Latin America honored as a UNESCO World Heritage site. Built in 1948, this house and studio represent a breathtaking synthesis of modern movement and traditional Mexican elements. Preserved exactly as it was until Barragan’s death in 1988, it is a global pilgrimage site for architects and art lovers, offering a meditative journey through light, color, and masterful design.',
+          locationText: 'Miguel Hidalgo, Mexico City',
           extraDetails: [
-            { icon: '📍', text: 'Paso de Cortés. Between volcanoes' }
+            { icon: '📍', text: 'Miguel Hidalgo, Mexico City' }
           ]
         },
         {
-          title: 'City Nightlife (Full Day)',
+          title: 'City Nightlife ',
           images: [
             '/assets/images/tours/night-1.jpg',
             '/assets/images/tours/night-2.jpg',

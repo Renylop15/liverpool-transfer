@@ -22,7 +22,7 @@
    2. HERO SECTION
    ========================================= */
 .hero-experiences {
-  background-image: url('/assets/luchas.jpg'); 
+  background-image: url('/assets/fondo1.jpg'); 
   background-size: cover; background-position: center;
   position: relative; text-align: center; color: #ffffff;
 }
@@ -37,23 +37,37 @@
 .subtitle { font-size: 16px; max-width: 600px; line-height: 1.5; font-weight: 300; margin: 0;}
 .dates { font-size: 12px; font-weight: bold; letter-spacing: 2px; margin-bottom: 10px; }
 
+/* Etiqueta de CDMX */
+.location-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+}
+
 /* =========================================
-   3. MAIN GRID (SIDE BY SIDE FIX)
+   3. MAIN GRID & CARD TOP ROW
    ========================================= */
 .tours-section { padding: 60px 20px; }
 
 .packages-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-  align-items: start; 
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  max-width: 1200px; margin: 0 auto; align-items: start; 
 }
 
 .package-card {
   background: white; border-radius: 15px; overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08); display: flex; flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+  display: flex; flex-direction: column;
+  height: 100%; /* <-- NUEVO */
 }
 
 /* CAROUSEL */
@@ -71,17 +85,28 @@
 }
 .carousel-btn:hover { background: #0b1d3a; }
 
-/* CONTENIDO DE LA TARJETA */
-.package-content { padding: 30px; text-align: left; }
-.badge {
-  background: rgba(11, 29, 58, 0.1); color: #0b1d3a; padding: 5px 15px;
-  border-radius: 20px; font-size: 12px; font-weight: bold;
+.package-content { 
+  padding: 30px; 
+  text-align: left; 
+  display: flex; 
+  flex-direction: column; 
+  flex-grow: 1; /* <-- NUEVO: Hace que el contenido empuje lo que sobra hacia abajo */
+}.badge { background: rgba(11, 29, 58, 0.1); color: #0b1d3a; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+
+/* CABECERA Y CAJA DE PRECIO */
+.package-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.package-titles { flex: 1; padding-right: 15px; }
+.package-titles h3 { color: #0b1d3a; font-size: 26px; margin: 10px 0 5px 0; font-weight: 800; line-height: 1.1; }
+.package-titles .subtitle { color: #666; font-size: 14px; margin: 0; line-height: 1.4; }
+
+.package-price-box {
+  text-align: right; background: #f8fafc; padding: 12px 20px; border-radius: 10px; border: 1px solid #e2e8f0; min-width: 140px;
 }
+.package-price-box .price-value { display: block; font-size: 26px; font-weight: 800; color: #0b1d3a; letter-spacing: -0.5px; }
+.package-price-box .price-currency { font-size: 11px; color: #64748b; font-weight: 700; letter-spacing: 1px; }
 
 /* INCLUSIONS */
-.inclusions-row {
-  display: flex; gap: 20px; margin: 20px 0; padding-bottom: 20px; border-bottom: 1px solid #eaeaea;
-}
+.inclusions-row { display: flex; gap: 20px; margin: 20px 0; padding-bottom: 20px; border-bottom: 1px solid #eaeaea; }
 .inclusion-column { flex: 1; }
 .inclusion-column h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: #0b1d3a; }
 .check-list, .list { list-style: none; padding: 0; margin: 0; }
@@ -89,68 +114,57 @@
 .check-list li::before { content: '✓ '; color: #27ae60; font-weight: bold; }
 
 /* =========================================
-   4. ITINERARIOS SUGERIDOS 
+   4. ITINERARIOS SUGERIDOS Y BOTÓN GENERAL
    ========================================= */
 .itineraries-visual-section { margin-top: 20px; }
 .itineraries-visual-section h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; color: #0b1d3a; }
 
-.itinerary-visual-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
-  width: 100%;
-}
-
+.itinerary-visual-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
 .itin-card {
-  display: flex; 
-  flex-direction: row; 
-  align-items: center; 
-  gap: 15px;
-  padding: 10px; 
-  border-radius: 10px; 
-  border: 1px solid #f0f0f0;
-  cursor: pointer; 
-  transition: 0.2s; 
-  background: white;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden; /* Corta cualquier cosa que intente salirse */
+  display: flex; flex-direction: row; align-items: center; gap: 15px; padding: 10px; 
+  border-radius: 10px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; background: white; width: 100%; box-sizing: border-box; overflow: hidden;
 }
 .itin-card:hover { background-color: #f9f9f9; border-color: #e2e8f0; }
 
-/* LA CAMISA DE FUERZA PARA LA IMAGEN */
-.itin-cover-wrapper {
-  width: 100px; 
-  height: 75px;
-  min-width: 100px; /* Obliga a que no crezca ni un milímetro más */
-  flex-shrink: 0; 
+.itin-cover-wrapper { width: 100px; height: 75px; min-width: 100px; flex-shrink: 0; }
+.itin-cover-img { width: 100px !important; height: 75px !important; min-width: 100px !important; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.itin-info { flex: 1; overflow: hidden; }
+.itin-title { font-size: 15px; font-weight: 700; color: #222; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* NUEVO BOTÓN GENERAL DE PAQUETE */
+.package-action {
+  margin-top: 10px; 
+  padding-top: 20px; /* Espacio limpio para que respire */
+  padding-bottom: 15px; /* <-- ESTA ES LA MAGIA: Le da "piso" extra para que no pegue abajo */
+  border-top: none; 
+}
+.btn-book-package {
+  display: block;
+  text-align: center;
+  width: 100%;
+  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: white;
+  padding: 18px 2px;
+  /* MAGIA 2: Bordes 100% redondeados (estilo píldora/Apple) */
+  border-radius: 50px; 
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  transition: all 0.3s ease;
+  /* Sombra más amplia y difuminada para que parezca que "flota" sobre la tarjeta */
+  box-shadow: 0 8px 25px rgba(11, 29, 58, 0.2); 
 }
 
-.itin-cover-img {
-  width: 100px !important; 
-  height: 75px !important;
-  min-width: 100px !important; 
-  object-fit: cover; 
-  border-radius: 8px; 
-  flex-shrink: 0;
+.btn-book-package:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(11, 29, 58, 0.35);
+  filter: brightness(1.15);
 }
 
-.itin-info { 
-  flex: 1; 
-  overflow: hidden; /* Evita que los textos largos deformen la caja */
-}
-.itin-title { 
-  font-size: 15px; 
-  font-weight: 700; 
-  color: #222; 
-  margin: 0 0 3px 0; 
-  white-space: nowrap; /* Mantiene el título en una sola línea */
-  overflow: hidden; 
-  text-overflow: ellipsis; /* Pone "..." si el título es muy largo */
-}
-.itin-price { font-size: 13px; color: #717171; margin: 0; }
 /* =========================================
-   5. MODAL (OVERFLOW FIX DEFINITIVO)
+   5. MODAL LIMPIO
    ========================================= */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -159,53 +173,19 @@
 }
 
 .modal-content {
-  background: white; width: 100%; max-width: 900px; border-radius: 16px;
-  padding: 30px; position: relative; max-height: 90vh; overflow-y: auto;
-  display: flex; flex-direction: column;
+  background: white; width: 100%; max-width: 700px; /* Un poco más estrecho al quitar la barra lateral */
+  border-radius: 16px; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto;
 }
 
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 30px; border: none; background: none; cursor: pointer; color: #666; }
-
 .itinerary-modal-header { margin-bottom: 20px; }
 .itinerary-modal-header h1 { font-size: 28px; font-weight: 800; color: #222; margin: 0 0 5px 0; }
 .itinerary-modal-meta { font-size: 14px; color: #717171; margin: 0; }
 
-/* FIX DE GALERÍA: Uso de Flexbox con altura estricta al 100% */
-.itinerary-modal-images-grid {
-  display: flex;
-  gap: 10px;
-  height: 350px; /* ALTURA ESTRICTA DE LA CAJA */
-  width: 100%;
-  margin-bottom: 30px;
-}
-
-.itin-img-modal-big { 
-  flex: 2; /* 66% del espacio */
-  height: 100%; /* No lo deja crecer más del contenedor */
-  object-fit: cover; 
-  border-radius: 12px; 
-}
-
-.itin-img-modal-small-grid { 
-  flex: 1; /* 33% del espacio */
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  grid-template-rows: 1fr 1fr; 
-  gap: 10px; 
-  height: 100%; /* VITAL PARA QUE NO DESBORDE */
-}
-
-.itin-img-modal-small { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: cover; 
-  border-radius: 8px; 
-}
-
-/* MAIN MODAL CONTENT */
-.itinerary-modal-main { display: flex; gap: 40px; }
-.itinerary-modal-left { flex: 2; }
-.itinerary-modal-right { flex: 1; }
+.itinerary-modal-images-grid { display: flex; gap: 10px; height: 300px; width: 100%; margin-bottom: 30px; }
+.itin-img-modal-big { flex: 2; height: 100%; object-fit: cover; border-radius: 12px; }
+.itin-img-modal-small-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; height: 100%; }
+.itin-img-modal-small { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
 .itinerary-description { font-size: 15px; color: #333; line-height: 1.6; margin: 0 0 20px 0; }
 .itinerary-details-extra { border-top: 1px solid #ebebeb; padding-top: 20px; }
@@ -213,104 +193,20 @@
 .itin-extra-icon { font-size: 18px; }
 .itin-extra-text { font-size: 14px; color: #333; line-height: 1.4; }
 
-/* BOOKING CARD */
-.itinerary-booking-card {
-  border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 0;
-  background: white; /* Para que nunca sea transparente */
-}
-.itin-price-modal { font-size: 22px; color: #222; font-weight: 800; margin: 0 0 20px 0; }
-.itin-price-modal span { font-weight: 400; font-size: 13px; color: #717171; }
-.itin-book-btn {
-  display: block; text-align: center; padding: 14px; border-radius: 8px;
-  background: #E51D53; color: white; font-weight: 800; font-size: 15px;
-  text-decoration: none; transition: 0.2s;
-}
-.itin-book-btn:hover { background-color: #d90b43; }
-
 /* =========================================
    6. RESPONSIVE
    ========================================= */
 @media (max-width: 950px) {
   .packages-grid { grid-template-columns: 1fr; } 
-  .itinerary-modal-main { flex-direction: column; gap: 20px; }
   .itinerary-modal-images-grid { height: 280px; }
 }
 @media (max-width: 600px) {
   .partners-nav { padding: 15px 20px; }
-  .itinerary-modal-images-grid { display: block; height: 220px; } /* Simplifica en móvil */
+  .package-top-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+  .package-price-box { width: 100%; text-align: left; display: flex; align-items: baseline; gap: 10px; }
+  
+  .itinerary-modal-images-grid { display: block; height: 220px; } 
   .itin-img-modal-big { width: 100%; border-radius: 8px; }
-  .itin-img-modal-small-grid { display: none; } /* Esconde las fotos chiquitas en el celular */
+  .itin-img-modal-small-grid { display: none; } 
   .inclusions-row { flex-direction: column; gap: 10px; }
-  .itinerary-booking-card { position: static; margin-top: 15px; }
-}
-/* =========================================
-   --- CABECERA DE LA TARJETA Y PRECIO --- 
-   ========================================= */
-.package-top-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; /* Centra verticalmente el precio con los títulos */
-  margin-bottom: 20px;
-}
-
-.package-titles {
-  flex: 1;
-  padding-right: 15px; /* Separación para que el texto no choque con la caja */
-}
-
-.package-titles h3 { 
-  color: #0b1d3a; 
-  font-size: 26px; 
-  margin: 10px 0 5px 0; 
-  font-weight: 800; 
-  line-height: 1.1; 
-}
-
-.package-titles .subtitle { 
-  color: #666; 
-  font-size: 14px; 
-  margin: 0; 
-  line-height: 1.4; 
-}
-
-/* CAJA DEL PRECIO */
-.package-price-box {
-  text-align: right;
-  background: #f8fafc; /* Gris muy clarito/azulado */
-  padding: 12px 20px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  min-width: 140px; /* Asegura que la caja siempre tenga un buen tamaño */
-}
-
-.package-price-box .price-value {
-  display: block;
-  font-size: 26px;
-  font-weight: 800;
-  color: #0b1d3a;
-  letter-spacing: -0.5px;
-}
-
-.package-price-box .price-currency {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-/* Ajuste Responsivo para Celulares */
-@media (max-width: 600px) {
-  .package-top-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-  .package-price-box {
-    width: 100%;
-    text-align: left;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
 }

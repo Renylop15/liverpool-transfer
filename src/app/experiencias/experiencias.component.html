@@ -9,6 +9,13 @@
       <p class="dates">PREMIUM MOBILITY</p>
       <h1 class="main-title">Private Chauffeur Service</h1>
       <p class="subtitle">Your time, your pace. Professional chauffeurs at your total disposal for city exploration.</p>
+      
+      <div class="location-badge">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        Exclusive to Mexico City (CDMX) & Metropolitan Area
+      </div>
     </div>
   </header>
 
@@ -17,6 +24,7 @@
       <div class="packages-grid">
         
         <div class="package-card" *ngFor="let pkg of packages">
+          
           <div class="carousel-container">
             <img [src]="pkg.images[pkg.currentImageIndex]" class="tour-carousel-image">
             <div class="carousel-controls" *ngIf="pkg.images.length > 1">
@@ -28,18 +36,15 @@
           <div class="package-content">
             
             <div class="package-top-row">
-              
               <div class="package-titles">
                 <span class="badge">{{ pkg.duration }}</span>
                 <h3>{{ pkg.title }}</h3>
                 <p class="subtitle">{{ pkg.subtitle }}</p>
               </div>
-              
               <div class="package-price-box">
-                <span class="price-value">From ${{ pkg.price }}</span>
+                <span class="price-value"> from ${{ pkg.price }}</span>
                 <span class="price-currency">MXN</span>
               </div>
-              
             </div>
             
             <div class="inclusions-row">
@@ -58,24 +63,24 @@
             </div>
 
             <div class="itineraries-visual-section">
-              <h4>Suggested Itineraries (Click to view details)</h4>
+              <h4>What to do in Mexico City (Click to view details)</h4>
               <div class="itinerary-visual-list">
-                
                 <div class="itin-card" *ngFor="let itin of pkg.recommendationsDetailed" (click)="openItineraryDetail(itin, $event)">
-  
                   <div class="itin-cover-wrapper">
                     <img [src]="itin.images[0]" class="itin-cover-img">
                   </div>
-                  
                   <div class="itin-info">
                     <h3 class="itin-title">{{ itin.title }}</h3>
                   </div>
                 </div>
-
               </div>
             </div>
-          </div>
-        </div>
+
+            <div class="package-action">
+              <a routerLink="/reserva-experiencia" class="btn-book-package">BOOK {{ pkg.title | uppercase }}</a>
+            </div>
+
+          </div> </div>
 
       </div>
     </div>
@@ -101,22 +106,15 @@
       </div>
 
       <div class="itinerary-modal-main">
-        <div class="itinerary-modal-left">
-            <p class="itinerary-description">{{ selectedItinerary.description }}</p>
-            <div class="itinerary-details-extra">
-                <div class="itin-extra-item" *ngFor="let detail of selectedItinerary.extraDetails">
-                    <span class="itin-extra-icon">{{ detail.icon }}</span>
-                    <span class="itin-extra-text">{{ detail.text }}</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="itinerary-modal-right">
-            <div class="itinerary-booking-card">
-                <a routerLink="/reserva-experiencia" class="itin-book-btn">BOOK THIS SERVICE</a>
+        <p class="itinerary-description">{{ selectedItinerary.description }}</p>
+        <div class="itinerary-details-extra">
+            <div class="itin-extra-item" *ngFor="let detail of selectedItinerary.extraDetails">
+                <span class="itin-extra-icon">{{ detail.icon }}</span>
+                <span class="itin-extra-text">{{ detail.text }}</span>
             </div>
         </div>
       </div>
+      
     </div>
   </div>
 </div>

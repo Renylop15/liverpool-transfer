@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js'; 
 import { RouterModule } from '@angular/router';
-import emailjs from '@emailjs/browser'; // <-- IMPORTANTE: Agregamos EmailJS
+import emailjs from '@emailjs/browser'; 
 
 const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
@@ -25,6 +25,12 @@ export class ReservaExperienciaComponent implements OnInit {
   
   horas: string[] = [];
   minutos: string[] = [];
+
+  // ==========================================
+  // VARIABLES PARA OPENSTREETMAP (LIVE SEARCH)
+  // ==========================================
+  resultadosOSM: any[] = [];
+  searchTimeout: any;
 
   texts: any = {
     en: {
@@ -49,7 +55,6 @@ export class ReservaExperienciaComponent implements OnInit {
     }
   };
 
-  // Agregamos ChangeDetectorRef al constructor
   constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef) {
     for (let i = 0; i < 24; i++) {
       this.horas.push(i < 10 ? '0' + i : i.toString());
@@ -60,9 +65,6 @@ export class ReservaExperienciaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // =========================================================
-    // LÓGICA DE RETORNO DEL BANCO (TEMPLATE DE PAGO)
-    // =========================================================
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
@@ -86,7 +88,6 @@ export class ReservaExperienciaComponent implements OnInit {
             monto: datosCorreo.cotizacion
           };
 
-          // 🚨 IMPORTANTE: Pon aquí tu ID del Template de Pago
           emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx')          
           .catch(() => {});
 
@@ -114,7 +115,7 @@ export class ReservaExperienciaComponent implements OnInit {
       tipo_servicio: ['', Validators.required],
       fecha_servicio: ['', Validators.required],
       hora_recogida: ['', Validators.required], 
-      lugar_recogida: ['', Validators.required],
+      lugar_recogida: ['', Validators.required], // Comienza vacío para el Live Search
       itinerario_notas: ['']
     });
 
@@ -143,6 +144,41 @@ export class ReservaExperienciaComponent implements OnInit {
     return 0;
   }
 
+  // ==========================================
+  // FUNCIONES DE OPENSTREETMAP (LIVE SEARCH)
+  // ==========================================
+  buscarDestino(event: any) {
+    const query = event.target.value;
+    
+    if (query.length < 3) {
+      this.resultadosOSM = [];
+      return;
+    }
+
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(async () => {
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=mx&limit=5`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        this.resultadosOSM = data;
+        this.cdr.detectChanges(); 
+      } catch (error) {
+        console.error("Error buscando en OpenStreetMap:", error);
+      }
+    }, 500); 
+  }
+
+  seleccionarDestino(lugar: any) {
+    // Usamos 'lugar_recogida' que es el nombre correcto del control en el form de experiencias
+    this.reservaForm.patchValue({ lugar_recogida: lugar.display_name });
+    this.resultadosOSM = []; 
+  }
+
+  // ==========================================
+  // FUNCIÓN PRINCIPAL DE ENVÍO Y COTIZACIÓN
+  // ==========================================
   async onSubmit() {
     if (this.reservaForm.invalid) {
       alert(this.lang === 'en' ? 'Please fill all fields' : 'Por favor completa todos los campos');
@@ -151,9 +187,6 @@ export class ReservaExperienciaComponent implements OnInit {
 
     const formVal = this.reservaForm.value;
 
-    // ==================================================
-    // PASO 1: COTIZACIÓN Y ENVÍO DE CORREO DE COTIZACIÓN
-    // ==================================================
     if (this.cotizacion === null) {
       this.cotizacion = this.calcularMonto(formVal.tipo_servicio, formVal.vehiculo);
       
@@ -165,7 +198,6 @@ export class ReservaExperienciaComponent implements OnInit {
 
       const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion);
 
-      // Cajita HTML con estilo para las Experiencias
       const detalleServicioHTML = `
         <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;">
           <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">
@@ -187,28 +219,22 @@ export class ReservaExperienciaComponent implements OnInit {
         tipo_servicio: servicioFinal,
         asistencia: 'N/A', 
         detalle_ida: detalleServicioHTML, 
-        detalle_vuelta: '' // Las experiencias no tienen vuelta de vuelo
+        detalle_vuelta: '' 
       };
 
-      // Guardamos en LocalStorage para usarlo después de pagar
       localStorage.setItem('experiencia_vancity', JSON.stringify(templateCotizacionParams));
       localStorage.setItem('idioma_vancity', this.lang);
 
-      // 🚨 IMPORTANTE: Pon aquí tu ID del Template de Cotización
-        emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx')       
+      emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx')       
         .catch((err) => console.error('Error Email:', err));
 
-      return; // Detenemos aquí para que el cliente vea la tarifa
+      return; 
     }
 
-    // ==================================================
-    // PASO 2: PROCEDER AL PAGO (GUARDAR EN DB Y OPENPAY)
-    // ==================================================
     this.loading = true;
     this.pagoIniciado = true;
 
     try {
-      // 1. Guardar en Base de Datos (Le pasamos estatus pendiente por defecto)
       const dataParaGuardar = { ...formVal, estatus: 'COTIZADO' };
       const { data, error } = await supabase
         .from('reservas_experiencias')
@@ -217,7 +243,6 @@ export class ReservaExperienciaComponent implements OnInit {
 
       if (error) throw error;
       
-      // 2. Ejecutar la función de pago
       const nombreCompleto = `${formVal.nombre} ${formVal.apellido}`;
       await this.procederAlPago(data[0].id, formVal.tipo_servicio, formVal.vehiculo, nombreCompleto, formVal.correo_cliente);
       
@@ -239,7 +264,7 @@ export class ReservaExperienciaComponent implements OnInit {
       nombre: nombre,
       email: email,
       descripcion: descripcionFinal,
-      redirectUrl: "https://igdsmxcity.vancity.mx/reserva-experiencia" // <-- AÑADE ESTO
+      redirectUrl: "https://igdsmxcity.vancity.mx/reserva-experiencia" 
     };
 
     try {

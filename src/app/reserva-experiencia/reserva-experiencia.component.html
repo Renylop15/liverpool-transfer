@@ -126,9 +126,17 @@
           </div>
         </div>
 
-        <div class="input-group" style="margin-bottom: 20px;">
-            <label>{{ texts[lang].pickup }}</label>
-            <input type="text" formControlName="lugar_recogida" [placeholder]="lang === 'en' ? 'Hotel or Address' : 'Hotel o Dirección'">
+        <div class="input-group" style="margin-bottom: 20px; position: relative;">
+            <label>{{ texts[lang].pickup }} (LIVE SEARCH)</label>
+            <input type="text" formControlName="lugar_recogida" 
+                   [placeholder]="lang === 'en' ? 'Hotel or Address' : 'Hotel o Dirección'"
+                   (input)="buscarDestino($event)" autocomplete="off">
+            
+            <div class="osm-dropdown" *ngIf="resultadosOSM.length > 0">
+              <div class="osm-item" *ngFor="let lugar of resultadosOSM" (click)="seleccionarDestino(lugar)">
+                📍 {{ lugar.display_name }}
+              </div>
+            </div>
         </div>
 
         <h3 class="section-title">3. {{ lang === 'en' ? 'Desired Itinerary (Optional)' : 'Itinerario Deseado (Opcional)' }}</h3>

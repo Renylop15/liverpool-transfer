@@ -132,6 +132,50 @@
 .quote-box .terms { font-size: 10px; color: #777; margin: 0; }
 
 /* =========================================
+   --- DROPDOWN LIVE SEARCH (OpenStreetMap) ---
+   ========================================= */
+.osm-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  z-index: 1050;
+  margin-top: 5px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.osm-dropdown::-webkit-scrollbar { width: 6px; }
+.osm-dropdown::-webkit-scrollbar-track { background: transparent; }
+.osm-dropdown::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+.osm-item {
+  padding: 12px 15px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+
+.osm-item:last-child {
+  border-bottom: none;
+}
+
+.osm-item:hover {
+  background-color: #f8fafc;
+  color: #0b1d3a;
+  font-weight: 700;
+}
+
+/* =========================================
    --- RESPONSIVO CELULARES --- 
    ========================================= */
 @media (max-width: 768px) {
