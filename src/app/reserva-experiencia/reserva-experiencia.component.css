@@ -52,7 +52,6 @@
 /* LADO DE LA IMAGEN FIJA */
 .image-side {
   flex: 1; 
-  /* 💡 TIP: Puedes cambiar fondo1.jpg por una imagen de un Tour / Ciudad */
   background-image: url('/assets/fondo6.jpg'); 
   background-size: cover; background-position: center; position: relative;
 }
@@ -173,6 +172,45 @@
   background-color: #f8fafc;
   color: #0b1d3a;
   font-weight: 700;
+}
+
+/* =========================================
+   --- TOUR SELECCIONADO (NUEVO) ---
+   ========================================= */
+.selected-tour-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f8fafc;
+  border: 1px solid #1a3a6c;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #0b1d3a;
+  box-shadow: 0 4px 15px rgba(11, 29, 58, 0.05);
+}
+
+.tour-icon {
+  font-size: 24px;
+}
+
+.tour-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.tour-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0b1d3a;
 }
 
 /* =========================================

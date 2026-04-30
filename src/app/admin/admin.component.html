@@ -1,26 +1,26 @@
 <div class="admin-container">
   <div class="header">
-  <div class="header-content">
-    <h2>Centro de Control Vancity 🚐</h2>
-    
-    <div class="header-actions">
-      <div class="stats-container">
-        <p class="stats">Traslados: <strong>{{ reservasTraslados.length }}</strong></p>
-        <p class="stats">Experiencias: <strong>{{ reservasExperiencias.length }}</strong></p>
+    <div class="header-content">
+      <h2>Centro de Control Vancity 🚐</h2>
+      
+      <div class="header-actions">
+        <div class="stats-container">
+          <p class="stats">Traslados: <strong>{{ reservasTraslados.length }}</strong></p>
+          <p class="stats">Experiencias: <strong>{{ reservasExperiencias.length }}</strong></p>
+        </div>
+        <button class="btn-logout" (click)="cerrarSesion()">Cerrar sesión</button>
       </div>
-      <button class="btn-logout" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+    
+    <div class="tabs-container">
+      <button class="tab-btn" [class.active]="tabActiva === 'traslados'" (click)="cambiarTab('traslados')">
+        ✈️ Traslados (Aeropuerto)
+      </button>
+      <button class="tab-btn" [class.active]="tabActiva === 'experiencias'" (click)="cambiarTab('experiencias')">
+        🏙️ Experiencias & Tours
+      </button>
     </div>
   </div>
-  
-  <div class="tabs-container">
-    <button class="tab-btn" [class.active]="tabActiva === 'traslados'" (click)="cambiarTab('traslados')">
-      ✈️ Traslados (Aeropuerto)
-    </button>
-    <button class="tab-btn" [class.active]="tabActiva === 'experiencias'" (click)="cambiarTab('experiencias')">
-      🏙️ Experiencias & Tours
-    </button>
-  </div>
-</div>
 
   <div class="table-wrapper">
     <p *ngIf="cargando" class="loading">Conectando con la base de datos...</p>
@@ -107,6 +107,8 @@
             <th>Servicio / Vehículo</th>
             <th>Recogida</th>
             <th>Notas / Itinerario</th>
+            <th>Tarifa</th>
+            <th>Estatus</th>
           </tr>
         </thead>
         <tbody>
@@ -139,6 +141,16 @@
 
             <td>
               <span class="email" style="white-space: pre-wrap;">{{ exp.itinerario_notas || 'Sin notas adicionales' }}</span>
+            </td>
+
+            <td class="price">
+              ${{ (exp.cotizacion || 0) | number:'1.2-2' }}
+            </td>
+
+            <td>
+              <span class="badge" [class.pagado]="exp.estatus === 'PAGADO'">
+                {{ exp.estatus || 'N/A' }}
+              </span>
             </td>
 
           </tr>

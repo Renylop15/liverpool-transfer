@@ -61,6 +61,9 @@ tr:hover {
   background-color: #333;
   color: #aaa;
   letter-spacing: 1px;
+  /* MAGIA AQUÍ: Fuerza a que el texto se quede en una sola línea */
+  white-space: nowrap; 
+  display: inline-block;
 }
 
 /* Cuando OpenPay apruebe el pago, el estatus se pondrá verde automáticamente */
@@ -101,7 +104,7 @@ tr:hover {
 }
 .car-info {
   display: inline-block;
-  background-color: #f1f5f9; /* Un gris muy claro */
+  background-color: #f1f5f9; 
   color: #0b1d3a;
   padding: 2px 8px;
   border-radius: 4px;
@@ -110,8 +113,9 @@ tr:hover {
   border: 1px solid #e2e8f0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  /* MAGIA AQUÍ TAMBIÉN */
+  white-space: nowrap; 
 }
-
 
 
 .tipo {
@@ -217,4 +221,15 @@ tr:hover {
     gap: 15px;
     margin-top: 15px;
   }
+}
+.dest-text {
+  display: block;
+  font-weight: 500;
+  color: #efefef;
+  /* Le ponemos un freno para que no crezca a lo loco */
+  max-width: 320px; 
+  line-height: 1.4;
+  /* Asegura que brinque de línea al chocar con el límite */
+  white-space: normal; 
+  word-wrap: break-word;
 }

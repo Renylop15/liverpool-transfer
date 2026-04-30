@@ -107,7 +107,7 @@
         <div class="form-row" style="margin-top: 20px;">
           <div class="input-group">
             <label>{{ lang === 'en' ? 'Date of Service' : 'Fecha del Servicio' }}</label>
-            <input type="date" formControlName="fecha_servicio">
+            <input type="date" formControlName="fecha_servicio" (change)="validarFechaDisponibilidad($event)">
           </div>
           <div class="input-group">
             <label>{{ texts[lang].pickup_time }}</label>
@@ -139,10 +139,23 @@
             </div>
         </div>
 
-        <h3 class="section-title">3. {{ lang === 'en' ? 'Desired Itinerary (Optional)' : 'Itinerario Deseado (Opcional)' }}</h3>
+        <h3 class="section-title">3. {{ lang === 'en' ? 'Selected Experience' : 'Experiencia Seleccionada' }}</h3>
+        
         <div class="input-group">
-          <label>{{ lang === 'en' ? 'Any specific places or special requests?' : '¿Algún lugar específico o petición especial?' }}</label>
-          <textarea formControlName="itinerario_notas" rows="4" [placeholder]="lang === 'en' ? 'Tell us about the places you\'d like to explore...' : 'Cuéntanos sobre los lugares que te gustaría explorar...'"></textarea>
+          <!-- Si el cliente viene de un paquete seleccionado -->
+          <div class="selected-tour-box" *ngIf="selectedTourName">
+            <span class="tour-icon">🗺️</span>
+            <div class="tour-details">
+              <span class="tour-label">{{ lang === 'en' ? 'Selected Itinerary:' : 'Itinerario:' }}</span>
+              <span class="tour-name">{{ selectedTourName }}</span>
+            </div>
+          </div>
+          
+          <!-- Si entró directo, le dejamos el cuadro de texto tradicional -->
+          <textarea *ngIf="!selectedTourName" formControlName="itinerario_notas" rows="4" [placeholder]="lang === 'en' ? 'Tell us about the places you\'d like to explore...' : 'Cuéntanos sobre los lugares que te gustaría explorar...'"></textarea>
+          
+          <!-- Input invisible para enviar los datos si hay un tour seleccionado -->
+          <input *ngIf="selectedTourName" type="hidden" formControlName="itinerario_notas">
         </div>
 
         <div class="quote-box" *ngIf="cotizacion !== null">

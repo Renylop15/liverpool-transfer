@@ -17,7 +17,7 @@ interface Package {
   subtitle: string;
   duration: string;
   priceBase: number;
-  price: string; // <-- NUEVA PROPIEDAD AGREGADA PARA LA CAJA DE PRECIO
+  price: string; 
   images: string[];
   currentImageIndex: number;
   includes: string[];
@@ -43,7 +43,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       subtitle: 'Executive Private Disposal',
       duration: 'Up to 6 Hours',
       priceBase: 3950,
-      price: '3,950.00', // <-- PRECIO FORMATEADO PARA LA VISTA
+      price: '3,950.00',
       images: [
         '/assets/angel4.jpg', 
         '/assets/images/tours/centro-1.jpg',
@@ -74,11 +74,11 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
         {
           title: 'Coyoacán: The Blue House & Anahuacalli Museum',
           images: [
-            '/assets/images/tours/coyoacan-1.jpg',
-            '/assets/images/tours/coyoacan-2.jpg',
-            '/assets/images/tours/coyoacan-3.jpg',
-            '/assets/images/tours/coyoacan-4.jpg',
-            '/assets/images/tours/coyoacan-5.jpg'
+            '/assets/images/tours/house-1.jpg',
+            '/assets/images/tours/house-2.jpg',
+            '/assets/images/tours/house-3.jpg',
+            '/assets/images/tours/house-4.jpg',
+            '/assets/images/tours/house-5.jpg'
           ],
           priceNumeric: 3950,
           description: ' Experience the dual heart of Mexican art. Step into The Blue House, the vibrant sanctuary where Frida Kahlo’s intimate universe comes to life, then discover the Anahuacalli, a breathtaking architectural "templo" designed by Diego Rivera to stage the indigenous cosmos. Enjoy a seamless two-for-one experience: Your admission to the Frida Kahlo Museum grants you access to the Anahuacalli Museum.',
@@ -127,7 +127,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       subtitle: 'Premium Private Disposal',
       duration: 'Up to 12 Hours',
       priceBase: 4950,
-      price: '4,950.00', // <-- PRECIO FORMATEADO PARA LA VISTA
+      price: '4,950.00',
       images: [
         '/assets/images/tours/teo-1.jpg', 
         '/assets/images/tours/teo-2.jpg',
@@ -139,22 +139,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
       includes: ['Professional Chauffeur', 'Premium Sedan Unit', 'Fuel & Insurance', 'Bottled Water', 'On-site Wait Time', 'Parking Fees', 'Toll Fees'],
       notIncludes: ['Entry Fees to Attractions', 'Meals and Beverages', 'Tour Guides', 'Gratuities'],
       recommendationsDetailed: [
-        {
-          title: 'Teotihuacán Pyramids',
-          images: [
-            '/assets/images/tours/teo-1.jpg',
-            '/assets/images/tours/teo-2.jpg',
-            '/assets/images/tours/teo-3.jpg',
-            '/assets/images/tours/teo-4.jpg',
-            '/assets/images/tours/teo-5.jpg'
-          ],
-          priceNumeric: 4950,
-          description: 'Visit the majestic archaeological site of Teotihuacán, including the Pyramids of the Sun and the Moon.',
-          locationText: 'San Juan Teotihuacán, Mexico',
-          extraDetails: [
-            { icon: '📍', text: 'Archaeological Zone. Teotihuacán' }
-          ]
-        },
+  
         {
           title: 'Xochimilco: Cuemanco Wharf',
           images: [
@@ -187,22 +172,7 @@ export class ExperienciasComponent implements OnInit, OnDestroy {
             { icon: '📍', text: 'Miguel Hidalgo, Mexico City' }
           ]
         },
-        {
-          title: 'City Nightlife ',
-          images: [
-            '/assets/images/tours/night-1.jpg',
-            '/assets/images/tours/night-2.jpg',
-            '/assets/images/tours/night-3.jpg',
-            '/assets/images/tours/night-4.jpg',
-            '/assets/images/tours/night-5.jpg'
-          ],
-          priceNumeric: 4950,
-          description: 'Enjoy a complete nightlife experience in Mexico City with guaranteed private transportation.',
-          locationText: 'Multiple areas, Mexico City',
-          extraDetails: [
-            { icon: '📍', text: 'Polanco, Roma, Condesa. Mexico City' }
-          ]
-        }
+  
       ]
     }
   ];
