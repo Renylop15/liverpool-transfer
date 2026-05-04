@@ -37,12 +37,11 @@
             
             <div class="package-top-row">
               <div class="package-titles">
-                <span class="badge">{{ pkg.duration }}</span>
                 <h3>{{ pkg.title }}</h3>
                 <p class="subtitle">{{ pkg.subtitle }}</p>
               </div>
               <div class="package-price-box">
-                <span class="price-value"> from ${{ pkg.price }}</span>
+                <span class="price-value">{{ pkg.priceLabel }}{{ pkg.price }}</span>
                 <span class="price-currency">MXN</span>
               </div>
             </div>
@@ -63,9 +62,10 @@
             </div>
             
             <div class="itineraries-visual-section">
-              <h4>What to do in Mexico City (Click to view details)</h4>
+              <h4>Available Experiences (Click to view & book)</h4>
               <div class="itinerary-visual-list">
-                <div class="itin-card" *ngFor="let itin of pkg.recommendationsDetailed" (click)="openItineraryDetail(itin, $event)">
+                <!-- Pass the package type to openItineraryDetail -->
+                <div class="itin-card" *ngFor="let itin of pkg.recommendationsDetailed" (click)="openItineraryDetail(itin, pkg.type, $event)">
                   <div class="itin-cover-wrapper">
                     <img [src]="itin.images[0]" class="itin-cover-img">
                   </div>
@@ -114,12 +114,15 @@
       </div>
       
       <!-- BOTÓN DE RESERVA EN EL MODAL -->
-      <div class="modal-booking-action" *ngFor="let pkg of packages">
-        <ng-container *ngIf="pkg.recommendationsDetailed.includes(selectedItinerary)">
-           <a [routerLink]="['/reserva-experiencia']" [queryParams]="{ tour: selectedItinerary.title, type: pkg.duration.includes('6') ? 'half-day' : 'full-day' }" class="btn-book-modal">
-             BOOK THIS EXPERIENCE
+      <div class="modal-booking-action">
+           <!-- Route to shared form if they clicked a shared tour -->
+           <a *ngIf="$any(selectedItinerary)._pkgType === 'shared'" [routerLink]="['/reserva-compartido']" [queryParams]="{ tour: selectedItinerary.title }" class="btn-book-modal">
+             BOOK SHARED EXPERIENCE
            </a>
-        </ng-container>
+           <!-- Route to private form if they clicked a private tour -->
+           <a *ngIf="$any(selectedItinerary)._pkgType === 'private'" [routerLink]="['/reserva-experiencia']" [queryParams]="{ tour: selectedItinerary.title }" class="btn-book-modal">
+             BOOK PRIVATE EXPERIENCE
+           </a>
       </div>
       
     </div>

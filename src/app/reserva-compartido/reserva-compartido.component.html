@@ -1,0 +1,178 @@
+<nav class="vancity-navbar">
+  <div class="navbar-logo">
+    <img src="assets/logo.png" alt="Vancity Logo">
+  </div>
+  
+  <div class="navbar-actions">
+    <div class="lang-segmented">
+      <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
+      <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
+    </div>
+    <button type="button" class="btn-back" routerLink="/experiencias">
+      {{ lang === 'en' ? 'Back' : 'Regresar' }}
+    </button>
+  </div>
+</nav>
+
+<div class="page-backdrop">
+  <div class="split-card">
+    
+    <div class="image-side">
+      <div class="image-overlay">
+        <h2>Shared Rides</h2>
+        <p>{{ lang === 'en' ? 'Experience the city together.' : 'Explora la ciudad acompañado.' }}</p>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="header">
+        <a href="/" class="logo-group-link"><img src="/assets/logo.png" alt="Vancity" class="logo-img"></a>      
+        <p>{{ texts[lang].title }}</p>
+        <span class="subtitle-text">{{ lang === 'en' ? 'Secure your tickets for this shared experience.' : 'Asegura tus boletos para esta experiencia.' }}</span>
+      </div>
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+        
+        <h3 class="section-title">1. {{ lang === 'en' ? 'Service Details' : 'Detalles del Servicio' }}</h3>
+        
+        <div class="input-group" style="margin-bottom: 20px;">
+          <div class="selected-tour-box" *ngIf="selectedTourName">
+            <span class="tour-icon">🎫</span>
+            <div class="tour-details">
+              <span class="tour-label">{{ lang === 'en' ? 'Selected Experience:' : 'Experiencia:' }}</span>
+              <span class="tour-name">{{ selectedTourName }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ texts[lang].tickets }}</label>
+            <select formControlName="boletos">
+              <option *ngFor="let p of opcionesTickets" [value]="p">
+                {{ p }} {{ p === 1 ? 'Ticket' : 'Tickets' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top: 20px;">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Select Date' : 'Selecciona una Fecha' }}</label>
+            
+            <div class="calendar-widget">
+              <div class="calendar-header">
+                <button type="button" class="cal-nav" (click)="cambiarMes(-1)">❮</button>
+                <span class="cal-month">{{ monthNames[lang][currentMonth] }} {{ currentYear }}</span>
+                <button type="button" class="cal-nav" (click)="cambiarMes(1)">❯</button>
+              </div>
+
+              <div class="calendar-grid">
+                <div class="day-name" *ngFor="let w of weekDays[lang]">{{ w }}</div>
+                
+                <div class="day-cell" *ngFor="let d of calendarDays"
+                     [class.empty]="!d"
+                     [class.disabled]="d && (!d.isAllowed || d.remaining === 0)"
+                     [class.selected]="d && d.dateStr === reservaForm.get('fecha_servicio')?.value"
+                     (click)="seleccionarFecha(d)"
+                     (mouseenter)="hoveredDay = d"
+                     (mouseleave)="hoveredDay = null">
+                     
+                     <span *ngIf="d">{{ d.day }}</span>
+
+                     <div class="custom-tooltip" *ngIf="d && hoveredDay === d">
+                        <div class="tooltip-content no-avail" *ngIf="!d.isAllowed || d.remaining === 0">
+                          {{ lang === 'en' ? 'Tickets sold out. Please contact us via WhatsApp for extraordinary availability.' : 'Boletos agotados para este día. Contáctanos en el botón de WhatsApp.' }}
+                        </div>
+                        <div class="tooltip-content yes-avail" *ngIf="d.isAllowed && d.remaining > 0">
+                          {{ lang === 'en' ? d.remaining + ' tickets left' : 'Quedan ' + d.remaining + ' boletos' }}
+                        </div>
+                     </div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" formControlName="fecha_servicio">
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 30px; margin-top: 15px;">
+          <label>{{ texts[lang].pickup }}</label>
+          <div class="fixed-pickup-box">
+             <span class="hotel-icon">🏨</span>
+             <div class="hotel-info">
+               <strong>Hotel Hyatt Regency</strong>
+               <span>Campos Elíseos 204, Polanco, CDMX</span>
+               <span style="color:#e11d48; font-weight: bold; margin-top:5px;">{{ lang === 'en' ? '* Schedule will be confirmed by our logistics team.' : '* El horario exacto será confirmado por logística.' }}</span>
+             </div>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             SECCIÓN 2: DATOS DE PASAJEROS DINÁMICOS
+             ============================================== -->
+        <h3 class="section-title">2. {{ lang === 'en' ? 'Passengers Information' : 'Información de Pasajeros' }}</h3>
+        
+        <div formArrayName="pasajerosDetalle">
+          <div class="passenger-card" *ngFor="let pas of pasajerosDetalles.controls; let i = index" [formGroupName]="i">
+            <h4 class="pax-title">{{ lang === 'en' ? 'Passenger' : 'Pasajero' }} {{ i + 1 }} <span *ngIf="i === 0">({{ lang === 'en' ? 'Primary Contact' : 'Contacto Principal' }})</span></h4>
+            
+            <div class="form-row">
+              <div class="input-group">
+                <input type="text" formControlName="nombre" [placeholder]="lang === 'en' ? 'First Name' : 'Nombre'">
+              </div>
+              <div class="input-group">
+                <input type="text" formControlName="apellido" [placeholder]="lang === 'en' ? 'Last Name' : 'Apellido'">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="input-group">
+                <input type="email" formControlName="correo" placeholder="Email">
+              </div>
+              <div class="input-group">
+                <input type="tel" formControlName="telefono" [placeholder]="lang === 'en' ? '+1 4719 123 4567' : 'Teléfono'">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-box" *ngIf="cotizacion !== null">
+          <h3>{{ lang === 'en' ? 'TOTAL FARE' : 'TARIFA TOTAL' }}</h3>
+          <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+          <p class="terms">{{ lang === 'en' ? '* Tax included (16%).' : '* Incluye IVA (16%).' }}</p>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid || pagoIniciado">
+          <span *ngIf="cotizacion === null">
+            {{ lang === 'en' ? 'GET QUOTE' : 'COTIZAR TICKETS' }}
+          </span>
+          <span *ngIf="cotizacion !== null">
+            {{ pagoIniciado ? 
+               (lang === 'en' ? 'CONNECTING...' : 'CONECTANDO...') : 
+               (lang === 'en' ? 'PROCEED TO SECURE PAYMENT' : 'PROCEDER AL PAGO SEGURO') 
+            }}
+          </span>
+        </button>
+        
+      </form>
+    </div> </div> </div><p>reserva-compartido works!</p>
+
+    <!-- ========================================================
+     MODAL PERSONALIZADO DE PAGO EXITOSO
+     ======================================================== -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">
+      {{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'Thank you! Your payment was processed and your shared tickets are officially reserved. We have sent a confirmation email with your details.' 
+         : '¡Gracias! Hemos recibido tu pago. Tus boletos compartidos están oficialmente reservados y te hemos enviado un correo de confirmación con los detalles.' }}
+    </p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">
+      {{ lang === 'en' ? 'Continue' : 'Continuar' }}
+    </button>
+  </div>
+</div>

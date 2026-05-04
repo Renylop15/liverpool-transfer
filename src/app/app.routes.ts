@@ -6,6 +6,7 @@ import { ExperienciasComponent } from './experiencias/experiencias.component'; /
 import { ReservaExperienciaComponent } from './reserva-experiencia/reserva-experiencia.component';
 import { authGuard } from './auth-guard'; // <-- IMPORTA TU GUARDIÁN
 import { LoginComponent } from './login/login.component'; // <-- IMPORTA EL COMPONENTE DE LOGIN
+import { ReservaCompartidoComponent } from './reserva-compartido/reserva-compartido.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent }, 
@@ -13,6 +14,7 @@ export const routes: Routes = [
   { path: 'experiencias', component: ExperienciasComponent }, // <--- 2. AGREGAMOS LA NUEVA RUTA AQUÍ
   { path: 'reserva-experiencia', component: ReservaExperienciaComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'reserva-compartido', component: ReservaCompartidoComponent },
 { 
     path: 'admin', 
     component: AdminComponent, 

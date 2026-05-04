@@ -181,3 +181,101 @@ input:focus, select.dark-input:focus {
   .row { flex-direction: column; gap: 0; }
   .row, .form-group, .half { width: 100% !important; }
 }
+/* =========================================
+   --- MODAL PERSONALIZADO (ALERTA DISPONIBILIDAD) ---
+   ========================================= */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  background: rgba(11, 29, 58, 0.85); /* Fondo oscuro Vancity */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px); /* Efecto difuminado moderno */
+}
+
+.custom-modal-card {
+  background: #ffffff;
+  width: 90%; 
+  max-width: 400px;
+  border-radius: 16px;
+  padding: 30px 25px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-icon {
+  font-size: 40px; 
+  margin-bottom: 15px;
+}
+
+.modal-title {
+  color: #0b1d3a; 
+  font-size: 20px; 
+  font-weight: 800; 
+  margin: 0 0 10px 0; 
+  text-transform: uppercase;
+}
+
+.modal-text {
+  color: #333; 
+  font-size: 14px; 
+  line-height: 1.5; 
+  margin: 0 0 15px 0;
+}
+
+.modal-subtext {
+  color: #e11d48; /* Rojo sutil para resaltar la solución por WhatsApp */
+  font-size: 12px; 
+  font-weight: 600; 
+  line-height: 1.4; 
+  margin: 0 0 25px 0;
+  background: #fff1f2; 
+  padding: 12px; 
+  border-radius: 8px; 
+  border: 1px dashed #fda4af;
+}
+
+.modal-btn {
+  background: linear-gradient(135deg, #0b1d3a 0%, #1a3a6c 100%);
+  color: white; 
+  border: none; 
+  padding: 12px 30px; 
+  border-radius: 25px;
+  font-weight: 700; 
+  font-size: 14px; 
+  cursor: pointer; 
+  text-transform: uppercase; 
+  letter-spacing: 1px;
+  transition: all 0.2s; 
+  width: 100%;
+}
+
+.modal-btn:hover {
+  transform: translateY(-2px); 
+  box-shadow: 0 5px 15px rgba(11, 29, 58, 0.3);
+}
+/* Estilos específicos para el Modal de Éxito */
+.custom-modal-card.success-card {
+  border-top: 6px solid #10b981; /* Una línea verde elegante arriba */
+}
+
+.modal-btn.success-btn {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%); /* Botón verde premium */
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.modal-btn.success-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}

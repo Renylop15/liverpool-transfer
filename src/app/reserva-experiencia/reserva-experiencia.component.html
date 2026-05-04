@@ -23,8 +23,8 @@
     
     <div class="image-side">
       <div class="image-overlay">
-        <h2>Bespoke Experiences</h2>
-        <p>{{ lang === 'en' ? 'Explore the city your way.' : 'Explora la ciudad a tu manera.' }}</p>
+        <h2>Private Rides</h2>
+        <p>{{ lang === 'en' ? 'Premium disposal for your city exploration.' : 'Vehículo premium a tu disposición.' }}</p>
       </div>
     </div>
 
@@ -35,12 +35,118 @@
           <img src="/assets/logo.png" alt="Logo Vancity" class="logo-img">
         </a>      
         <p>{{ texts[lang].title }}</p>
-        <span class="subtitle-text">{{ lang === 'en' ? 'Fill out the details below to request your bespoke mobility experience.' : 'Completa los detalles para solicitar tu experiencia.' }}</span>
+        <span class="subtitle-text">{{ lang === 'en' ? 'Fill out the details below to request your bespoke mobility experience.' : 'Completa los detalles para solicitar tu experiencia privada.' }}</span>
       </div>
 
       <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
         
-        <h3 class="section-title">1. {{ lang === 'en' ? 'Contact Information' : 'Información de Contacto' }}</h3>
+        <h3 class="section-title">1. {{ lang === 'en' ? 'Service Details' : 'Detalles del Servicio' }}</h3>
+        
+        <div class="input-group" style="margin-bottom: 20px;">
+          <div class="selected-tour-box" *ngIf="selectedTourName">
+            <span class="tour-icon">🗺️</span>
+            <div class="tour-details">
+              <span class="tour-label">{{ lang === 'en' ? 'Selected Itinerary:' : 'Itinerario:' }}</span>
+              <span class="tour-name">{{ selectedTourName }}</span>
+            </div>
+          </div>
+          <input type="hidden" formControlName="itinerario_notas">
+        </div>
+        
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Preferred Vehicle' : 'Vehículo Preferido' }}</label>
+            <select formControlName="vehiculo">
+              <option value="" disabled selected>{{ lang === 'en' ? 'Select a car...' : 'Selecciona un auto...' }}</option>
+              <option value="Sedan">Sedan (Corolla, Prius, or similar)</option>
+              <option value="SUV">SUV (Highlander, Sienna, or similar)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>{{ texts[lang].passengers }}</label>
+            <select formControlName="pasajeros">
+              <option *ngFor="let p of opcionesPasajeros" [value]="p">
+                {{ p }} {{ p === 1 ? (lang === 'en' ? 'Passenger' : 'Pasajero') : (lang === 'en' ? 'Passengers' : 'Pasajeros') }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="vehicle-image-container" *ngIf="reservaForm.get('vehiculo')?.value">
+          <img *ngIf="reservaForm.get('vehiculo')?.value === 'Sedan'" 
+               src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
+               
+          <img *ngIf="reservaForm.get('vehiculo')?.value === 'SUV'" 
+               src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
+        </div>
+
+        <!-- ==============================================
+             NUEVO CALENDARIO INTERACTIVO
+             ============================================== -->
+        <div class="form-row" style="margin-top: 20px;">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Select Date' : 'Selecciona una Fecha' }}</label>
+            
+            <div class="calendar-widget">
+              <!-- Overlay que bloquea si no hay coche elegido -->
+              <div class="calendar-overlay" *ngIf="!reservaForm.get('vehiculo')?.value">
+                <p>⚠️ {{ lang === 'en' ? 'Please select a preferred vehicle first to see availability.' : 'Por favor, selecciona un vehículo preferido primero para ver la disponibilidad.' }}</p>
+              </div>
+
+              <div class="calendar-header">
+                <button type="button" class="cal-nav" (click)="cambiarMes(-1)">❮</button>
+                <span class="cal-month">{{ monthNames[lang][currentMonth] }} {{ currentYear }}</span>
+                <button type="button" class="cal-nav" (click)="cambiarMes(1)">❯</button>
+              </div>
+
+              <div class="calendar-grid">
+                <!-- Días de la semana -->
+                <div class="day-name" *ngFor="let w of weekDays[lang]">{{ w }}</div>
+                
+                <!-- Celdas de los días -->
+                <div class="day-cell" *ngFor="let d of calendarDays"
+                     [class.empty]="!d"
+                     [class.disabled]="d && (!d.isAllowed || d.remaining === 0)"
+                     [class.selected]="d && d.dateStr === reservaForm.get('fecha_servicio')?.value"
+                     (click)="seleccionarFecha(d)"
+                     (mouseenter)="hoveredDay = d"
+                     (mouseleave)="hoveredDay = null">
+                     
+                     <span *ngIf="d">{{ d.day }}</span>
+
+                     <!-- TOOLTIP AL PASAR EL RATÓN -->
+                     <div class="custom-tooltip" *ngIf="d && hoveredDay === d">
+                        <!-- NO HAY LUGAR -->
+                        <div class="tooltip-content no-avail" *ngIf="!d.isAllowed || d.remaining === 0">
+                          {{ lang === 'en' ? 'We have no availability for this day. If you want to check more dates and times, contact us via the WhatsApp button.' : 'No tenemos disponibilidad para este día. Si quieres checar más fechas, contáctanos en el botón de WhatsApp.' }}
+                        </div>
+                        <!-- SÍ HAY LUGAR -->
+                        <div class="tooltip-content yes-avail" *ngIf="d.isAllowed && d.remaining > 0">
+                          {{ lang === 'en' ? d.remaining + ' spots left' : 'Quedan ' + d.remaining + ' disponibles' }}
+                        </div>
+                     </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Guardamos el valor para Angular Forms de manera oculta -->
+            <input type="hidden" formControlName="fecha_servicio">
+          </div>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 30px; margin-top: 15px;">
+          <label>{{ texts[lang].pickup }}</label>
+          <div class="fixed-pickup-box">
+             <span class="hotel-icon">🏨</span>
+             <div class="hotel-info">
+               <strong>Hotel Hyatt Regency</strong>
+               <span>Campos Elíseos 204, Polanco, CDMX</span>
+             </div>
+          </div>
+        </div>
+
+        <h3 class="section-title">2. {{ lang === 'en' ? 'Contact Information' : 'Información de Contacto' }}</h3>
         
         <div class="form-row">
           <div class="input-group">
@@ -62,100 +168,6 @@
             <label>{{ lang === 'en' ? 'Phone / WhatsApp' : 'Teléfono / WhatsApp' }}</label>
             <input type="tel" formControlName="telefono" placeholder="+1 234 567 8900">
           </div>
-        </div>
-
-        <div class="form-row">
-          <div class="input-group">
-            <label>{{ lang === 'en' ? 'Number of Passengers' : 'Número de Pasajeros' }}</label>
-            <select formControlName="pasajeros">
-              <option value="1-2">1 - 2 {{ lang === 'en' ? 'Passengers' : 'Pasajeros' }}</option>
-              <option value="3-4">3 - 4 {{ lang === 'en' ? 'Passengers' : 'Pasajeros' }}</option>
-            </select>
-          </div>
-        </div>
-
-        <h3 class="section-title">2. {{ lang === 'en' ? 'Service Details' : 'Detalles del Servicio' }}</h3>
-        
-        <div class="form-row">
-          <div class="input-group">
-            <label>{{ texts[lang].serviceType }}</label>
-            <select formControlName="tipo_servicio">
-              <option value="" disabled selected>{{ lang === 'en' ? 'Select an option...' : 'Selecciona una opción...' }}</option>
-              <option value="half-day">{{ texts[lang].halfDay }}</option>
-              <option value="full-day">{{ texts[lang].fullDay }}</option>
-            </select>
-          </div>
-          
-          <div class="input-group">
-            <label>{{ lang === 'en' ? 'Preferred Vehicle' : 'Vehículo Preferido' }}</label>
-            <select formControlName="vehiculo">
-              <option value="" disabled selected>{{ lang === 'en' ? 'Select a car...' : 'Selecciona un auto...' }}</option>
-              <option value="Sedan">Sedan (Corolla, Prius, or similar)</option>
-              <option value="SUV">SUV (Highlander, Sienna, or similar)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="vehicle-image-container" *ngIf="reservaForm.get('vehiculo')?.value">
-          <img *ngIf="reservaForm.get('vehiculo')?.value === 'Sedan'" 
-               src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
-               
-          <img *ngIf="reservaForm.get('vehiculo')?.value === 'SUV'" 
-               src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
-        </div>
-
-        <div class="form-row" style="margin-top: 20px;">
-          <div class="input-group">
-            <label>{{ lang === 'en' ? 'Date of Service' : 'Fecha del Servicio' }}</label>
-            <input type="date" formControlName="fecha_servicio" (change)="validarFechaDisponibilidad($event)">
-          </div>
-          <div class="input-group">
-            <label>{{ texts[lang].pickup_time }}</label>
-            <div class="time-picker-custom">
-              <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)">
-                <option value="" disabled selected>HH</option>
-                <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
-              </select>
-              <span class="dos-puntos">:</span>
-              <select #mSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)">
-                <option value="" disabled selected>MM</option>
-                <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
-              </select>
-            </div>
-            <input type="hidden" formControlName="hora_recogida">
-          </div>
-        </div>
-
-        <div class="input-group" style="margin-bottom: 20px; position: relative;">
-            <label>{{ texts[lang].pickup }} (LIVE SEARCH)</label>
-            <input type="text" formControlName="lugar_recogida" 
-                   [placeholder]="lang === 'en' ? 'Hotel or Address' : 'Hotel o Dirección'"
-                   (input)="buscarDestino($event)" autocomplete="off">
-            
-            <div class="osm-dropdown" *ngIf="resultadosOSM.length > 0">
-              <div class="osm-item" *ngFor="let lugar of resultadosOSM" (click)="seleccionarDestino(lugar)">
-                📍 {{ lugar.display_name }}
-              </div>
-            </div>
-        </div>
-
-        <h3 class="section-title">3. {{ lang === 'en' ? 'Selected Experience' : 'Experiencia Seleccionada' }}</h3>
-        
-        <div class="input-group">
-          <!-- Si el cliente viene de un paquete seleccionado -->
-          <div class="selected-tour-box" *ngIf="selectedTourName">
-            <span class="tour-icon">🗺️</span>
-            <div class="tour-details">
-              <span class="tour-label">{{ lang === 'en' ? 'Selected Itinerary:' : 'Itinerario:' }}</span>
-              <span class="tour-name">{{ selectedTourName }}</span>
-            </div>
-          </div>
-          
-          <!-- Si entró directo, le dejamos el cuadro de texto tradicional -->
-          <textarea *ngIf="!selectedTourName" formControlName="itinerario_notas" rows="4" [placeholder]="lang === 'en' ? 'Tell us about the places you\'d like to explore...' : 'Cuéntanos sobre los lugares que te gustaría explorar...'"></textarea>
-          
-          <!-- Input invisible para enviar los datos si hay un tour seleccionado -->
-          <input *ngIf="selectedTourName" type="hidden" formControlName="itinerario_notas">
         </div>
 
         <div class="quote-box" *ngIf="cotizacion !== null">
@@ -181,3 +193,22 @@
         
       </form>
     </div> </div> </div>
+    <!-- ========================================================
+     MODAL PERSONALIZADO DE PAGO EXITOSO
+     ======================================================== -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">
+      {{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'Thank you! Your payment was processed and your private ride is officially reserved. We have sent a confirmation email with your details.' 
+         : '¡Gracias! Hemos recibido tu pago. Tu viaje privado está oficialmente reservado y te hemos enviado un correo de confirmación con los detalles.' }}
+    </p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">
+      {{ lang === 'en' ? 'Continue' : 'Continuar' }}
+    </button>
+  </div>
+</div>

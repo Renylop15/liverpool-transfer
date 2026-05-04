@@ -22,52 +22,82 @@ export class ReservaExperienciaComponent implements OnInit {
   loading = false; 
   pagoIniciado = false; 
   cotizacion: number | null = null; 
-  horas: string[] = [];
-  minutos: string[] = [];
-  resultadosOSM: any[] = [];
-  searchTimeout: any;
   
-  // NUEVA VARIABLE PARA MOSTRAR EL TOUR ELEGIDO
   selectedTourName: string = '';
+  opcionesPasajeros: number[] = [1, 2, 3]; 
+  showSuccessModal = false;
 
   texts: any = {
-    en: { title: 'Book Your Service', firstName: 'First Name', lastName: 'Last Name', pickup_time: 'Pickup Time', serviceType: 'Service Type', halfDay: 'Half Day (6h)', fullDay: 'Full Day (12h)', pickup: 'Pickup Location' },
-    es: { title: 'Reserva tu Servicio', firstName: 'Nombre', lastName: 'Apellido', pickup_time: 'Hora de Salida', serviceType: 'Tipo de Servicio', halfDay: 'Medio Día (6h)', fullDay: 'Día Completo (12h)', pickup: 'Lugar de Recogida' }
+    en: { title: 'Book Your Private Ride', firstName: 'First Name', lastName: 'Last Name', pickup: 'Fixed Pickup Location', passengers: 'Number of Passengers' },
+    es: { title: 'Reserva tu Viaje Privado', firstName: 'Nombre', lastName: 'Apellido', pickup: 'Punto de Recogida Fijo', passengers: 'Número de Pasajeros' }
   };
 
-  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private route: ActivatedRoute) {
-    for (let i = 0; i < 24; i++) this.horas.push(i.toString().padStart(2, '0'));
-    for (let i = 0; i < 60; i += 5) this.minutos.push(i.toString().padStart(2, '0'));
-  }
+  preciosMatrix: any = {
+    'Chapultepec Castle': { Sedan: [6160, 7370, 8580], SUV: [7645, 8855, 10065, 11275] },
+    'Basílica of Guadalupe': { Sedan: [5950, 6950, 7950], SUV: [7435, 8435, 9435, 10435] },
+    'Historic Downtown': { Sedan: [6050, 7150, 8250], SUV: [7535, 8635, 9735, 10835] },
+    'Xochimilco': { Sedan: [7450, 9950, 12450], SUV: [8935, 11435, 13935, 16435] },
+    'Frida Khalo Museum & Anahuacalli': { Sedan: [6270, 7590, 8910], SUV: [7755, 9075, 10395, 11715] },
+    'Luis Barragan House': { Sedan: [6600, 8250, 9900], SUV: [8085, 9735, 11385, 13035] }
+  };
+
+  // ==========================================
+  // VARIABLES DEL CALENDARIO INTERACTIVO
+  // ==========================================
+  currentYear = 2026;
+  currentMonth = 4; // 4 = Mayo (los meses en JS empiezan en 0)
+  calendarDays: any[] = [];
+  hoveredDay: any = null;
+  cargandoCalendario = false;
+
+  weekDays: any = {
+    es: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+    en: ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+  };
+  monthNames: any = {
+    es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  };
+
+  constructor(private fb: FormBuilder, private cdr: ChangeDetectorRef, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.reservaForm = this.fb.group({
+      vehiculo: ['', Validators.required], 
+      pasajeros: [1, Validators.required],
+      fecha_servicio: ['', Validators.required], // Se llenará oculto con el calendario
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo_cliente: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
-      pasajeros: ['1-2', Validators.required],
-      vehiculo: ['', Validators.required], 
-      tipo_servicio: ['', Validators.required],
-      fecha_servicio: ['', Validators.required],
-      hora_recogida: ['', Validators.required], 
-      lugar_recogida: ['', Validators.required],
       itinerario_notas: [''] 
     });
 
-    // ATRAPAMOS EL TOUR DE LA URL
     this.route.queryParams.subscribe(params => {
       if (params['tour']) {
         this.selectedTourName = params['tour'];
-        this.reservaForm.patchValue({
-          itinerario_notas: params['tour'], // Mandamos el nombre puro a la BD
-          tipo_servicio: params['type'] || ''
-        });
+        this.reservaForm.patchValue({ itinerario_notas: params['tour'] });
       }
+    });
+
+    this.reservaForm.get('vehiculo')?.valueChanges.subscribe(vehiculo => {
+      if (vehiculo === 'Sedan') {
+        this.opcionesPasajeros = [1, 2, 3];
+        if (this.reservaForm.value.pasajeros > 3) this.reservaForm.patchValue({ pasajeros: 1 });
+      } else if (vehiculo === 'SUV') {
+        this.opcionesPasajeros = [1, 2, 3, 4];
+      }
+      this.cotizacion = null;
+      this.reservaForm.patchValue({ fecha_servicio: '' }); // Borra fecha si cambia de auto
+      this.generarCalendario(); // Recalcula disponibilidad real
     });
 
     this.reservaForm.valueChanges.subscribe(() => { this.cotizacion = null; });
 
+    // Inicializa el calendario
+    this.generarCalendario();
+
+    // LÓGICA RETORNO OPENPAY
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
@@ -78,96 +108,180 @@ export class ReservaExperienciaComponent implements OnInit {
           const datosCorreo = JSON.parse(datosGuardados);
           const templatePagoParams = {
             titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
-            mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your payment was successful and your experience is reserved.' : '¡Gracias! Hemos recibido tu pago exitosamente. Tu experiencia está reservada.',
+            mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your payment was successful and your private ride is reserved.' : '¡Gracias! Hemos recibido tu pago exitosamente. Tu viaje privado está reservado.',
             nombre: datosCorreo.nombre, email_destino: datosCorreo.email_destino, folio: openpayId, tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
           };
+          
+          // 1. Mandamos el correo silenciosamente
           emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
+          
+          // 2. Actualizamos base de datos silenciosamente
           supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
-          alert(idiomaGuardado === 'en' ? 'Payment Successful! Confirmation email sent.' : '¡Pago Exitoso! Te hemos enviado un correo de confirmación.');
-          localStorage.removeItem('experiencia_vancity');
-          localStorage.removeItem('idioma_vancity');
-          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // 3. ¡Lanzamos el modal bonito!
+          this.showSuccessModal = true;
         }
       }
     }
   }
-
-  async validarFechaDisponibilidad(event: Event) {
-    const fecha = (event.target as HTMLInputElement).value;
-    if (!fecha) return;
-
-    const allowed = ['2026-05-17', '2026-05-20', '2026-05-22'];
-    if (!allowed.includes(fecha) && fecha < '2026-05-23') {
-      alert(this.lang === 'en' ? 'Service only available on May 17, 20, 22 and from May 23 onwards.' : 'Servicio solo disponible los días 17, 20, 22 de mayo y a partir del 23.');
-      this.reservaForm.patchValue({ fecha_servicio: '' });
-      return;
+  closeSuccessModal() {
+    this.showSuccessModal = false;
+    localStorage.removeItem('experiencia_vancity');
+    localStorage.removeItem('idioma_vancity');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+  // ==========================================
+  // LÓGICA DEL CALENDARIO
+  // ==========================================
+  cambiarMes(delta: number) {
+    this.currentMonth += delta;
+    if (this.currentMonth < 0) {
+      this.currentMonth = 11;
+      this.currentYear--;
+    } else if (this.currentMonth > 11) {
+      this.currentMonth = 0;
+      this.currentYear++;
     }
-
-    this.loading = true;
-    const { data } = await supabase.from('reservas_experiencias').select('id').eq('fecha_servicio', fecha).eq('estatus', 'PAGADO');
-    if ((data?.length || 0) >= 3) {
-      alert(this.lang === 'en' ? 'Fully booked! Max 3 experiences for this day.' : '¡Día lleno! Máximo 3 experiencias para este día.');
-      this.reservaForm.patchValue({ fecha_servicio: '' });
-    }
-    this.loading = false;
-    this.cdr.detectChanges();
+    this.reservaForm.patchValue({ fecha_servicio: '' });
+    this.generarCalendario();
   }
 
-  buscarDestino(event: any) {
-    const query = event.target.value;
-    if (query.length < 3) { this.resultadosOSM = []; return; }
-    clearTimeout(this.searchTimeout);
-    this.searchTimeout = setTimeout(async () => {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=mx&limit=5`;
-      const res = await fetch(url);
-      this.resultadosOSM = await res.json();
+  async generarCalendario() {
+    const primerDia = new Date(this.currentYear, this.currentMonth, 1).getDay();
+    const diasEnMes = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+    
+    // Ajuste para que Lunes sea el primer día (0) en vez de Domingo
+    let startOffset = primerDia - 1;
+    if (startOffset < 0) startOffset = 6;
+
+    this.calendarDays = [];
+    for (let i = 0; i < startOffset; i++) {
+      this.calendarDays.push(null);
+    }
+
+    const vehiculoSeleccionado = this.reservaForm.get('vehiculo')?.value;
+
+    for (let i = 1; i <= diasEnMes; i++) {
+      const fechaStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const isAllowed = this.checarFechasPermitidas(fechaStr);
+      
+      this.calendarDays.push({
+        day: i,
+        dateStr: fechaStr,
+        isAllowed: isAllowed,
+        remaining: isAllowed && vehiculoSeleccionado ? 3 : 0 // Max 3 lugares
+      });
+    }
+
+    // Consultamos la BD si hay vehículo seleccionado
+    if (vehiculoSeleccionado) {
+      this.cargandoCalendario = true;
       this.cdr.detectChanges();
-    }, 500);
+
+      const startDate = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-01`;
+      const endDate = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-31`;
+
+      const { data } = await supabase.from('reservas_experiencias')
+        .select('fecha_servicio')
+        .eq('vehiculo', vehiculoSeleccionado)
+        .eq('estatus', 'PAGADO')
+        .gte('fecha_servicio', startDate)
+        .lte('fecha_servicio', endDate);
+
+      const conteoPorDia: any = {};
+      if (data) {
+        data.forEach(r => {
+          conteoPorDia[r.fecha_servicio] = (conteoPorDia[r.fecha_servicio] || 0) + 1;
+        });
+      }
+
+      this.calendarDays.forEach(d => {
+        if (d && d.isAllowed) {
+          const ocupados = conteoPorDia[d.dateStr] || 0;
+          d.remaining = Math.max(0, 3 - ocupados); // Restamos al máximo de 3
+        }
+      });
+
+      this.cargandoCalendario = false;
+      this.cdr.detectChanges();
+    }
   }
 
-  seleccionarDestino(lugar: any) {
-    this.reservaForm.patchValue({ lugar_recogida: lugar.display_name });
-    this.resultadosOSM = [];
+  checarFechasPermitidas(fechaStr: string): boolean {
+    const allowed = ['2026-05-17', '2026-05-20', '2026-05-22'];
+    if (allowed.includes(fechaStr)) return true;
+    if (fechaStr >= '2026-05-23') return true;
+    return false;
+  }
+
+  seleccionarFecha(d: any) {
+    if (d && d.isAllowed && d.remaining > 0) {
+      this.reservaForm.patchValue({ fecha_servicio: d.dateStr });
+      this.cotizacion = null;
+    }
+  }
+
+  // ==========================================
+  // FLUJO DE PAGO Y ENVÍO
+  // ==========================================
+  calcularMonto(tour: string, vehiculo: string, pasajeros: number): number {
+    if (this.preciosMatrix[tour] && this.preciosMatrix[tour][vehiculo]) {
+      return this.preciosMatrix[tour][vehiculo][pasajeros - 1];
+    }
+    return 0; 
   }
 
   async onSubmit() {
     if (this.reservaForm.invalid) {
-      alert(this.lang === 'en' ? 'Please fill all fields' : 'Por favor completa todos los campos');
+      alert(this.lang === 'en' ? 'Please fill all fields, including the vehicle and date.' : 'Por favor completa todos los campos, incluyendo vehículo y fecha en el calendario.');
       return;
     }
     const formVal = this.reservaForm.value;
 
     if (this.cotizacion === null) {
-      this.cotizacion = formVal.tipo_servicio === 'half-day' ? (formVal.vehiculo === 'Sedan' ? 3950 : 5135) : (formVal.vehiculo === 'Sedan' ? 4950 : 6435);
+      this.cotizacion = this.calcularMonto(this.selectedTourName, formVal.vehiculo, parseInt(formVal.pasajeros));
       this.loading = false;
       this.cdr.detectChanges(); 
 
       const nombreCompleto = `${formVal.nombre} ${formVal.apellido}`;
-      const tipoTraducido = formVal.tipo_servicio === 'half-day' ? (this.lang === 'en' ? 'Half Day' : 'Medio Día') : (this.lang === 'en' ? 'Full Day' : 'Día Completo');
-      const servicioFinal = `${formVal.vehiculo} - ${tipoTraducido}`;
+      const servicioFinal = `Private Ride - ${formVal.vehiculo}`;
 
-      const dataParaGuardar = { ...formVal, estatus: 'COTIZADO', cotizacion: this.cotizacion };
-      supabase.from('reservas_experiencias').insert([dataParaGuardar]).then();
-
+      const dataParaGuardar = { 
+        ...formVal, 
+        pasajeros: formVal.pasajeros.toString(), 
+        estatus: 'COTIZADO', 
+        cotizacion: this.cotizacion,
+        hora_recogida: 'Flexible',
+        lugar_recogida: 'Hotel Hyatt Regency Polanco',
+        tipo_servicio: 'Private Ride'
+      };
+// Guardamos y agregamos un console.error para monitorear si Supabase se queja de algo
+      supabase.from('reservas_experiencias').insert([dataParaGuardar]).then(({ error }) => {
+        if (error) {
+          console.error("Error guardando en Supabase:", error);
+        } else {
+          console.log("¡Reserva guardada exitosamente en la BD!");
+        }
+      });
       const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion);
       const detalleServicioHTML = `
         <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;">
-          <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">${this.lang === 'en' ? '📍 Pickup Details' : '📍 Detalles de Recogida'}</h3>
-          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${formVal.fecha_servicio} | ${formVal.hora_recogida} hrs</p>
-          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Location' : 'Lugar'}:</strong> ${formVal.lugar_recogida}</p>
-          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Experience / Notes' : 'Experiencia / Notas'}:</strong> ${formVal.itinerario_notas || 'N/A'}</p>
+          <h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">${this.lang === 'en' ? '📍 Service Details' : '📍 Detalles del Servicio'}</h3>
+          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date' : 'Fecha'}:</strong> ${formVal.fecha_servicio}</p>
+          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Pickup Location' : 'Punto de Recogida'}:</strong> Hotel Hyatt Regency Polanco</p>
+          <p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Experience' : 'Experiencia'}:</strong> ${this.selectedTourName}</p>
         </div>`;
 
       const templateCotizacionParams = {
-        titulo_mensaje: this.lang === 'en' ? 'Your Experience Quote' : 'Tu Cotización de Experiencia',
+        titulo_mensaje: this.lang === 'en' ? 'Your Private Ride Quote' : 'Tu Cotización de Viaje Privado',
         mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested experience.' : 'Aquí están los detalles de la experiencia solicitada.',
-        nombre: nombreCompleto, email_destino: formVal.correo_cliente, destino: 'City Tour / Experience', cotizacion: cotizacionFormateada,
+        nombre: nombreCompleto, email_destino: formVal.correo_cliente, destino: this.selectedTourName, cotizacion: cotizacionFormateada,
         pasajeros: formVal.pasajeros, tipo_servicio: servicioFinal, asistencia: 'N/A', detalle_ida: detalleServicioHTML, detalle_vuelta: '' 
       };
 
       localStorage.setItem('experiencia_vancity', JSON.stringify(templateCotizacionParams));
       localStorage.setItem('idioma_vancity', this.lang);
-      emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx').catch((err) => console.error('Error Email:', err));
+      emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx').catch();
 
     } else {
       this.loading = true;
@@ -175,9 +289,8 @@ export class ReservaExperienciaComponent implements OnInit {
       this.cdr.detectChanges(); 
       try {
         const nombreCompleto = `${formVal.nombre} ${formVal.apellido}`;
-        await this.procederAlPago(formVal.tipo_servicio, formVal.vehiculo, nombreCompleto, formVal.correo_cliente);
+        await this.procederAlPago(formVal.vehiculo, nombreCompleto, formVal.correo_cliente);
       } catch (error) {
-        console.error('Error:', error);
         this.loading = false;
         this.pagoIniciado = false;
         this.cdr.detectChanges(); 
@@ -185,10 +298,10 @@ export class ReservaExperienciaComponent implements OnInit {
     }
   }
 
-  async procederAlPago(tipoServicio: string, vehiculo: string, nombre: string, email: string) {
-    const descripcionViaje = tipoServicio === 'half-day' ? 'Half Day' : 'Full Day';
-    const descripcionFinal = `Vancity Experience ${descripcionViaje}  ${vehiculo}`;
-    const datosPago = { monto: this.cotizacion, nombre: nombre, email: email, descripcion: descripcionFinal, redirectUrl: "https://igdsmxcity.vancity.mx/reserva-experiencia" };
+  async procederAlPago(vehiculo: string, nombre: string, email: string) {
+    const descripcionFinal = `Vancity Private Ride ${vehiculo}`;
+    const urlRetorno = window.location.origin + '/reserva-experiencia';
+    const datosPago = { monto: this.cotizacion, nombre: nombre, email: email, descripcion: descripcionFinal, redirectUrl: urlRetorno };
 
     try {
       const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
@@ -203,6 +316,5 @@ export class ReservaExperienciaComponent implements OnInit {
     }
   }
 
-  actualizarHoraSalida(h: string, m: string) { this.reservaForm.patchValue({ hora_recogida: `${h}:${m}` }); }
   toggleLang() { this.lang = this.lang === 'en' ? 'es' : 'en'; }
 }

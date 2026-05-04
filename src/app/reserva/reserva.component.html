@@ -60,43 +60,9 @@
             <div class="phone-group">
               <select formControlName="codigoPais" class="dark-input select-codigo">
                 <option value="+52">🇲🇽 +52 (Mexico)</option>
-                <option value="+61">🇦🇺 +61 (Australia)</option>
-                <option value="+43">🇦🇹 +43 (Austria)</option>
-                <option value="+32">🇧🇪 +32 (Belgium)</option>
-                <option value="+1">🇨🇦 +1 (Canada)</option>
-                <option value="+56">🇨🇱 +56 (Chile)</option>
-                <option value="+86">🇨🇳 +86 (China)</option>
-                <option value="+357">🇨🇾 +357 (Cyprus)</option>
-                <option value="+420">🇨🇿 +420 (Czech Republic)</option>
-                <option value="+45">🇩🇰 +45 (Denmark)</option>
-                <option value="+44">🇬🇧 +44 (England)</option>
-                <option value="+372">🇪🇪 +372 (Estonia)</option>
-                <option value="+358">🇫🇮 +358 (Finland)</option>
-                <option value="+33">🇫🇷 +33 (France)</option>
-                <option value="+49">🇩🇪 +49 (Germany)</option>
-                <option value="+30">🇬🇷 +30 (Greece)</option>
-                <option value="+852">🇭🇰 +852 (Hong Kong)</option>
-                <option value="+91">🇮🇳 +91 (India)</option>
-                <option value="+62">🇮🇩 +62 (Indonesia)</option>
-                <option value="+353">🇮🇪 +353 (Ireland)</option>
-                <option value="+39">🇮🇹 +39 (Italy)</option>
-                <option value="+81">🇯🇵 +81 (Japan)</option>
-                <option value="+60">🇲🇾 +60 (Malaysia)</option>
-                <option value="+31">🇳🇱 +31 (Netherlands)</option>
-                <option value="+64">🇳🇿 +64 (New Zealand)</option>
-                <option value="+47">🇳🇴 +47 (Norway)</option>
-                <option value="+63">🇵🇭 +63 (Philippines)</option>
-                <option value="+974">🇶🇦 +974 (Qatar)</option>
-                <option value="+7">🇷🇺 +7 (Russia)</option>
-                <option value="+27">🇿🇦 +27 (South Africa)</option>
-                <option value="+82">🇰🇷 +82 (South Korea)</option>
-                <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
-                <option value="+41">🇨🇭 +41 (Switzerland)</option>
-                <option value="+886">🇹🇼 +886 (Taiwan)</option>
-                <option value="+66">🇹🇭 +66 (Thailand)</option>
-                <option value="+90">🇹🇷 +90 (Turkey)</option>
-                <option value="+971">🇦🇪 +971 (United Arab Emirates)</option>
-                <option value="+1">🇺🇸 +1 (United States)</option>
+                <option value="+1">🇺🇸 +1 (US)</option>
+                <option value="+44">🇬🇧 +44 (UK)</option>
+                <!-- Omitidos los demás para mantener el código corto aquí, pero déjalos como los tienes en el original -->
               </select>
               <input type="tel" formControlName="telefono" placeholder="55 1234 5678" (keypress)="soloNumeros($event)" maxlength="10">
             </div>
@@ -113,10 +79,7 @@
               <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
             </select>
           </div>
-          <div class="form-group half">
-            <label>{{ textos[lang].pasajeros }}</label>
-            <input type="number" formControlName="pasajeros" min="1" max="4">
-          </div>
+          
         </div>
         
         <div class="form-group" style="width: 100%;">
@@ -135,6 +98,14 @@
                  src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
           </div>
         </div>
+        <div class="form-group half">
+            <label>{{ textos[lang].pasajeros }}</label>
+            <select formControlName="pasajeros" class="dark-input">
+              <option *ngFor="let p of opcionesPasajeros" [value]="p">
+                {{ p }} {{ p === 1 ? (lang === 'en' ? 'Passenger' : 'Pasajero') : (lang === 'en' ? 'Passengers' : 'Pasajeros') }}
+              </option>
+            </select>
+          </div>
 
         <div class="row">
           <div class="form-group half" style="width: 100%;">
@@ -175,12 +146,12 @@
           <div class="form-group half">
             <label>{{ textos[lang].hora_llegada }}</label>
             <div class="time-picker-custom">
-              <select #hLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input">
+              <select #hLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[0] || ''">
                 <option value="" disabled selected>HH</option>
                 <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
               </select>
               <span class="dos-puntos">:</span>
-              <select #mLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input">
+              <select #mLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[1] || ''">
                 <option value="" disabled selected>MM</option>
                 <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
               </select>
@@ -221,12 +192,12 @@
             <div class="form-group half">
               <label>{{ textos[lang].hora_salida }}</label>
               <div class="time-picker-custom">
-                <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input">
+                <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input" [value]="reservationForm.get('horaSalida')?.value?.split(':')[0] || ''">
                   <option value="" disabled selected>HH</option>
                   <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
                 </select>
                 <span class="dos-puntos">:</span>
-                <select #mSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input">
+                <select #mSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input" [value]="reservationForm.get('horaSalida')?.value?.split(':')[1] || ''">
                   <option value="" disabled selected>MM</option>
                   <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
                 </select>
@@ -270,4 +241,50 @@
         </datalist>
 
       </form>
-      </div> </div> </div> 
+    </div> 
+  </div> 
+</div> 
+
+<!-- ========================================================
+     NUEVO MODAL PERSONALIZADO DE DISPONIBILIDAD
+     ======================================================== -->
+<div class="custom-modal-overlay" *ngIf="showAvailabilityModal">
+  <div class="custom-modal-card">
+    <div class="modal-icon">⏳</div>
+    <h3 class="modal-title">
+      {{ lang === 'en' ? 'Fully Booked' : 'Horario Ocupado' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'We are fully booked at this exact time. Please select a time at least 3 hours earlier or later.' 
+         : 'Nuestra flotilla está completamente ocupada en este horario. Por favor selecciona una hora con al menos 3 horas de diferencia.' }}
+    </p>
+    <div class="modal-subtext">
+      {{ lang === 'en'
+         ? 'If you urgently need this specific date and time, please contact us via the WhatsApp button to check for extraordinary availability.'
+         : 'Si necesitas urgentemente esta fecha y hora, contáctanos en el botón de WhatsApp (esquina inferior derecha) para revisar disponibilidad extraordinaria.' }}
+    </div>
+    <button type="button" class="modal-btn" (click)="closeModal()">
+      {{ lang === 'en' ? 'Understood' : 'Entendido' }}
+    </button>
+  </div>
+</div>
+<!-- ========================================================
+     NUEVO MODAL PERSONALIZADO DE PAGO EXITOSO
+     ======================================================== -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">
+      {{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'Thank you! Your payment was processed and your unit is officially reserved. We have sent a confirmation email with your details.' 
+         : '¡Gracias! Hemos recibido tu pago. Tu unidad está oficialmente reservada y te hemos enviado un correo de confirmación con los detalles.' }}
+    </p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">
+      {{ lang === 'en' ? 'Continue' : 'Continuar' }}
+    </button>
+  </div>
+</div>
