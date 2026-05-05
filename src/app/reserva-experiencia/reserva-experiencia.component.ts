@@ -101,26 +101,44 @@ export class ReservaExperienciaComponent implements OnInit {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
+
       if (openpayId) {
-        const datosGuardados = localStorage.getItem('experiencia_vancity');
-        const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
-        if (datosGuardados) {
-          const datosCorreo = JSON.parse(datosGuardados);
-          const templatePagoParams = {
-            titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
-            mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your payment was successful and your private ride is reserved.' : '¡Gracias! Hemos recibido tu pago exitosamente. Tu viaje privado está reservado.',
-            nombre: datosCorreo.nombre, email_destino: datosCorreo.email_destino, folio: openpayId, tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
-          };
+        // 1. LLAMAMOS AL VERIFICADOR
+        supabase.functions.invoke('openpay-checkout', { 
+          body: { action: 'verify', transaction_id: openpayId } 
+        }).then(({ data, error }) => {
           
-          // 1. Mandamos el correo silenciosamente
-          emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
-          
-          // 2. Actualizamos base de datos silenciosamente
-          supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
-          
-          // 3. ¡Lanzamos el modal bonito!
-          this.showSuccessModal = true;
-        }
+          // 2. REVISAMOS SI FALLÓ
+          if (error || !data || data.status !== 'completed') {
+             alert(this.lang === 'en' 
+                ? 'Payment could not be completed. The bank declined the authorization. Please try a different card.' 
+                : 'El pago no pudo ser procesado o el banco declinó la autorización. Por favor intenta con otro método de pago.');
+             window.history.replaceState({}, document.title, window.location.pathname);
+             return; 
+          }
+
+          // 3. SI FUE EXITOSO (Datos específicos de Experiencia Privada)
+          const datosGuardados = localStorage.getItem('experiencia_vancity');
+          const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
+
+          if (datosGuardados) {
+            const datosCorreo = JSON.parse(datosGuardados);
+
+            const templatePagoParams = {
+              titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
+              mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your payment was successful and your private ride is reserved.' : '¡Gracias! Hemos recibido tu pago exitosamente. Tu viaje privado está reservado.',
+              nombre: datosCorreo.nombre, email_destino: datosCorreo.email_destino, folio: openpayId,
+              tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
+            };
+            
+            emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
+            
+            // Actualizamos la tabla correcta
+            supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
+            
+            this.showSuccessModal = true;
+          }
+        });
       }
     }
   }

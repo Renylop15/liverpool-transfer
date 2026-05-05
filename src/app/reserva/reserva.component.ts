@@ -34,10 +34,39 @@ export class ReservaComponent implements OnInit {
   showAvailabilityModal = false;
 
   aerolineasPopulares = [
+  // MÉXICO Y LATAM
   "Aeroméxico", "Volaris", "Viva Aerobus", "Copa Airlines", "Avianca", "LATAM Airlines", 
+  "Aerolíneas Argentinas", "Sky Airline", "JetSmart", "TAG Airlines", "AeroMéxico Connect",
+  
+  // ESTADOS UNIDOS Y CANADÁ
   "American Airlines", "Delta Airlines", "United Airlines", "Southwest Airlines", 
-  "Lufthansa", "Air France", "Iberia", "British Airways", "KLM", "Emirates"
-].sort();
+  "Alaska Airlines", "JetBlue Airways", "Spirit Airlines", "Frontier Airlines", 
+  "Allegiant Air", "Hawaiian Airlines", "Sun Country Airlines", "Air Canada", 
+  "WestJet", "Air Transat", "Porter Airlines", "Flair Airlines",
+
+  // EUROPA
+  "Lufthansa", "Air France", "Iberia", "British Airways", "KLM", "Swiss International", 
+  "Austrian Airlines", "TAP Air Portugal", "Alitalia", "ITA Airways", "Turkish Airlines", 
+  "Aeroflot", "SAS Scandinavian", "Finnair", "Brussels Airlines", "Virgin Atlantic", 
+  "Icelandair", "LOT Polish Airlines", "Air Europa", "Norwegian Air", "Ryanair", 
+  "EasyJet", "Vueling", "Wizz Air", "Eurowings", "Condor",
+
+  // ASIA Y MEDIO ORIENTE
+  "Emirates", "Qatar Airways", "Etihad Airways", "Singapore Airlines", "Cathay Pacific", 
+  "All Nippon Airways (ANA)", "Japan Airlines (JAL)", "Korean Air", "Asiana Airlines", 
+  "China Southern Airlines", "China Eastern Airlines", "Air China", "Hainan Airlines", 
+  "Thai Airways", "Malaysia Airlines", "Vietnam Airlines", "Garuda Indonesia", 
+  "Philippine Airlines", "Eva Air", "Air India", "IndiGo", "Saudia", "El Al", 
+  "Turkish Airlines", "Royal Jordanian", "Oman Air",
+
+  // OCEANÍA Y ÁFRICA
+  "Qantas", "Air New Zealand", "Virgin Australia", "Jetstar", "Ethiopian Airlines", 
+  "South African Airways", "EgyptAir", "Kenya Airways", "Royal Air Maroc",
+
+  // PRIVADOS / OTROS
+  "NetJets", "Flexjet", "VistaJet", "Wheels Up", "Charter Privado", "Vuelo Privado"
+].sort(); // El .sort() las ordena alfabéticamente de la A a la Z automáticamente
+  
 
   textos = {
     es: {
@@ -120,35 +149,52 @@ export class ReservaComponent implements OnInit {
       if (fecha && hora) this.validarHorarioDisp(fecha, hora, 'horaSalida');
     });
 
+    // LÓGICA RETORNO OPENPAY
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
 
       if (openpayId) {
-        const datosGuardados = localStorage.getItem('reserva_vancity');
-        const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
-
-        if (datosGuardados) {
-          const datosCorreo = JSON.parse(datosGuardados);
-
-          const templatePagoParams = {
-            titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
-            mensaje_principal: idiomaGuardado === 'en' 
-              ? 'Thank you! Your payment was successful and your unit is reserved.' 
-              : '¡Gracias! Hemos recibido tu pago exitosamente. Tu unidad está reservada.',
-            nombre: datosCorreo.nombre, email_destino: datosCorreo.email_destino, folio: openpayId,
-            tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
-          };
+        
+        // 1. LLAMAMOS AL VERIFICADOR ANTES DE HACER CUALQUIER OTRA COSA
+        supabase.functions.invoke('openpay-checkout', { 
+          body: { action: 'verify', transaction_id: openpayId } 
+        }).then(({ data, error }) => {
           
-          // 1. Mandamos el correo en segundo plano
-          emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
-          
-          // 2. Actualizamos Supabase en segundo plano
-          supabase.from('reservas').update({ estatus: 'PAGADO' }).eq('email', datosCorreo.email_destino).then(() => {});
+          // 2. REVISAMOS SI OPENPAY DIJO QUE EL PAGO ES "COMPLETED"
+          if (error || !data || data.status !== 'completed') {
+             // El pago falló (ej. 3D Secure declinado)
+             alert(this.lang === 'en' 
+                ? 'Payment could not be completed. The bank declined the authorization. Please try a different card.' 
+                : 'El pago no pudo ser procesado o el banco declinó la autorización. Por favor intenta con otro método de pago.');
+             
+             // Limpiamos la URL para que puedan intentar de nuevo
+             window.history.replaceState({}, document.title, window.location.pathname);
+             return; 
+          }
 
-          // 3. ¡Desplegamos el modal bonito en lugar del alert feo!
-          this.showSuccessModal = true;
-        }
+          // 3. SI LLEGA AQUÍ, EL PAGO ES 100% REAL Y SEGURO
+          const datosGuardados = localStorage.getItem('reserva_vancity');
+          const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
+
+          if (datosGuardados) {
+            const datosCorreo = JSON.parse(datosGuardados);
+
+            const templatePagoParams = {
+              titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
+              mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your payment was successful and your unit is reserved.' : '¡Gracias! Hemos recibido tu pago exitosamente. Tu unidad está reservada.',
+              nombre: datosCorreo.nombre, email_destino: datosCorreo.email_destino, folio: openpayId,
+              tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
+            };
+            
+            // Acciones de éxito
+            emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
+            supabase.from('reservas').update({ estatus: 'PAGADO' }).eq('email', datosCorreo.email_destino).then(() => {});
+            
+            // Lanzamos modal
+            this.showSuccessModal = true;
+          }
+        });
       }
     }
     
