@@ -145,7 +145,14 @@
         <div class="row">
           <div class="form-group half" style="width: 100%;">
             <label>{{ textos[lang].destino }}</label>
-            <input type="text" formControlName="destino" readonly style="color: #9ca3af; cursor: not-allowed; opacity: 0.8;">
+            <select formControlName="destino" class="dark-input">
+              <option value="" disabled selected>
+                {{ lang === 'en' ? 'Select your hotel' : 'Selecciona tu hotel' }}
+              </option>
+              <option *ngFor="let hotel of listaHoteles" [value]="hotel">
+                {{ hotel }}
+              </option>
+            </select>
           </div>
         </div>
 

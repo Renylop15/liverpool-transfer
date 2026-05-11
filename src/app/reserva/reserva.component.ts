@@ -32,6 +32,9 @@ export class ReservaComponent implements OnInit {
 
   // NUEVA VARIABLE PARA CONTROLAR EL MODAL
   showAvailabilityModal = false;
+      
+  listaHoteles = ['Hotel Hyatt Regency Mexico City','Hotel JW Marriott Mexico City Polanco', 'Hotel InterContinental Presidente Mexico City Polanco' ];
+
 
   aerolineasPopulares = [
   // MÉXICO Y LATAM
@@ -116,7 +119,7 @@ export class ReservaComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]], codigoPais: ['+52', Validators.required],
       telefono: ['', Validators.required], tipoViaje: ['one_way', Validators.required],
       pasajeros: [1, [Validators.required, Validators.min(1), Validators.max(4)]],
-      vehiculo: ['', Validators.required], destino: ['Hotel Hyatt Regency Mexico City, JW Marriott Hotel Mexico City, InterContinental Presidente Mexico City by IHG', Validators.required],
+      vehiculo: ['', Validators.required], destino: ['', Validators.required], // <-- Cambiado a vacío y requerido
       aerolinea: ['', Validators.required], noVuelo: ['', Validators.required], terminal: ['t1', Validators.required],
       fechaLlegada: ['', Validators.required], horaLlegada: ['', Validators.required],
       aerolineaSalida: [''], noVueloSalida: [''], terminalSalida: ['t1'], fechaSalida: [''], horaSalida: [''],
