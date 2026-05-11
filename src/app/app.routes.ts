@@ -7,7 +7,7 @@ import { ReservaExperienciaComponent } from './reserva-experiencia/reserva-exper
 import { authGuard } from './auth-guard'; // <-- IMPORTA TU GUARDIÁN
 import { LoginComponent } from './login/login.component'; // <-- IMPORTA EL COMPONENTE DE LOGIN
 import { ReservaCompartidoComponent } from './reserva-compartido/reserva-compartido.component';
-
+import { ReservaChoferComponent } from './reserva-chofer/reserva-chofer.component';
 export const routes: Routes = [
   { path: '', component: LandingComponent }, 
   { path: 'reserva', component: ReservaComponent }, 
@@ -15,6 +15,7 @@ export const routes: Routes = [
   { path: 'reserva-experiencia', component: ReservaExperienciaComponent },
   { path: 'login', component: LoginComponent },
   { path: 'reserva-compartido', component: ReservaCompartidoComponent },
+  { path: 'reserva-chofer', component: ReservaChoferComponent },
 { 
     path: 'admin', 
     component: AdminComponent, 
