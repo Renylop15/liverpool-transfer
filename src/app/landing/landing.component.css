@@ -506,3 +506,222 @@ html, body {
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* =========================================
+   --- SLIDE DECK (GUÍA DE ARRIBO) --- 
+   ========================================= */
+.arrival-guide-section {
+  background-color: #f8fafc;
+  padding: 80px 20px;
+  border-top: 1px solid #eaeaea;
+}
+
+.slide-deck-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 30px;
+  -webkit-overflow-scrolling: touch; /* Deslizamiento suave en iOS */
+  scrollbar-width: thin;
+  scrollbar-color: #0b1d3a #e2e8f0;
+}
+
+/* Estilo de la barra de desplazamiento en Chrome/Safari */
+.slide-deck-container::-webkit-scrollbar {
+  height: 8px;
+}
+.slide-deck-container::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.slide-deck-container::-webkit-scrollbar-thumb {
+  background-color: #0b1d3a;
+  border-radius: 10px;
+}
+
+.slide-card {
+  min-width: 320px;
+  max-width: 350px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 30px;
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  border-top: 5px solid #0b1d3a;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.slide-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.slide-number {
+  font-size: 50px;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1;
+  margin-bottom: 15px;
+  /* Borde del texto para dar efecto ahuecado */
+  text-shadow: -1px -1px 0 #cbd5e1, 1px -1px 0 #cbd5e1, -1px 1px 0 #cbd5e1, 1px 1px 0 #cbd5e1;
+}
+
+.slide-card h3 {
+  font-size: 20px;
+  color: #0b1d3a;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.slide-card p {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+.slide-card hr {
+  border: 0;
+  border-top: 1px dashed #cbd5e1;
+  margin: 0 0 20px 0;
+}
+
+.slide-card .small-text {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.slide-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.slide-list li {
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  position: relative;
+  padding-left: 22px;
+}
+
+.slide-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #1a3a6c;
+  font-weight: bold;
+}
+
+/* Ajuste específico para celulares */
+@media (max-width: 768px) {
+  .arrival-guide-section {
+    padding: 50px 15px;
+  }
+  .slide-card {
+    min-width: 85vw; /* Ocupa casi toda la pantalla para que sea obvio que se puede deslizar */
+  }
+}
+
+/* =========================================
+   --- SLIDE DECK (GUÍA DE ARRIBO CON IMÁGENES) --- 
+   ========================================= */
+.arrival-guide-section {
+  background-color: #f8fafc;
+  padding: 80px 20px;
+  border-top: 1px solid #eaeaea;
+}
+
+.slide-deck-container {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 30px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #0b1d3a #e2e8f0;
+}
+
+.slide-deck-container::-webkit-scrollbar {
+  height: 8px;
+}
+.slide-deck-container::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.slide-deck-container::-webkit-scrollbar-thumb {
+  background-color: #0b1d3a;
+  border-radius: 10px;
+}
+
+/* LA TARJETA QUE SOSTIENE TU IMAGEN */
+.slide-image-card {
+  min-width: 85vw; /* En celulares ocupa casi toda la pantalla */
+  max-width: 900px; /* Tamaño máximo en PC */
+  border-radius: 12px;
+  scroll-snap-align: center;
+  flex-shrink: 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  overflow: hidden; /* Corta las esquinas de la imagen para que queden redondas */
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.slide-image-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+.slide-image-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block; /* Evita espacios en blanco debajo de la imagen */
+}
+
+/* Ajuste específico para PC y Tablets */
+@media (min-width: 768px) {
+  .slide-image-card {
+    min-width: 700px; /* Hace que en PC se vean a un tamaño perfecto de lectura */
+  }
+}
+
+@media (max-width: 768px) {
+  .arrival-guide-section {
+    padding: 50px 15px;
+  }
+}
+
+/* --- BOTÓN DE DESCARGA PDF --- */
+.btn-download-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #0b1d3a;
+  border: 2px solid #0b1d3a;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.btn-download-pdf:hover {
+  background: #0b1d3a;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(11, 29, 58, 0.2);
+  transform: translateY(-2px);
+}

@@ -1,0 +1,241 @@
+<nav class="vancity-navbar">
+  <div class="navbar-logo">
+    <img src="assets/logo.png" alt="Vancity Logo">
+  </div>
+
+  <div class="navbar-actions">
+    <div class="lang-segmented">
+      <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
+      <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
+    </div>
+
+    <button type="button" class="btn-back" routerLink="/">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-bottom: -3px; margin-right: 2px;">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      {{ lang === 'en' ? 'Back' : 'Regresar' }}
+    </button>
+  </div>
+</nav>
+
+<div class="page-backdrop">
+  <div class="split-card">
+
+    <div class="image-side chauffeur-bg">
+      <div class="image-overlay">
+        <h2>Private Chauffeur</h2>
+        <p>{{ lang === 'en' ? 'Total freedom for your city travels.' : 'Libertad total para tus traslados en la ciudad.' }}</p>
+      </div>
+    </div>
+
+    <div class="form-side">
+
+      <div class="header">
+        <a href="/" class="logo-group-link">
+          <img src="assets/logo.png" alt="Logo Vancity" class="logo-img">
+        </a>      
+        <p>{{ texts[lang].title }}</p>
+        <span class="subtitle-text">{{ lang === 'en' ? 'Fill out the details below to request your bespoke chauffeur service.' : 'Completa los detalles para solicitar tu chofer privado.' }}</span>
+      </div>
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+
+        <h3 class="section-title">1. {{ lang === 'en' ? 'Contact Information' : 'Información de Contacto' }}</h3>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ texts[lang].firstName }}</label>
+            <input type="text" formControlName="nombre" [placeholder]="lang === 'en' ? 'Ex. John' : 'Ej. Juan'">
+          </div>
+          <div class="input-group">
+            <label>{{ texts[lang].lastName }}</label>
+            <input type="text" formControlName="apellido" [placeholder]="lang === 'en' ? 'Ex. Doe' : 'Ej. Pérez'">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Email Address' : 'Correo Electrónico' }}</label>
+            <input type="email" formControlName="correo_cliente" placeholder="email@example.com">
+          </div>
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Phone / WhatsApp' : 'Teléfono / WhatsApp' }}</label>
+            <div class="phone-group">
+              <select formControlName="codigoPais" class="select-codigo">
+                <option value="+52">🇲🇽 +52 (Mexico)</option>
+                <option value="+1">🇺🇸 +1 (US)</option>
+                <option value="+44">🇬🇧 +44 (UK)</option>
+                <option value="+61">🇦🇺 +61 (Australia)</option>
+                <option value="+43">🇦🇹 +43 (Austria)</option>
+                <option value="+32">🇧🇪 +32 (Belgium)</option>
+                <option value="+1">🇨🇦 +1 (Canada)</option>
+                <option value="+56">🇨🇱 +56 (Chile)</option>
+                <option value="+86">🇨🇳 +86 (China)</option>
+                <option value="+357">🇨🇾 +357 (Cyprus)</option>
+                <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+                <option value="+45">🇩🇰 +45 (Denmark)</option>
+                <option value="+44">🇬🇧 +44 (England)</option>
+                <option value="+372">🇪🇪 +372 (Estonia)</option>
+                <option value="+358">🇫🇮 +358 (Finland)</option>
+                <option value="+33">🇫🇷 +33 (France)</option>
+                <option value="+49">🇩🇪 +49 (Germany)</option>
+                <option value="+30">🇬🇷 +30 (Greece)</option>
+                <option value="+852">🇭🇰 +852 (Hong Kong)</option>
+                <option value="+91">🇮🇳 +91 (India)</option>
+                <option value="+62">🇮🇩 +62 (Indonesia)</option>
+                <option value="+353">🇮🇪 +353 (Ireland)</option>
+                <option value="+39">🇮🇹 +39 (Italy)</option>
+                <option value="+81">🇯🇵 +81 (Japan)</option>
+                <option value="+60">🇲🇾 +60 (Malaysia)</option>
+                <option value="+31">🇳🇱 +31 (Netherlands)</option>
+                <option value="+64">🇳🇿 +64 (New Zealand)</option>
+                <option value="+47">🇳🇴 +47 (Norway)</option>
+                <option value="+63">🇵🇭 +63 (Philippines)</option>
+                <option value="+974">🇶🇦 +974 (Qatar)</option>
+                <option value="+7">🇷🇺 +7 (Russia)</option>
+                <option value="+27">🇿🇦 +27 (South Africa)</option>
+                <option value="+82">🇰🇷 +82 (South Korea)</option>
+                <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+                <option value="+41">🇨🇭 +41 (Switzerland)</option>
+                <option value="+886">🇹🇼 +886 (Taiwan)</option>
+                <option value="+66">🇹🇭 +66 (Thailand)</option>
+                <option value="+90">🇹🇷 +90 (Turkey)</option>
+                <option value="+971">🇦🇪 +971 (United Arab Emirates)</option>
+              </select>
+              <input type="tel" formControlName="telefono" placeholder="1234567890">
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title">2. {{ lang === 'en' ? 'Service Details' : 'Detalles del Servicio' }}</h3>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ texts[lang].serviceType }}</label>
+            <select formControlName="duracion">
+              <option value="" disabled selected>{{ lang === 'en' ? 'Select an option...' : 'Selecciona una opción...' }}</option>
+              <option value="half-day">{{ texts[lang].halfDay }}</option>
+              <option value="full-day">{{ texts[lang].fullDay }}</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Preferred Vehicle' : 'Vehículo Preferido' }}</label>
+            <select formControlName="vehiculo">
+              <option value="" disabled selected>{{ lang === 'en' ? 'Select a car...' : 'Selecciona un auto...' }}</option>
+              <option value="Sedan">Sedan Ejecutivo (Max 3 Pax)</option>
+              <option value="SUV">SUV Premium (Max 4 Pax)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="vehicle-image-container" *ngIf="reservaForm.get('vehiculo')?.value">
+          <img *ngIf="reservaForm.get('vehiculo')?.value === 'Sedan'" 
+               src="assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
+          <img *ngIf="reservaForm.get('vehiculo')?.value === 'SUV'" 
+               src="assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
+        </div>
+
+        <div class="form-row" style="margin-top: 20px;">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Date of Service' : 'Fecha del Servicio' }}</label>
+            <input type="date" formControlName="fecha_servicio">
+          </div>
+          <div class="input-group">
+            <label>{{ texts[lang].pickup_time }}</label>
+            <div class="time-picker-custom">
+              <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)">
+                <option value="" disabled selected>HH</option>
+                <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+              </select>
+              <span class="dos-puntos">:</span>
+              <select #mSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)">
+                <option value="" disabled selected>MM</option>
+                <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+              </select>
+            </div>
+            <input type="hidden" formControlName="hora_recogida">
+          </div>
+        </div>
+
+        <h3 class="section-title">3. {{ lang === 'en' ? 'Itinerary' : 'Itinerario' }}</h3>
+
+        <div class="input-group relative-wrap" style="margin-bottom: 20px;">
+            <label>{{ texts[lang].pickup }} (LIVE SEARCH)</label>
+            <input type="text" formControlName="lugar_recogida" 
+                   [placeholder]="lang === 'en' ? 'Hotel or Address' : 'Hotel o Dirección'"
+                   (input)="buscarDireccion($event, 'recogida')" autocomplete="off">
+            
+            <div class="osm-dropdown" *ngIf="resultadosOSM.length > 0">
+              <div class="osm-item" *ngFor="let lugar of resultadosOSM" (click)="seleccionarDireccion(lugar, 'recogida')">
+                📍 {{ lugar.display_name }}
+              </div>
+            </div>
+        </div>
+
+        <div formArrayName="destinos">
+          <div *ngFor="let d of destinos.controls; let i=index" class="input-group relative-wrap" style="margin-bottom: 15px;">
+            <label>{{ lang === 'en' ? 'Stop' : 'Parada' }} {{ i + 1 }}</label>
+            <div style="display: flex; gap: 10px;">
+              <input [formControlName]="i" class="input-destino flex-grow" (input)="buscarDireccion($event, 'destino', i)" autocomplete="off" placeholder="Busca un destino...">
+              <button type="button" class="btn-remove" (click)="quitarDestino(i)" *ngIf="destinos.length > 1">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+              </button>
+            </div>
+            
+            <div class="osm-dropdown" *ngIf="resultadosDestinosOSM[i] && resultadosDestinosOSM[i].length > 0">
+              <div class="osm-item" *ngFor="let lugar of resultadosDestinosOSM[i]" (click)="seleccionarDireccion(lugar, 'destino', i)">
+                📍 {{ lugar.display_name }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button type="button" class="btn-add-destino" (click)="agregarDestino()">
+          + {{ lang === 'en' ? 'Add another stop' : 'Añadir otra parada' }}
+        </button>
+
+        <div class="quote-box" *ngIf="cotizacion !== null">
+          <h3>{{ lang === 'en' ? 'ESTIMATED FARE' : 'TARIFA ESTIMADA' }}</h3>
+          <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+          <p style="color: #9ca3af; font-size: 11px; margin-top: -10px; margin-bottom: 10px;">
+            {{ lang === 'en' ? 'Prices in Mexican Pesos' : 'Precios en Pesos Mexicanos' }}
+          </p>
+          <p class="terms">{{ lang === 'en' ? '* Tax included (16%).' : '* Incluye IVA e Impuestos.' }}</p>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid || pagoIniciado">
+          <span *ngIf="cotizacion === null">
+            {{ lang === 'en' ? 'GET QUOTE' : 'COTIZAR SERVICIO' }}
+          </span>
+          <span *ngIf="cotizacion !== null">
+            {{ pagoIniciado ? 
+               (lang === 'en' ? 'CONNECTING TO BANK...' : 'CONECTANDO AL BANCO...') : 
+               (lang === 'en' ? 'PROCEED TO SECURE PAYMENT' : 'PROCEDER AL PAGO SEGURO') 
+            }}
+          </span>
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
+<!-- ========================================================
+     NUEVO MODAL PERSONALIZADO DE PAGO EXITOSO
+     ======================================================== -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">
+      {{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'Thank you! Your payment was processed and your unit is officially reserved. We have sent a confirmation email with your details.' 
+         : '¡Gracias! Hemos recibido tu pago. Tu unidad está oficialmente reservada y te hemos enviado un correo de confirmación con los detalles.' }}
+    </p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">
+      {{ lang === 'en' ? 'Continue' : 'Continuar' }}
+    </button>
+  </div>
+</div>

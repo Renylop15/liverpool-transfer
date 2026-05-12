@@ -25,6 +25,9 @@ export class ReservaExperienciaComponent implements OnInit {
   
   selectedTourName: string = '';
   opcionesPasajeros: number[] = [1, 2, 3]; 
+
+  // NUEVAS VARIABLES PARA EL FLUJO EMPRESARIAL
+  reservaGeneradaId: string | null = null; 
   showSuccessModal = false;
 
   texts: any = {
@@ -65,7 +68,7 @@ export class ReservaExperienciaComponent implements OnInit {
     this.reservaForm = this.fb.group({
       vehiculo: ['', Validators.required], 
       pasajeros: [1, Validators.required],
-      fecha_servicio: ['', Validators.required], // Se llenará oculto con el calendario
+      fecha_servicio: ['', Validators.required], 
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       correo_cliente: ['', [Validators.required, Validators.email]],
@@ -88,27 +91,23 @@ export class ReservaExperienciaComponent implements OnInit {
         this.opcionesPasajeros = [1, 2, 3, 4];
       }
       this.cotizacion = null;
-      this.reservaForm.patchValue({ fecha_servicio: '' }); // Borra fecha si cambia de auto
-      this.generarCalendario(); // Recalcula disponibilidad real
+      this.reservaForm.patchValue({ fecha_servicio: '' }); 
+      this.generarCalendario(); 
     });
 
     this.reservaForm.valueChanges.subscribe(() => { this.cotizacion = null; });
 
-    // Inicializa el calendario
     this.generarCalendario();
 
-    // LÓGICA RETORNO OPENPAY
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
 
       if (openpayId) {
-        // 1. LLAMAMOS AL VERIFICADOR
         supabase.functions.invoke('openpay-checkout', { 
           body: { action: 'verify', transaction_id: openpayId } 
         }).then(({ data, error }) => {
           
-          // 2. REVISAMOS SI FALLÓ
           if (error || !data || data.status !== 'completed') {
              alert(this.lang === 'en' 
                 ? 'Payment could not be completed. The bank declined the authorization. Please try a different card.' 
@@ -117,7 +116,6 @@ export class ReservaExperienciaComponent implements OnInit {
              return; 
           }
 
-          // 3. SI FUE EXITOSO (Datos específicos de Experiencia Privada)
           const datosGuardados = localStorage.getItem('experiencia_vancity');
           const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
 
@@ -133,21 +131,24 @@ export class ReservaExperienciaComponent implements OnInit {
             
             emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
             
-            // Actualizamos la tabla correcta
             supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
             
+            // 🚨 SOLUCIÓN 1: Despertar a Angular y lanzar modal
             this.showSuccessModal = true;
+            this.cdr.detectChanges();
           }
         });
       }
     }
   }
+
   closeSuccessModal() {
     this.showSuccessModal = false;
     localStorage.removeItem('experiencia_vancity');
     localStorage.removeItem('idioma_vancity');
     window.history.replaceState({}, document.title, window.location.pathname);
   }
+
   // ==========================================
   // LÓGICA DEL CALENDARIO
   // ==========================================
@@ -168,7 +169,6 @@ export class ReservaExperienciaComponent implements OnInit {
     const primerDia = new Date(this.currentYear, this.currentMonth, 1).getDay();
     const diasEnMes = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
     
-    // Ajuste para que Lunes sea el primer día (0) en vez de Domingo
     let startOffset = primerDia - 1;
     if (startOffset < 0) startOffset = 6;
 
@@ -187,11 +187,10 @@ export class ReservaExperienciaComponent implements OnInit {
         day: i,
         dateStr: fechaStr,
         isAllowed: isAllowed,
-        remaining: isAllowed && vehiculoSeleccionado ? 3 : 0 // Max 3 lugares
+        remaining: isAllowed && vehiculoSeleccionado ? 3 : 0 
       });
     }
 
-    // Consultamos la BD si hay vehículo seleccionado
     if (vehiculoSeleccionado) {
       this.cargandoCalendario = true;
       this.cdr.detectChanges();
@@ -216,7 +215,7 @@ export class ReservaExperienciaComponent implements OnInit {
       this.calendarDays.forEach(d => {
         if (d && d.isAllowed) {
           const ocupados = conteoPorDia[d.dateStr] || 0;
-          d.remaining = Math.max(0, 3 - ocupados); // Restamos al máximo de 3
+          d.remaining = Math.max(0, 3 - ocupados); 
         }
       });
 
@@ -273,14 +272,15 @@ export class ReservaExperienciaComponent implements OnInit {
         lugar_recogida: 'Hotel Hyatt Regency Polanco',
         tipo_servicio: 'Private Ride'
       };
-// Guardamos y agregamos un console.error para monitorear si Supabase se queja de algo
-      supabase.from('reservas_experiencias').insert([dataParaGuardar]).then(({ error }) => {
-        if (error) {
-          console.error("Error guardando en Supabase:", error);
-        } else {
-          console.log("¡Reserva guardada exitosamente en la BD!");
-        }
-      });
+
+      // 🚨 SOLUCIÓN 2: Guardamos en BD y pedimos el ID de retorno (.select())
+      const { data, error } = await supabase.from('reservas_experiencias').insert([dataParaGuardar]).select();
+      if (error) {
+        console.error("Error guardando en Supabase:", error);
+      } else if (data && data.length > 0) {
+        this.reservaGeneradaId = data[0].id;
+      }
+
       const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion);
       const detalleServicioHTML = `
         <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;">
@@ -318,8 +318,16 @@ export class ReservaExperienciaComponent implements OnInit {
 
   async procederAlPago(vehiculo: string, nombre: string, email: string) {
     const descripcionFinal = `Vancity Private Ride ${vehiculo}`;
-    const urlRetorno = window.location.origin + '/reserva-experiencia';
-    const datosPago = { monto: this.cotizacion, nombre: nombre, email: email, descripcion: descripcionFinal, redirectUrl: urlRetorno };
+    const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica garantizada
+
+    const datosPago = { 
+      monto: this.cotizacion, 
+      nombre: nombre, 
+      email: email, 
+      descripcion: descripcionFinal, 
+      redirectUrl: urlRetorno,
+      reserva_id: this.reservaGeneradaId // 🚨 Mandamos el ID al Webhook
+    };
 
     try {
       const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });

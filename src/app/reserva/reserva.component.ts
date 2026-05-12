@@ -5,7 +5,6 @@ import emailjs from '@emailjs/browser';
 import { createClient } from '@supabase/supabase-js'; 
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { RouterModule } from '@angular/router'; 
-import { url } from 'inspector';
 
 const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
@@ -27,49 +26,79 @@ export class ReservaComponent implements OnInit {
   horas: string[] = [];
   minutos: string[] = [];
   showSuccessModal = false;
-  // VARIABLE PARA CONTROLAR EL MÁXIMO DE PASAJEROS SEGÚN EL AUTO
   opcionesPasajeros: number[] = [1, 2, 3, 4];
-
-  // NUEVA VARIABLE PARA CONTROLAR EL MODAL
   showAvailabilityModal = false;
+  
+  // NUEVA VARIABLE: Guarda el ID oculto para mandarlo a OpenPay
+  reservaGeneradaId: string | null = null; 
       
   listaHoteles = ['Hotel Hyatt Regency Mexico City','Hotel JW Marriott Mexico City Polanco', 'Hotel InterContinental Presidente Mexico City Polanco' ];
 
-
   aerolineasPopulares = [
+
   // MÉXICO Y LATAM
+
   "Aeroméxico", "Volaris", "Viva Aerobus", "Copa Airlines", "Avianca", "LATAM Airlines", 
+
   "Aerolíneas Argentinas", "Sky Airline", "JetSmart", "TAG Airlines", "AeroMéxico Connect",
+
   
+
   // ESTADOS UNIDOS Y CANADÁ
+
   "American Airlines", "Delta Airlines", "United Airlines", "Southwest Airlines", 
+
   "Alaska Airlines", "JetBlue Airways", "Spirit Airlines", "Frontier Airlines", 
+
   "Allegiant Air", "Hawaiian Airlines", "Sun Country Airlines", "Air Canada", 
+
   "WestJet", "Air Transat", "Porter Airlines", "Flair Airlines",
 
+
+
   // EUROPA
+
   "Lufthansa", "Air France", "Iberia", "British Airways", "KLM", "Swiss International", 
+
   "Austrian Airlines", "TAP Air Portugal", "Alitalia", "ITA Airways", "Turkish Airlines", 
+
   "Aeroflot", "SAS Scandinavian", "Finnair", "Brussels Airlines", "Virgin Atlantic", 
+
   "Icelandair", "LOT Polish Airlines", "Air Europa", "Norwegian Air", "Ryanair", 
+
   "EasyJet", "Vueling", "Wizz Air", "Eurowings", "Condor",
 
+
+
   // ASIA Y MEDIO ORIENTE
+
   "Emirates", "Qatar Airways", "Etihad Airways", "Singapore Airlines", "Cathay Pacific", 
+
   "All Nippon Airways (ANA)", "Japan Airlines (JAL)", "Korean Air", "Asiana Airlines", 
+
   "China Southern Airlines", "China Eastern Airlines", "Air China", "Hainan Airlines", 
+
   "Thai Airways", "Malaysia Airlines", "Vietnam Airlines", "Garuda Indonesia", 
+
   "Philippine Airlines", "Eva Air", "Air India", "IndiGo", "Saudia", "El Al", 
+
   "Turkish Airlines", "Royal Jordanian", "Oman Air",
 
+
+
   // OCEANÍA Y ÁFRICA
+
   "Qantas", "Air New Zealand", "Virgin Australia", "Jetstar", "Ethiopian Airlines", 
+
   "South African Airways", "EgyptAir", "Kenya Airways", "Royal Air Maroc",
 
+
+
   // PRIVADOS / OTROS
+
   "NetJets", "Flexjet", "VistaJet", "Wheels Up", "Charter Privado", "Vuelo Privado"
+
 ].sort(); // El .sort() las ordena alfabéticamente de la A a la Z automáticamente
-  
 
   textos = {
     es: {
@@ -101,11 +130,10 @@ export class ReservaComponent implements OnInit {
 
   toggleLanguage() { this.lang = this.lang === 'es' ? 'en' : 'es'; }
 
-  // FUNCIÓN PARA CERRAR EL MODAL
   closeModal() {
     this.showAvailabilityModal = false;
   }
-  // FUNCIÓN PARA CERRAR EL MODAL DE ÉXITO Y LIMPIAR LA URL
+
   closeSuccessModal() {
     this.showSuccessModal = false;
     localStorage.removeItem('reserva_vancity');
@@ -119,7 +147,7 @@ export class ReservaComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]], codigoPais: ['+52', Validators.required],
       telefono: ['', Validators.required], tipoViaje: ['one_way', Validators.required],
       pasajeros: [1, [Validators.required, Validators.min(1), Validators.max(4)]],
-      vehiculo: ['', Validators.required], destino: ['', Validators.required], // <-- Cambiado a vacío y requerido
+      vehiculo: ['', Validators.required], destino: ['', Validators.required],
       aerolinea: ['', Validators.required], noVuelo: ['', Validators.required], terminal: ['t1', Validators.required],
       fechaLlegada: ['', Validators.required], horaLlegada: ['', Validators.required],
       aerolineaSalida: [''], noVueloSalida: [''], terminalSalida: ['t1'], fechaSalida: [''], horaSalida: [''],
@@ -130,7 +158,6 @@ export class ReservaComponent implements OnInit {
   }
 
   ngOnInit() {
-    // NUEVA LÓGICA: ESCUCHAR CAMBIOS EN EL VEHÍCULO PARA AJUSTAR PASAJEROS
     this.reservationForm.get('vehiculo')?.valueChanges.subscribe(vehiculo => {
       if (vehiculo === 'Sedan') {
         this.opcionesPasajeros = [1, 2, 3];
@@ -142,6 +169,7 @@ export class ReservaComponent implements OnInit {
       }
       this.cotizacion = null;
     });
+    
     this.reservationForm.get('fechaLlegada')?.valueChanges.subscribe(fecha => {
       const hora = this.reservationForm.get('horaLlegada')?.value;
       if (fecha && hora) this.validarHorarioDisp(fecha, hora, 'horaLlegada');
@@ -152,31 +180,23 @@ export class ReservaComponent implements OnInit {
       if (fecha && hora) this.validarHorarioDisp(fecha, hora, 'horaSalida');
     });
 
-    // LÓGICA RETORNO OPENPAY
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
 
       if (openpayId) {
-        
-        // 1. LLAMAMOS AL VERIFICADOR ANTES DE HACER CUALQUIER OTRA COSA
         supabase.functions.invoke('openpay-checkout', { 
           body: { action: 'verify', transaction_id: openpayId } 
         }).then(({ data, error }) => {
           
-          // 2. REVISAMOS SI OPENPAY DIJO QUE EL PAGO ES "COMPLETED"
           if (error || !data || data.status !== 'completed') {
-             // El pago falló (ej. 3D Secure declinado)
              alert(this.lang === 'en' 
                 ? 'Payment could not be completed. The bank declined the authorization. Please try a different card.' 
                 : 'El pago no pudo ser procesado o el banco declinó la autorización. Por favor intenta con otro método de pago.');
-             
-             // Limpiamos la URL para que puedan intentar de nuevo
              window.history.replaceState({}, document.title, window.location.pathname);
              return; 
           }
 
-          // 3. SI LLEGA AQUÍ, EL PAGO ES 100% REAL Y SEGURO
           const datosGuardados = localStorage.getItem('reserva_vancity');
           const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
 
@@ -190,12 +210,12 @@ export class ReservaComponent implements OnInit {
               tipo_servicio: datosCorreo.tipo_servicio, monto: datosCorreo.cotizacion
             };
             
-            // Acciones de éxito
             emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
             supabase.from('reservas').update({ estatus: 'PAGADO' }).eq('email', datosCorreo.email_destino).then(() => {});
             
-            // Lanzamos modal
+            // 🚨 SOLUCIÓN 1: Activar el modal y "despertar" a Angular
             this.showSuccessModal = true;
+            this.cdr.detectChanges(); 
           }
         });
       }
@@ -239,7 +259,6 @@ export class ReservaComponent implements OnInit {
         });
 
         if (overlaps >= 3) {
-          // ABRIMOS EL MODAL BONITO EN LUGAR DEL ALERT NATIVO
           this.showAvailabilityModal = true;
           this.reservationForm.get(campoHora)?.setValue('');
           this.cotizacion = null;
@@ -291,13 +310,18 @@ export class ReservaComponent implements OnInit {
         this.cdr.detectChanges(); 
         let tipoTraducido = isRound ? (this.lang === 'en' ? 'Round Trip' : 'Redondo') : (this.lang === 'en' ? 'One Way' : 'Sencillo');
 
-        supabase.from('reservas').insert([{
+        // 🚨 SOLUCIÓN 2: Guardamos en base de datos y recuperamos el ID
+        const { data, error } = await supabase.from('reservas').insert([{
             nombres: form.nombres, apellidos: form.apellidos, email: form.email, telefono: `${form.codigoPais} ${form.telefono}`, destino: form.destino,
             asistencia: form.asistencia || 'Ninguna', cotizacion: this.cotizacion, estatus: 'COTIZADO', tipo_viaje: tipoTraducido, vehiculo: form.vehiculo, pasajeros: form.pasajeros,
             aerolinea_ida: form.aerolinea, vuelo_ida: form.noVuelo, terminal_ida: terminalTexto, fecha_ida: form.fechaLlegada, hora_ida: form.horaLlegada,
             aerolinea_vuelta: isRound ? form.aerolineaSalida : null, vuelo_vuelta: isRound ? form.noVueloSalida : null,
             terminal_vuelta: isRound ? terminalSalidaTexto : null, fecha_vuelta: isRound ? form.fechaSalida : null, hora_vuelta: isRound ? form.horaSalida : null
-        }]).then(); 
+        }]).select(); 
+
+        if (data && data.length > 0) {
+          this.reservaGeneradaId = data[0].id; // Guardamos el ID en memoria
+        }
 
         const detalleIdaHTML = `<div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fff;"><h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">${this.lang === 'en' ? '✈️ Arrival Flight (One Way)' : '✈️ Vuelo de Llegada (Ida)'}</h3><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airline' : 'Aerolínea'}:</strong> ${form.aerolinea}</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Flight' : 'Vuelo'}:</strong> ${form.noVuelo} (T${terminalTexto})</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaLlegada} | ${form.horaLlegada} hrs</p></div>`;
         const detalleVueltaHTML = isRound ? `<div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #555;"><h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">${this.lang === 'en' ? '✈️ Departure Flight (Return)' : '✈️ Vuelo de Salida (Regreso)'}</h3><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airline' : 'Aerolínea'}:</strong> ${form.aerolineaSalida}</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Flight' : 'Vuelo'}:</strong> ${form.noVueloSalida} (T${terminalSalidaTexto})</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Date & Time' : 'Fecha y Hora'}:</strong> ${form.fechaSalida} | ${form.horaSalida} hrs</p></div>` : '';
@@ -320,11 +344,17 @@ export class ReservaComponent implements OnInit {
           this.pagoIniciado = true; 
           this.cdr.detectChanges(); 
           try {
-            const urlRetorno = window.location.origin + '/reserva';
+            const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica garantizada
+            
             const datosPago = {
-              monto: this.cotizacion, nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
-              email: this.reservationForm.value.email, descripcion: `Traslado Ejecutivo Vancity`, redirectUrl: urlRetorno
+              monto: this.cotizacion, 
+              nombre: `${this.reservationForm.value.nombres} ${this.reservationForm.value.apellidos}`,
+              email: this.reservationForm.value.email, 
+              descripcion: `Traslado Ejecutivo Vancity`, 
+              redirectUrl: urlRetorno,
+              reserva_id: this.reservaGeneradaId // Mandamos el ID al Webhook
             };
+            
             const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
             if (error || (data && data.error)) {
               alert('Hubo un error con el banco. Intenta dar clic de nuevo.');

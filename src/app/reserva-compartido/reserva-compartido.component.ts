@@ -25,6 +25,9 @@ export class ReservaCompartidoComponent implements OnInit {
   
   selectedTourName: string = '';
   opcionesTickets: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
+  
+  // NUEVAS VARIABLES PARA EL FLUJO EMPRESARIAL
+  reservaGeneradaId: string | null = null; 
   showSuccessModal = false;
 
   texts: any = {
@@ -32,7 +35,6 @@ export class ReservaCompartidoComponent implements OnInit {
     es: { title: 'Reserva tu Experiencia Compartida', tickets: 'Número de Tickets', pickup: 'Punto de Recogida Fijo' }
   };
 
-  // MATRIZ DE PRECIOS POR TICKET (SHARED RIDE)
   preciosShared: any = {
     'Chapultepec Castle': 3008,
     'Basílica of Guadalupe': 2798,
@@ -42,9 +44,8 @@ export class ReservaCompartidoComponent implements OnInit {
     'Luis Barragan House': 3448
   };
 
-  // VARIABLES DEL CALENDARIO
   currentYear = 2026;
-  currentMonth = 4; // Mayo
+  currentMonth = 4; 
   calendarDays: any[] = [];
   hoveredDay: any = null;
   cargandoCalendario = false;
@@ -61,19 +62,17 @@ export class ReservaCompartidoComponent implements OnInit {
     this.reservaForm = this.fb.group({
       boletos: [1, Validators.required],
       fecha_servicio: ['', Validators.required],
-      pasajerosDetalle: this.fb.array([]) // Array dinámico de pasajeros
+      pasajerosDetalle: this.fb.array([]) 
     });
 
-    this.actualizarCamposPasajeros(1); // Inicia con 1 pasajero
+    this.actualizarCamposPasajeros(1); 
 
-    // ATRAPAMOS EL TOUR
     this.route.queryParams.subscribe(params => {
       if (params['tour']) {
         this.selectedTourName = params['tour'];
       }
     });
 
-    // ESCUCHAR CAMBIOS EN LOS TICKETS PARA AJUSTAR PASAJEROS Y CALENDARIO
     this.reservaForm.get('boletos')?.valueChanges.subscribe(cantidad => {
       this.actualizarCamposPasajeros(parseInt(cantidad));
       this.cotizacion = null;
@@ -85,18 +84,15 @@ export class ReservaCompartidoComponent implements OnInit {
 
     this.generarCalendario();
 
-    // LÓGICA RETORNO OPENPAY
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
 
       if (openpayId) {
-        // 1. LLAMAMOS AL VERIFICADOR
         supabase.functions.invoke('openpay-checkout', { 
           body: { action: 'verify', transaction_id: openpayId } 
         }).then(({ data, error }) => {
           
-          // 2. REVISAMOS SI FALLÓ
           if (error || !data || data.status !== 'completed') {
              alert(this.lang === 'en' 
                 ? 'Payment could not be completed. The bank declined the authorization. Please try a different card.' 
@@ -105,7 +101,6 @@ export class ReservaCompartidoComponent implements OnInit {
              return; 
           }
 
-          // 3. SI FUE EXITOSO (Datos específicos de Experiencia Compartida)
           const datosGuardados = localStorage.getItem('compartido_vancity');
           const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
 
@@ -126,24 +121,24 @@ export class ReservaCompartidoComponent implements OnInit {
 
             emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
             
-            // Actualizamos la tabla correcta
             supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
             
+            // 🚨 SOLUCIÓN 1: Activar el modal y repintar
             this.showSuccessModal = true;
+            this.cdr.detectChanges();
           }
         });
       }
     }
   }
+
   closeSuccessModal() {
     this.showSuccessModal = false;
     localStorage.removeItem('compartido_vancity');
     localStorage.removeItem('idioma_vancity');
     window.history.replaceState({}, document.title, window.location.pathname);
   }
-  // ==========================================
-  // FORMULARIO DINÁMICO DE PASAJEROS
-  // ==========================================
+
   get pasajerosDetalles() {
     return this.reservaForm.get('pasajerosDetalle') as FormArray;
   }
@@ -166,9 +161,6 @@ export class ReservaCompartidoComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // LÓGICA DEL CALENDARIO
-  // ==========================================
   cambiarMes(delta: number) {
     this.currentMonth += delta;
     if (this.currentMonth < 0) { this.currentMonth = 11; this.currentYear--; } 
@@ -204,7 +196,6 @@ export class ReservaCompartidoComponent implements OnInit {
       const startDate = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-01`;
       const endDate = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-31`;
 
-      // Traemos las reservas de ESTE tour en formato Shared
       const { data } = await supabase.from('reservas_experiencias')
         .select('fecha_servicio, pasajeros')
         .eq('tipo_servicio', 'Shared Ride')
@@ -225,7 +216,6 @@ export class ReservaCompartidoComponent implements OnInit {
         if (d && d.isAllowed) {
           const ocupados = ocupadosPorDia[d.dateStr] || 0;
           d.remaining = Math.max(0, 10 - ocupados); 
-          // Si los lugares restantes son menores a los boletos que el usuario quiere, bloqueamos el día
           if (d.remaining < ticketsRequeridos) {
             d.remaining = 0; 
           }
@@ -251,9 +241,6 @@ export class ReservaCompartidoComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // FLUJO DE PAGO Y ENVÍO
-  // ==========================================
   async onSubmit() {
     if (this.reservaForm.invalid) {
       alert(this.lang === 'en' ? 'Please fill all fields, including passenger details and date.' : 'Por favor completa todos los campos, incluyendo pasajeros y fecha en el calendario.');
@@ -269,11 +256,8 @@ export class ReservaCompartidoComponent implements OnInit {
       this.loading = false;
       this.cdr.detectChanges(); 
 
-      // El Pasajero 1 se guarda en las columnas principales para control rápido
       const paxPrincipal = formVal.pasajerosDetalle[0];
       const nombreCompleto = `${paxPrincipal.nombre} ${paxPrincipal.apellido}`;
-      
-      // Guardamos el detalle de TODOS en itinerario_notas para no perder data
       const notasCompletas = `Tour: ${this.selectedTourName} | Pax Details: ${JSON.stringify(formVal.pasajerosDetalle)}`;
 
       const dataParaGuardar = { 
@@ -292,7 +276,11 @@ export class ReservaCompartidoComponent implements OnInit {
         itinerario_notas: notasCompletas
       };
       
-      supabase.from('reservas_experiencias').insert([dataParaGuardar]).then();
+      // 🚨 SOLUCIÓN 2: Guardamos en base de datos y recuperamos el ID
+      const { data, error } = await supabase.from('reservas_experiencias').insert([dataParaGuardar]).select();
+      if (data && data.length > 0) {
+        this.reservaGeneradaId = data[0].id; 
+      }
 
       const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion);
 
@@ -329,11 +317,18 @@ export class ReservaCompartidoComponent implements OnInit {
   }
 
   async procederAlPago(nombre: string, email: string) {
-    // 1. Limpiamos el texto para que OpenPay no lo rechace (cambiamos "&" por "y" y quitamos símbolos raros)
     const tourLimpio = this.selectedTourName.replace(/&/g, 'y').replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]/g, '');
     const descripcionFinal = `Vancity Shared Tickets ${tourLimpio}`;
-    const urlRetorno = window.location.origin + '/reserva-compartido';
-    const datosPago = { monto: this.cotizacion, nombre: nombre, email: email, descripcion: descripcionFinal, redirectUrl: urlRetorno };
+    const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica
+    
+    const datosPago = { 
+      monto: this.cotizacion, 
+      nombre: nombre, 
+      email: email, 
+      descripcion: descripcionFinal, 
+      redirectUrl: urlRetorno,
+      reserva_id: this.reservaGeneradaId // 🚨 Mandamos el ID al Webhook
+    };
 
     try {
       const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
