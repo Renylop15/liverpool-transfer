@@ -171,9 +171,9 @@ export class ReservaChoferComponent implements OnInit {
 
   calcularMonto(duracion: string, vehiculo: string): number {
     if (duracion === 'half-day') {
-      return vehiculo === 'Sedan' ? 3500 : 4500;
+      return vehiculo === 'Sedan' ? 3950 : 5135;
     } else if (duracion === 'full-day') {
-      return vehiculo === 'Sedan' ? 5500 : 7500;
+      return vehiculo === 'Sedan' ? 4950 : 6435;
     }
     return 0;
   }
