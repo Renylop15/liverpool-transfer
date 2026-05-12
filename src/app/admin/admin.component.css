@@ -193,11 +193,49 @@ tr:hover {
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-wrap: wrap;
+}
+.action-buttons-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-action {
+  background-color: transparent;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-reload {
+  color: #4da8da;
+  border: 1px solid #4da8da;
+}
+.btn-reload:hover {
+  background-color: #4da8da;
+  color: #fff;
+}
+.btn-reload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-export {
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+}
+.btn-export:hover {
+  background-color: #2e7d32;
+  color: #fff;
 }
 
 .btn-logout {
   background-color: transparent;
-  color: #ff4d4f; /* Rojo sutil */
+  color: #ff4d4f; 
   border: 1px solid #ff4d4f;
   padding: 8px 15px;
   border-radius: 6px;
@@ -215,11 +253,19 @@ tr:hover {
 
 /* Ajuste responsive para la cabecera en celulares */
 @media (max-width: 768px) {
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .header-actions {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
     margin-top: 15px;
+  }
+  .action-buttons-group {
+    flex-wrap: wrap;
   }
 }
 .dest-text {
