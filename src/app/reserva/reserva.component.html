@@ -330,3 +330,24 @@
     </button>
   </div>
 </div>
+<div class="custom-modal-overlay" *ngIf="showClosedModal">
+  <div class="custom-modal-card" style="border-top: 6px solid #e11d48;">
+    <div class="modal-icon">🛑</div>
+    <h3 class="modal-title" style="color: #e11d48;">
+      {{ lang === 'en' ? 'Temporarily Unavailable' : 'Temporalmente Agotado' }}
+    </h3>
+    <p class="modal-text">
+      {{ lang === 'en' 
+         ? 'Due to high demand, our transfer services are fully booked at the moment. We apologize for the inconvenience.' 
+         : 'Debido a la alta demanda para el evento, nuestros traslados se encuentran temporalmente agotados.' }}
+    </p>
+    <div class="modal-subtext" style="background: #fff1f2; border: 1px dashed #fda4af; color: #e11d48;">
+      {{ lang === 'en'
+         ? 'Please check back later or contact us via WhatsApp for extraordinary availability.'
+         : 'Por favor, intenta más tarde o contáctanos por WhatsApp para revisar cancelaciones o disponibilidad extraordinaria.' }}
+    </div>
+    <button type="button" class="modal-btn" routerLink="/" style="background: #e11d48; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);">
+      {{ lang === 'en' ? 'Return to Home' : 'Regresar al Inicio' }}
+    </button>
+  </div>
+</div>
