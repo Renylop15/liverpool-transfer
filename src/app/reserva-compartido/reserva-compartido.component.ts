@@ -26,9 +26,12 @@ export class ReservaCompartidoComponent implements OnInit {
   selectedTourName: string = '';
   opcionesTickets: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; 
   
-  // NUEVAS VARIABLES PARA EL FLUJO EMPRESARIAL
   reservaGeneradaId: string | null = null; 
   showSuccessModal = false;
+
+  // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
+  // Cambia a 'false' cuando vuelvas a tener lugares disponibles.
+  showClosedModal = true; 
 
   texts: any = {
     en: { title: 'Book Your Shared Experience', tickets: 'Number of Tickets', pickup: 'Fixed Pickup Location' },
@@ -66,6 +69,11 @@ export class ReservaCompartidoComponent implements OnInit {
     });
 
     this.actualizarCamposPasajeros(1); 
+
+    // 🚨 Si el modal de cerrado está activo, bloqueamos el formulario por seguridad
+    if (this.showClosedModal) {
+      this.reservaForm.disable();
+    }
 
     this.route.queryParams.subscribe(params => {
       if (params['tour']) {
@@ -123,7 +131,6 @@ export class ReservaCompartidoComponent implements OnInit {
             
             supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
             
-            // 🚨 SOLUCIÓN 1: Activar el modal y repintar
             this.showSuccessModal = true;
             this.cdr.detectChanges();
           }
@@ -276,7 +283,6 @@ export class ReservaCompartidoComponent implements OnInit {
         itinerario_notas: notasCompletas
       };
       
-      // 🚨 SOLUCIÓN 2: Guardamos en base de datos y recuperamos el ID
       const { data, error } = await supabase.from('reservas_experiencias').insert([dataParaGuardar]).select();
       if (data && data.length > 0) {
         this.reservaGeneradaId = data[0].id; 
@@ -319,7 +325,7 @@ export class ReservaCompartidoComponent implements OnInit {
   async procederAlPago(nombre: string, email: string) {
     const tourLimpio = this.selectedTourName.replace(/&/g, 'y').replace(/[^a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]/g, '');
     const descripcionFinal = `Vancity Shared Tickets ${tourLimpio}`;
-    const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica
+    const urlRetorno = window.location.origin + window.location.pathname;
     
     const datosPago = { 
       monto: this.cotizacion, 
@@ -327,7 +333,7 @@ export class ReservaCompartidoComponent implements OnInit {
       email: email, 
       descripcion: descripcionFinal, 
       redirectUrl: urlRetorno,
-      reserva_id: this.reservaGeneradaId // 🚨 Mandamos el ID al Webhook
+      reserva_id: this.reservaGeneradaId 
     };
 
     try {

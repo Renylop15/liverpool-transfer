@@ -26,10 +26,13 @@ export class ReservaChoferComponent implements OnInit {
   horas: string[] = [];
   minutos: string[] = [];
 
-  // NUEVAS VARIABLES PARA EL FLUJO EMPRESARIAL
   reservaGeneradaId: string | null = null; 
   showSuccessModal = false;
-  showAvailabilityModal = false; // Por si luego añades validación de choferes
+  showAvailabilityModal = false;
+
+  // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
+  // Cambia a 'false' cuando vuelvas a tener unidades disponibles.
+  showClosedModal = true; 
 
   // ==========================================
   // VARIABLES PARA OPENSTREETMAP (LIVE SEARCH)
@@ -70,7 +73,6 @@ export class ReservaChoferComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA CERRAR EL MODAL Y LIMPIAR LA URL
   closeSuccessModal() {
     this.showSuccessModal = false;
     localStorage.removeItem('chofer_vancity');
@@ -79,12 +81,30 @@ export class ReservaChoferComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.reservaForm = this.fb.group({
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      correo_cliente: ['', [Validators.required, Validators.email]],
+      codigoPais: ['+52', Validators.required],
+      telefono: ['', Validators.required],
+      vehiculo: ['', Validators.required], 
+      duracion: ['', Validators.required],
+      fecha_servicio: ['', Validators.required],
+      hora_recogida: ['', Validators.required], 
+      lugar_recogida: ['', Validators.required], 
+      destinos: this.fb.array([this.fb.control('', Validators.required)]) 
+    });
+
+    // 🚨 Si el modal de cerrado está activo, bloqueamos el formulario por seguridad
+    if (this.showClosedModal) {
+      this.reservaForm.disable();
+    }
+
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
 
       if (openpayId) {
-        // VERIFICAMOS CON OPENPAY
         supabase.functions.invoke('openpay-checkout', { 
           body: { action: 'verify', transaction_id: openpayId } 
         }).then(({ data, error }) => {
@@ -119,27 +139,12 @@ export class ReservaChoferComponent implements OnInit {
 
             supabase.from('reservas_chofer').update({ estatus: 'PAGADO' }).eq('email', datosCorreo.email_destino).then(() => {});
 
-            // ACTIVAMOS EL MODAL BONITO EN LUGAR DEL ALERT
             this.showSuccessModal = true;
             this.cdr.detectChanges();
           }
         });
       }
     }
-
-    this.reservaForm = this.fb.group({
-      nombre: ['', Validators.required],
-      apellido: ['', Validators.required],
-      correo_cliente: ['', [Validators.required, Validators.email]],
-      codigoPais: ['+52', Validators.required],
-      telefono: ['', Validators.required],
-      vehiculo: ['', Validators.required], 
-      duracion: ['', Validators.required],
-      fecha_servicio: ['', Validators.required],
-      hora_recogida: ['', Validators.required], 
-      lugar_recogida: ['', Validators.required], 
-      destinos: this.fb.array([this.fb.control('', Validators.required)]) 
-    });
 
     this.reservaForm.valueChanges.subscribe(() => {
       this.cotizacion = null;
@@ -278,7 +283,6 @@ export class ReservaChoferComponent implements OnInit {
         itinerario: formVal.destinos.join(' -> '), cotizacion: this.cotizacion, estatus: 'COTIZADO'
       };
 
-      // 🚨 SOLUCIÓN: Guardamos la reserva y recuperamos su ID
       const { data, error } = await supabase.from('reservas_chofer').insert([dataInsert]).select();
       if (data && data.length > 0) {
         this.reservaGeneradaId = data[0].id;
@@ -306,7 +310,7 @@ export class ReservaChoferComponent implements OnInit {
     const descripcionViaje = duracion === 'half-day' ? 'Half Day' : 'Full Day';
     const descripcionFinal = `Servicio Chofer ${descripcionViaje}  ${vehiculo}`;
 
-    const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica garantizada
+    const urlRetorno = window.location.origin + window.location.pathname; 
 
     const datosPago = {
       monto: this.cotizacion, 
@@ -314,7 +318,7 @@ export class ReservaChoferComponent implements OnInit {
       email: email,
       descripcion: descripcionFinal,
       redirectUrl: urlRetorno,
-      reserva_id: this.reservaGeneradaId // Mandamos el ID al Webhook
+      reserva_id: this.reservaGeneradaId 
     };
 
     try {

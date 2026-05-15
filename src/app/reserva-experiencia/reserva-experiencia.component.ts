@@ -26,9 +26,12 @@ export class ReservaExperienciaComponent implements OnInit {
   selectedTourName: string = '';
   opcionesPasajeros: number[] = [1, 2, 3]; 
 
-  // NUEVAS VARIABLES PARA EL FLUJO EMPRESARIAL
   reservaGeneradaId: string | null = null; 
   showSuccessModal = false;
+
+  // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
+  // Cambia a 'false' cuando vuelvas a tener lugares disponibles.
+  showClosedModal = true; 
 
   texts: any = {
     en: { title: 'Book Your Private Ride', firstName: 'First Name', lastName: 'Last Name', pickup: 'Fixed Pickup Location', passengers: 'Number of Passengers' },
@@ -44,11 +47,8 @@ export class ReservaExperienciaComponent implements OnInit {
     'Luis Barragan House': { Sedan: [6600, 8250, 9900], SUV: [8085, 9735, 11385, 13035] }
   };
 
-  // ==========================================
-  // VARIABLES DEL CALENDARIO INTERACTIVO
-  // ==========================================
   currentYear = 2026;
-  currentMonth = 4; // 4 = Mayo (los meses en JS empiezan en 0)
+  currentMonth = 4; 
   calendarDays: any[] = [];
   hoveredDay: any = null;
   cargandoCalendario = false;
@@ -75,6 +75,11 @@ export class ReservaExperienciaComponent implements OnInit {
       telefono: ['', Validators.required],
       itinerario_notas: [''] 
     });
+
+    // 🚨 Si el modal de cerrado está activo, bloqueamos el formulario por seguridad
+    if (this.showClosedModal) {
+      this.reservaForm.disable();
+    }
 
     this.route.queryParams.subscribe(params => {
       if (params['tour']) {
@@ -133,7 +138,6 @@ export class ReservaExperienciaComponent implements OnInit {
             
             supabase.from('reservas_experiencias').update({ estatus: 'PAGADO' }).eq('correo_cliente', datosCorreo.email_destino).then(() => {});
             
-            // 🚨 SOLUCIÓN 1: Despertar a Angular y lanzar modal
             this.showSuccessModal = true;
             this.cdr.detectChanges();
           }
@@ -149,9 +153,6 @@ export class ReservaExperienciaComponent implements OnInit {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // ==========================================
-  // LÓGICA DEL CALENDARIO
-  // ==========================================
   cambiarMes(delta: number) {
     this.currentMonth += delta;
     if (this.currentMonth < 0) {
@@ -238,9 +239,6 @@ export class ReservaExperienciaComponent implements OnInit {
     }
   }
 
-  // ==========================================
-  // FLUJO DE PAGO Y ENVÍO
-  // ==========================================
   calcularMonto(tour: string, vehiculo: string, pasajeros: number): number {
     if (this.preciosMatrix[tour] && this.preciosMatrix[tour][vehiculo]) {
       return this.preciosMatrix[tour][vehiculo][pasajeros - 1];
@@ -273,7 +271,6 @@ export class ReservaExperienciaComponent implements OnInit {
         tipo_servicio: 'Private Ride'
       };
 
-      // 🚨 SOLUCIÓN 2: Guardamos en BD y pedimos el ID de retorno (.select())
       const { data, error } = await supabase.from('reservas_experiencias').insert([dataParaGuardar]).select();
       if (error) {
         console.error("Error guardando en Supabase:", error);
@@ -318,7 +315,7 @@ export class ReservaExperienciaComponent implements OnInit {
 
   async procederAlPago(vehiculo: string, nombre: string, email: string) {
     const descripcionFinal = `Vancity Private Ride ${vehiculo}`;
-    const urlRetorno = window.location.origin + window.location.pathname; // URL dinámica garantizada
+    const urlRetorno = window.location.origin + window.location.pathname;
 
     const datosPago = { 
       monto: this.cotizacion, 
@@ -326,7 +323,7 @@ export class ReservaExperienciaComponent implements OnInit {
       email: email, 
       descripcion: descripcionFinal, 
       redirectUrl: urlRetorno,
-      reserva_id: this.reservaGeneradaId // 🚨 Mandamos el ID al Webhook
+      reserva_id: this.reservaGeneradaId 
     };
 
     try {

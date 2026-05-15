@@ -212,3 +212,24 @@
     </button>
   </div>
 </div>
+<div class="custom-modal-overlay" *ngIf="showClosedModal">
+  <div class="custom-modal-card" style="border-top: 6px solid #e11d48; max-width: 400px; padding: 30px;">
+    <div class="modal-icon" style="font-size: 50px; margin-bottom: 15px;">🛑</div>
+    <h3 class="modal-title" style="color: #e11d48; font-size: 22px; margin-top: 0;">
+      {{ lang === 'en' ? 'Temporarily Sold Out' : 'Temporalmente Agotado' }}
+    </h3>
+    <p class="modal-text" style="color: #475569; font-size: 14px; margin-bottom: 20px;">
+      {{ lang === 'en' 
+         ? 'Due to high demand, our private experiences are fully booked at the moment. We apologize for the inconvenience.' 
+         : 'Debido a la alta demanda para el evento, las experiencias privadas se encuentran temporalmente agotadas.' }}
+    </p>
+    <div class="modal-subtext" style="background: #fff1f2; border: 1px dashed #fda4af; color: #e11d48; padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 25px;">
+      {{ lang === 'en'
+         ? 'Please check back later or contact us via WhatsApp for extraordinary availability.'
+         : 'Por favor, intenta más tarde o contáctanos por WhatsApp para revisar cancelaciones o disponibilidad extraordinaria.' }}
+    </div>
+    <button type="button" class="modal-btn" routerLink="/experiencias" style="background: #e11d48; border-radius: 50px; padding: 12px 30px; font-weight: bold; width: 100%; border: none; color: white; cursor: pointer; text-transform: uppercase;">
+      {{ lang === 'en' ? 'Return to Experiences' : 'Regresar a Experiencias' }}
+    </button>
+  </div>
+</div>
