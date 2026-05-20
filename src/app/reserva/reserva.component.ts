@@ -37,7 +37,7 @@ export class ReservaComponent implements OnInit {
   
   // 🚨 SWITCH DE CIERRE DE FORMULARIO:
   // Cambia a 'false' cuando vuelvas a tener unidades disponibles.
-  showClosedModal = false; 
+  showClosedModal = true; 
 
   listaHoteles = ['Hotel Hyatt Regency Mexico City','Hotel JW Marriott Mexico City Polanco', 'Hotel InterContinental Presidente Mexico City Polanco' ];
 
