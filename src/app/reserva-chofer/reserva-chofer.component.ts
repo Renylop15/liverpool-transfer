@@ -32,7 +32,7 @@ export class ReservaChoferComponent implements OnInit {
 
   // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
   // Cambia a 'false' cuando vuelvas a tener unidades disponibles.
-  showClosedModal = true; 
+  showClosedModal = false; 
 
   // ==========================================
   // VARIABLES PARA OPENSTREETMAP (LIVE SEARCH)

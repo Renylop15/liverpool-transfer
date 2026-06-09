@@ -31,7 +31,7 @@ export class ReservaCompartidoComponent implements OnInit {
 
   // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
   // Cambia a 'false' cuando vuelvas a tener lugares disponibles.
-  showClosedModal = true; 
+  showClosedModal = false; 
 
   texts: any = {
     en: { title: 'Book Your Shared Experience', tickets: 'Number of Tickets', pickup: 'Fixed Pickup Location' },

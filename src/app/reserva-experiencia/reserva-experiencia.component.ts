@@ -31,7 +31,7 @@ export class ReservaExperienciaComponent implements OnInit {
 
   // 🚨 SWITCH DE CIERRE DE FORMULARIO (SOLD OUT):
   // Cambia a 'false' cuando vuelvas a tener lugares disponibles.
-  showClosedModal = true; 
+  showClosedModal = false; 
 
   texts: any = {
     en: { title: 'Book Your Private Ride', firstName: 'First Name', lastName: 'Last Name', pickup: 'Fixed Pickup Location', passengers: 'Number of Passengers' },

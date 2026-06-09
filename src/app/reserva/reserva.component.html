@@ -107,41 +107,16 @@
         <div class="divider"></div>
         
         <div class="row">
-          <div class="form-group half">
+          <div class="form-group half" style="width: 100%;">
             <label>{{ textos[lang].tipo }}</label>
             <select formControlName="tipoViaje" class="dark-input">
-              <option value="one_way">{{ textos[lang].tipo_sencillo }}</option>
-              <option value="round_trip">{{ textos[lang].tipo_redondo }}</option>
+              <option value="llegada">{{ textos[lang].tipo_llegada }}</option>
+              <option value="salida">{{ textos[lang].tipo_salida }}</option>
+              <option value="redondo">{{ textos[lang].tipo_redondo }}</option>
             </select>
           </div>
-          
         </div>
         
-        <div class="form-group" style="width: 100%;">
-          <label>{{ textos[lang].vehiculo }}</label>
-          <select formControlName="vehiculo" class="dark-input">
-            <option value="" disabled selected>{{ textos[lang].vehiculo_ph }}</option>
-            <option value="Sedan">Sedan ( Corolla, Prius, or similar)</option>
-            <option value="SUV">SUV ( Highlander, Sienna, or similar)</option>
-          </select>
-
-          <div class="vehicle-image-container" *ngIf="reservationForm.get('vehiculo')?.value">
-            <img *ngIf="reservationForm.get('vehiculo')?.value === 'Sedan'" 
-                 src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
-                 
-            <img *ngIf="reservationForm.get('vehiculo')?.value === 'SUV'" 
-                 src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
-          </div>
-        </div>
-        <div class="form-group half">
-            <label>{{ textos[lang].pasajeros }}</label>
-            <select formControlName="pasajeros" class="dark-input">
-              <option *ngFor="let p of opcionesPasajeros" [value]="p">
-                {{ p }} {{ p === 1 ? (lang === 'en' ? 'Passenger' : 'Pasajero') : (lang === 'en' ? 'Passengers' : 'Pasajeros') }}
-              </option>
-            </select>
-          </div>
-
         <div class="row">
           <div class="form-group half" style="width: 100%;">
             <label>{{ textos[lang].destino }}</label>
@@ -156,55 +131,75 @@
           </div>
         </div>
 
-        <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">
-          {{ textos[lang].titulo_llegada }}
-        </h4>
-        <div class="row">
-          <div class="form-group half">
-            <label>{{ textos[lang].aerolinea }}</label>
-            <input type="text" formControlName="aerolinea" list="listaAerolineas" placeholder="{{ textos[lang].aerolinea_ph }}">
-          </div>
-          <div class="form-group half">
-            <label>{{ textos[lang].vuelo }}</label>
-            <input type="text" formControlName="noVuelo" placeholder="AM-405">
-          </div>
-        </div>
+        <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'llegada' || reservationForm.get('tipoViaje')?.value === 'redondo'">
+          <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">
+            {{ textos[lang].titulo_llegada }}
+          </h4>
 
-        <div class="row">
-          <div class="form-group half">
-            <label>{{ textos[lang].terminal }}</label>
-            <select formControlName="terminal" class="dark-input">
-              <option value="t1">{{ textos[lang].term1 }}</option>
-              <option value="t2">{{ textos[lang].term2 }}</option>
+          <div class="form-group" style="width: 100%;">
+            <label>{{ textos[lang].aeropuerto }}</label>
+            <select formControlName="aeropuertoLlegada" class="dark-input">
+              <option value="" disabled selected>{{ textos[lang].aeropuerto_ph }}</option>
+              <option *ngFor="let aero of listaAeropuertos" [value]="aero">{{ aero }}</option>
             </select>
           </div>
-        </div>
-        
-        <div class="row">
-          <div class="form-group half">
-            <label>{{ textos[lang].fecha_llegada }}</label>
-            <input type="date" formControlName="fechaLlegada" class="dark-input">
+
+          <div class="row">
+            <div class="form-group half">
+              <label>{{ textos[lang].aerolinea }}</label>
+              <input type="text" formControlName="aerolinea" list="listaAerolineas" placeholder="{{ textos[lang].aerolinea_ph }}">
+            </div>
+            <div class="form-group half">
+              <label>{{ textos[lang].vuelo }}</label>
+              <input type="text" formControlName="noVuelo" placeholder="AM-405">
+            </div>
           </div>
-          <div class="form-group half">
-            <label>{{ textos[lang].hora_llegada }}</label>
-            <div class="time-picker-custom">
-              <select #hLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[0] || ''">
-                <option value="" disabled selected>HH</option>
-                <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
-              </select>
-              <span class="dos-puntos">:</span>
-              <select #mLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[1] || ''">
-                <option value="" disabled selected>MM</option>
-                <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+
+          <div class="row">
+            <div class="form-group half">
+              <label>{{ textos[lang].terminal }}</label>
+              <select formControlName="terminal" class="dark-input">
+                <option value="t1">{{ textos[lang].term1 }}</option>
+                <option value="t2">{{ textos[lang].term2 }}</option>
               </select>
             </div>
           </div>
-        </div>
+          
+          <div class="row">
+            <div class="form-group half">
+              <label>{{ textos[lang].fecha_llegada }}</label>
+              <input type="date" formControlName="fechaLlegada" class="dark-input">
+            </div>
+            <div class="form-group half">
+              <label>{{ textos[lang].hora_llegada }}</label>
+              <div class="time-picker-custom">
+                <select #hLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[0] || ''">
+                  <option value="" disabled selected>HH</option>
+                  <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+                </select>
+                <span class="dos-puntos">:</span>
+                <select #mLlegada (change)="actualizarHoraLlegada(hLlegada.value, mLlegada.value)" class="dark-input" [value]="reservationForm.get('horaLlegada')?.value?.split(':')[1] || ''">
+                  <option value="" disabled selected>MM</option>
+                  <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </ng-container>
 
-        <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'round_trip'">
+        <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'salida' || reservationForm.get('tipoViaje')?.value === 'redondo'">
           <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">
             {{ textos[lang].titulo_salida }}
           </h4>
+
+          <div class="form-group" style="width: 100%;">
+            <label>{{ textos[lang].aeropuerto }}</label>
+            <select formControlName="aeropuertoSalida" class="dark-input">
+              <option value="" disabled selected>{{ textos[lang].aeropuerto_ph }}</option>
+              <option *ngFor="let aero of listaAeropuertos" [value]="aero">{{ aero }}</option>
+            </select>
+          </div>
+
           <div class="row">
             <div class="form-group half">
               <label>{{ textos[lang].aerolinea }}</label>
@@ -224,14 +219,14 @@
                 <option value="t2">{{ textos[lang].term2 }}</option>
               </select>
             </div>
-          </div>
-          
-          <div class="row">
             <div class="form-group half">
               <label>{{ textos[lang].fecha_salida }}</label>
               <input type="date" formControlName="fechaSalida" class="dark-input">
             </div>
-            <div class="form-group half">
+          </div>
+          
+          <div class="row" style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed #cbd5e1; margin-bottom: 20px;">
+            <div class="form-group half" style="margin-bottom: 0;">
               <label>{{ textos[lang].hora_salida }}</label>
               <div class="time-picker-custom">
                 <select #hSalida (change)="actualizarHoraSalida(hSalida.value, mSalida.value)" class="dark-input" [value]="reservationForm.get('horaSalida')?.value?.split(':')[0] || ''">
@@ -245,10 +240,51 @@
                 </select>
               </div>
             </div>
+
+            <div class="form-group half" style="margin-bottom: 0;">
+              <label style="color: #e11d48;">{{ textos[lang].hora_recogida_hotel }}</label>
+              <div class="time-picker-custom">
+                <select #hRecogida (change)="actualizarHoraRecogida(hRecogida.value, mRecogida.value)" class="dark-input" [value]="reservationForm.get('horaRecogidaHotel')?.value?.split(':')[0] || ''">
+                  <option value="" disabled selected>HH</option>
+                  <option *ngFor="let h of horas" [value]="h">{{ h }}</option>
+                </select>
+                <span class="dos-puntos">:</span>
+                <select #mRecogida (change)="actualizarHoraRecogida(hRecogida.value, mRecogida.value)" class="dark-input" [value]="reservationForm.get('horaRecogidaHotel')?.value?.split(':')[1] || ''">
+                  <option value="" disabled selected>MM</option>
+                  <option *ngFor="let m of minutos" [value]="m">{{ m }}</option>
+                </select>
+              </div>
+            </div>
           </div>
         </ng-container>
 
         <div class="divider"></div>
+        
+        <div class="form-group" style="width: 100%;">
+          <label>{{ textos[lang].vehiculo }}</label>
+          <select formControlName="vehiculo" class="dark-input">
+            <option value="" disabled selected>{{ textos[lang].vehiculo_ph }}</option>
+            <option value="Sedan">Sedan ( Corolla, Prius, or similar)</option>
+            <option value="SUV">SUV ( Highlander, Sienna, or similar)</option>
+          </select>
+
+          <div class="vehicle-image-container" *ngIf="reservationForm.get('vehiculo')?.value">
+            <img *ngIf="reservationForm.get('vehiculo')?.value === 'Sedan'" 
+                 src="/assets/sedan.jpg" alt="Auto Sedan" class="vehicle-img fadeIn">
+                 
+            <img *ngIf="reservationForm.get('vehiculo')?.value === 'SUV'" 
+                 src="/assets/suv.jpg" alt="Auto SUV" class="vehicle-img fadeIn">
+          </div>
+        </div>
+
+        <div class="form-group half">
+            <label>{{ textos[lang].pasajeros }}</label>
+            <select formControlName="pasajeros" class="dark-input">
+              <option *ngFor="let p of opcionesPasajeros" [value]="p">
+                {{ p }} {{ p === 1 ? (lang === 'en' ? 'Passenger' : 'Pasajero') : (lang === 'en' ? 'Passengers' : 'Pasajeros') }}
+              </option>
+            </select>
+        </div>
 
         <div class="form-group">
           <label>{{ textos[lang].asistencia }}</label>
@@ -287,9 +323,6 @@
   </div> 
 </div> 
 
-<!-- ========================================================
-     NUEVO MODAL PERSONALIZADO DE DISPONIBILIDAD
-     ======================================================== -->
 <div class="custom-modal-overlay" *ngIf="showAvailabilityModal">
   <div class="custom-modal-card">
     <div class="modal-icon">⏳</div>
@@ -297,23 +330,17 @@
       {{ lang === 'en' ? 'Fully Booked' : 'Horario Ocupado' }}
     </h3>
     <p class="modal-text">
-      {{ lang === 'en' 
-         ? 'We are fully booked at this exact time. Please select a time at least 3 hours earlier or later.' 
-         : 'Nuestra flotilla está completamente ocupada en este horario. Por favor selecciona una hora con al menos 3 horas de diferencia.' }}
+      {{ lang === 'en' ? 'We are fully booked at this exact time. Please select a time at least 3 hours earlier or later.' : 'Nuestra flotilla está completamente ocupada en este horario. Por favor selecciona una hora con al menos 3 horas de diferencia.' }}
     </p>
     <div class="modal-subtext">
-      {{ lang === 'en'
-         ? 'If you urgently need this specific date and time, please contact us via the WhatsApp button to check for extraordinary availability.'
-         : 'Si necesitas urgentemente esta fecha y hora, contáctanos en el botón de WhatsApp (esquina inferior derecha) para revisar disponibilidad extraordinaria.' }}
+      {{ lang === 'en' ? 'If you urgently need this specific date and time, please contact us via the WhatsApp button to check for extraordinary availability.' : 'Si necesitas urgentemente esta fecha y hora, contáctanos en el botón de WhatsApp (esquina inferior derecha) para revisar disponibilidad extraordinaria.' }}
     </div>
     <button type="button" class="modal-btn" (click)="closeModal()">
       {{ lang === 'en' ? 'Understood' : 'Entendido' }}
     </button>
   </div>
 </div>
-<!-- ========================================================
-     NUEVO MODAL PERSONALIZADO DE PAGO EXITOSO
-     ======================================================== -->
+
 <div class="custom-modal-overlay" *ngIf="showSuccessModal">
   <div class="custom-modal-card success-card">
     <div class="modal-icon">✅</div>
@@ -321,15 +348,14 @@
       {{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}
     </h3>
     <p class="modal-text">
-      {{ lang === 'en' 
-         ? 'Thank you! Your payment was processed and your unit is officially reserved. We have sent a confirmation email with your details.' 
-         : '¡Gracias! Hemos recibido tu pago. Tu unidad está oficialmente reservada y te hemos enviado un correo de confirmación con los detalles.' }}
+      {{ lang === 'en' ? 'Thank you! Your payment was processed and your unit is officially reserved. We have sent a confirmation email with your details.' : '¡Gracias! Hemos recibido tu pago. Tu unidad está oficialmente reservada y te hemos enviado un correo de confirmación con los detalles.' }}
     </p>
     <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">
       {{ lang === 'en' ? 'Continue' : 'Continuar' }}
     </button>
   </div>
 </div>
+
 <div class="custom-modal-overlay" *ngIf="showClosedModal">
   <div class="custom-modal-card" style="border-top: 6px solid #e11d48;">
     <div class="modal-icon">🛑</div>
@@ -337,14 +363,10 @@
       {{ lang === 'en' ? 'Temporarily Unavailable' : 'Temporalmente Agotado' }}
     </h3>
     <p class="modal-text">
-      {{ lang === 'en' 
-         ? 'Due to high demand, our transfer services are fully booked at the moment. We apologize for the inconvenience.' 
-         : 'Debido a la alta demanda para el evento, nuestros traslados se encuentran temporalmente agotados.' }}
+      {{ lang === 'en' ? 'Due to high demand, our transfer services are fully booked at the moment. We apologize for the inconvenience.' : 'Debido a la alta demanda para el evento, nuestros traslados se encuentran temporalmente agotados.' }}
     </p>
     <div class="modal-subtext" style="background: #fff1f2; border: 1px dashed #fda4af; color: #e11d48;">
-      {{ lang === 'en'
-         ? 'Please check back later or contact us via WhatsApp for extraordinary availability.'
-         : 'Por favor, intenta más tarde o contáctanos por WhatsApp para revisar cancelaciones o disponibilidad extraordinaria.' }}
+      {{ lang === 'en' ? 'Please check back later or contact us via WhatsApp for extraordinary availability.' : 'Por favor, intenta más tarde o contáctanos por WhatsApp para revisar cancelaciones o disponibilidad extraordinaria.' }}
     </div>
     <button type="button" class="modal-btn" routerLink="/" style="background: #e11d48; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.3);">
       {{ lang === 'en' ? 'Return to Home' : 'Regresar al Inicio' }}
