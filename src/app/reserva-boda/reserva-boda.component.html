@@ -1,0 +1,144 @@
+<nav class="vancity-navbar">
+  <div class="navbar-logo">
+    <img src="assets/logo.png" alt="Vancity Logo">
+  </div>
+  
+  <div class="navbar-actions">
+    <div class="lang-segmented">
+      <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
+      <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
+    </div>
+    <button type="button" class="btn-back" routerLink="/">
+      {{ lang === 'en' ? 'Back' : 'Regresar' }}
+    </button>
+  </div>
+</nav>
+
+<div class="page-backdrop">
+  <div class="split-card">
+    
+    <!-- Lado de la Imagen -->
+    <div class="image-side">
+      <div class="image-overlay">
+        <h2>Wedding Shuttle</h2>
+        <p>{{ lang === 'en' ? 'Travel comfortably to the venue.' : 'Viaja cómodamente al evento.' }}</p>
+      </div>
+    </div>
+
+    <!-- Lado del Formulario -->
+    <div class="form-side">
+      <div class="header">
+        <p>{{ texts[lang].title }}</p>
+        <span class="subtitle-text">{{ lang === 'en' ? 'Secure your seat for the shared van.' : 'Asegura tu asiento en la Van compartida.' }}</span>
+      </div>
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+        
+        <h3 class="section-title">1. {{ lang === 'en' ? 'Shuttle Details' : 'Detalles del Traslado' }}</h3>
+        
+        <div class="form-row">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Select Schedule' : 'Selecciona el Horario' }}</label>
+            <select formControlName="horario">
+              <option value="" disabled>{{ lang === 'en' ? 'Choose departure...' : 'Elige tu salida...' }}</option>
+              <option value="Viernes 1:00 PM">Viernes 18 Sep - 1:00 PM (CDMX -> Cuernavaca)</option>
+              <option value="Sabado 9:00 AM">Sábado 19 Sep - 9:00 AM (CDMX -> Cuernavaca)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>{{ texts[lang].tickets }}</label>
+            <select formControlName="boletos">
+              <option *ngFor="let p of opcionesTickets" [value]="p">
+                {{ p }} {{ p === 1 ? 'Lugar' : 'Lugares' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             MAPA DE ASIENTOS TIPO AEROLÍNEA
+             ============================================== -->
+        
+        <div class="seat-selection-wrapper" *ngIf="reservaForm.get('horario')?.value">
+          <label class="seat-label">{{ lang === 'en' ? 'Select your seats' : 'Selecciona tus asientos' }}</label>
+          
+          <div class="seat-legend">
+            <div class="legend-item"><div class="seat-box disp"></div> Disponible</div>
+            <div class="legend-item"><div class="seat-box selec"></div> Seleccionado</div>
+            <div class="legend-item"><div class="seat-box ocup"></div> Ocupado</div>
+          </div>
+          
+          <!-- Contenedor relativo con la imagen de fondo -->
+          <!-- Contenedor con la imagen real -->
+          <div class="van-image-container">
+            <!-- Esta es la imagen base -->
+            <img src="/assets/van-layout.png" alt="Layout de la Van" class="van-base-img">
+            
+            <!-- Estos son los botones interactivos -->
+            <div *ngFor="let asiento of asientos" 
+                 class="interactive-seat" 
+                 [ngClass]="asiento.estado"
+                 [style.top]="asiento.top"
+                 [style.left]="asiento.left"
+                 (click)="seleccionarAsiento(asiento)">
+              {{ asiento.numero }}
+            </div>
+          </div>
+
+          <p class="seat-counter">
+            Seleccionados: {{ asientosSeleccionados.length }} / {{ reservaForm.get('boletos')?.value }}
+          </p>
+        </div>
+
+        <h3 class="section-title">2. {{ lang === 'en' ? 'Passengers Information' : 'Información de Pasajeros' }}</h3>
+        
+        <div formArrayName="pasajerosDetalle">
+          <div class="passenger-card" *ngFor="let pas of pasajerosDetalles.controls; let i = index" [formGroupName]="i">
+            <h4 class="pax-title">{{ lang === 'en' ? 'Passenger' : 'Pasajero' }} {{ i + 1 }}</h4>
+            <div class="form-row">
+              <div class="input-group">
+                <input type="text" formControlName="nombre" [placeholder]="lang === 'en' ? 'First Name' : 'Nombre'">
+              </div>
+              <div class="input-group">
+                <input type="text" formControlName="apellido" [placeholder]="lang === 'en' ? 'Last Name' : 'Apellido'">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="input-group">
+                <input type="email" formControlName="correo" placeholder="Email">
+              </div>
+              <div class="input-group">
+                <input type="tel" formControlName="telefono" placeholder="Teléfono">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-box" *ngIf="cotizacion !== null">
+          <h3>{{ lang === 'en' ? 'TOTAL FARE' : 'TARIFA TOTAL' }}</h3>
+          <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid || pagoIniciado">
+          <span *ngIf="cotizacion === null">
+            {{ lang === 'en' ? 'CALCULATE TOTAL' : 'COTIZAR TICKETS' }}
+          </span>
+          <span *ngIf="cotizacion !== null">
+            {{ pagoIniciado ? 'CONECTANDO...' : (lang === 'en' ? 'PROCEED TO SECURE PAYMENT' : 'PROCEDER AL PAGO SEGURO') }}
+          </span>
+        </button>
+        
+      </form>
+    </div> 
+  </div> 
+</div>
+
+<!-- Modal de Éxito -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">{{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}</h3>
+    <p class="modal-text">Tus asientos han sido reservados con éxito.</p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">Continuar</button>
+  </div>
+</div>

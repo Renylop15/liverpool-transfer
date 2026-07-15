@@ -16,6 +16,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'reserva-compartido', component: ReservaCompartidoComponent },
   { path: 'reserva-chofer', component: ReservaChoferComponent },
+  {path: 'reserva-boda', loadComponent: () => import('./reserva-boda/reserva-boda.component').then(m => m.ReservaBodaComponent)},
 { 
     path: 'admin', 
     component: AdminComponent, 
