@@ -33,7 +33,7 @@ export class ReservaComponent implements OnInit {
   showAvailabilityModal = false;
   showClosedModal = false; 
 
-  listaHoteles = ['Hotel Hyatt Regency Mexico City','Hotel JW Marriott Mexico City Polanco', 'Hotel InterContinental Presidente Mexico City Polanco' ];
+  listaHoteles = [ 'Hotel InterContinental Presidente Mexico City Polanco' ];
   
   // NUEVA LISTA DE AEROPUERTOS
   listaAeropuertos = ['AICM (Benito Juárez)', 'AIFA (Felipe Ángeles)', 'AIT (Toluca)'];
@@ -74,7 +74,11 @@ export class ReservaComponent implements OnInit {
       asistencia_opciones: { ninguna: 'Ninguna', silla: 'Silla de Ruedas', bebe: 'Asiento para Bebé', mascota: 'Mascota en Transportadora', otro: 'Otro (Especificar en notas)'},
       tarifa: 'TARIFA ESTIMADA', terminos: '* Incluye IVA (16%).', btn_cotizando: 'CALCULANDO...', btn_cotizar: 'COTIZAR VIAJE',
       btn_pagar: 'PROCEDER AL PAGO SEGURO', alerta: '¡Listo para cobrar $', titulo_llegada: 'DATOS DE VUELO DE LLEGADA',
-      titulo_salida: 'DATOS DE VUELO DE SALIDA', hora_llegada: 'HORA DE ATERRIZAJE', hora_salida: 'HORA DE DESPEGUE', hora_recogida_hotel: 'HORA DE RECOGIDA (EN EL HOTEL)'
+      titulo_salida: 'DATOS DE VUELO DE SALIDA', hora_llegada: 'HORA DE ATERRIZAJE', hora_salida: 'HORA DE DESPEGUE', hora_recogida_hotel: 'HORA DE RECOGIDA (EN EL HOTEL)',
+      
+      // NUEVO: Textos de la caja de viaje redondo
+      info_redondo_titulo: 'Viaje Redondo Incluido',
+      info_redondo_desc: 'Contamos con dos salidas hacia Cuernavaca. Tu compra cubre el traslado de ida y el regreso único programado para el <strong>domingo 20 a las 12:30 pm. Si tus salidas no coinciden con  las fechas programadas favor de contactarnos via whatsapp.</strong>.'
     },
     en: {
       titulo: 'Executive Vehicle Service', nombres: 'FIRST NAME', apellidos: 'LAST NAME',
@@ -87,7 +91,9 @@ export class ReservaComponent implements OnInit {
       asistencia: 'SPECIAL ASSISTANCE', asistencia_opciones: { ninguna: 'None', silla: 'Wheelchair', bebe: 'Baby Seat', mascota: 'Pet in Carrier', otro: 'Other (Specify in notes)'},
       tarifa: 'ESTIMATED FARE', terminos: '* Tax included (16%). ', btn_cotizando: 'CALCULATING...', btn_cotizar: 'GET QUOTE',
       btn_pagar: 'PROCEED TO SECURE PAYMENT', alerta: 'Ready to charge $', titulo_llegada: 'ARRIVAL FLIGHT DETAILS',
-      titulo_salida: 'DEPARTURE FLIGHT DETAILS', hora_llegada: 'LANDING TIME', hora_salida: 'DEPARTURE TIME', hora_recogida_hotel: 'HOTEL PICKUP TIME'
+      titulo_salida: 'DEPARTURE FLIGHT DETAILS', hora_llegada: 'LANDING TIME', hora_salida: 'DEPARTURE TIME', hora_recogida_hotel: 'HOTEL PICKUP TIME',
+      info_redondo_titulo: 'Round Trip Included',
+      info_redondo_desc: 'We have two departures to Cuernavaca. Your purchase covers the outbound transfer and the single return trip scheduled for <strong>Sunday 20th at 12:30 pm. If your departures do not match the scheduled dates, please contact us via WhatsApp.</strong>.'
     }
   };
 

@@ -27,10 +27,38 @@
 
     <!-- Lado del Formulario -->
     <div class="form-side">
-      <div class="header">
-        <p>{{ texts[lang].title }}</p>
-        <span class="subtitle-text">{{ lang === 'en' ? 'Secure your seat for the shared van.' : 'Asegura tu asiento en la Van compartida.' }}</span>
-      </div>
+      <!-- ENCABEZADO Y DESCRIPCIÓN -->
+        <!-- ENCABEZADO Y DESCRIPCIÓN -->
+        <div class="header">
+          <!-- Título principal dinámico -->
+          <p>{{ lang === 'en' ? 'Wedding Shuttle Reservation' : 'Reserva Transporte de Boda' }}</p>
+          
+          <!-- Subtítulo dinámico -->
+          <span class="subtitle-text">
+            {{ lang === 'en' ? 'Secure your seat in the shared Van.' : 'Asegura tu asiento en la Van compartida.' }}
+          </span>
+          
+          <!-- Caja de descripción del servicio -->
+          <div class="info-redondo">
+            
+            <!-- VERSIÓN INGLÉS -->
+            <ng-container *ngIf="lang === 'en'">
+              <strong>Round Trip Included</strong>
+              <span>
+                We have two departures to Cuernavaca. Your purchase covers the outbound transfer and the single return trip scheduled for <strong>Sunday 20th at 12:30 pm</strong>. If your departures do not match the scheduled dates, please contact us via WhatsApp.
+              </span>
+            </ng-container>
+
+            <!-- VERSIÓN ESPAÑOL -->
+            <ng-container *ngIf="lang === 'es'">
+              <strong>Viaje Redondo Incluido</strong>
+              <span>
+                Contamos con dos salidas hacia Cuernavaca. Tu compra cubre el traslado de ida y el regreso único programado para el <strong>domingo 20 a las 12:30 pm</strong>. Si tus salidas no coinciden con las fechas programadas, favor de contactarnos vía WhatsApp.
+              </span>
+            </ng-container>
+            
+          </div>
+        </div>
 
       <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
         
