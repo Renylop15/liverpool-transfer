@@ -127,9 +127,23 @@
               <option *ngFor="let hotel of listaHoteles" [value]="hotel">
                 {{ hotel }}
               </option>
+              <option value="OTRO" style="font-weight: bold; color: #1a3a6c;">
+                {{ lang === 'en' ? '+ Other (Specify address)' : '+ Otro (Especificar dirección)' }}
+              </option>
             </select>
           </div>
         </div>
+
+        <!-- NUEVO CAMPO: Solo se muestra si elige "OTRO" -->
+        <ng-container *ngIf="reservationForm.get('destino')?.value === 'OTRO'">
+          <div class="row">
+            <div class="form-group half" style="width: 100%;">
+              <label>{{ lang === 'en' ? 'SPECIFY ADDRESS OR HOTEL' : 'ESPECIFICA DIRECCIÓN O HOTEL' }}</label>
+              <input type="text" formControlName="destinoOtro" class="dark-input" 
+                     [placeholder]="lang === 'en' ? 'E.g. Airbnb at Condesa, full address...' : 'Ej. Airbnb en Condesa, dirección completa...'">
+            </div>
+          </div>
+        </ng-container>
 
         <ng-container *ngIf="reservationForm.get('tipoViaje')?.value === 'llegada' || reservationForm.get('tipoViaje')?.value === 'redondo'">
           <h4 style="color: #9ca3af; margin: 20px 0 10px 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">

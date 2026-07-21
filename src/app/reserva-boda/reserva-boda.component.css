@@ -543,3 +543,34 @@
   font-weight: bold;
   color: #0b1d3a;
 }
+
+/* =========================================
+   --- CHECKBOX MISMO NOMBRE --- 
+   ========================================= */
+.checkbox-wrapper {
+  margin-bottom: 25px;
+  background: #f8fafc;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  animation: fadeInVehicle 0.3s ease-out forwards;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b1d3a;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0b1d3a;
+  cursor: pointer;
+}

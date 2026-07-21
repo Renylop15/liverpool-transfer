@@ -64,20 +64,29 @@
         
         <h3 class="section-title">1. {{ lang === 'en' ? 'Shuttle Details' : 'Detalles del Traslado' }}</h3>
         
-        <div class="form-row">
+       <div class="form-row">
           <div class="input-group">
             <label>{{ lang === 'en' ? 'Select Schedule' : 'Selecciona el Horario' }}</label>
             <select formControlName="horario">
               <option value="" disabled>{{ lang === 'en' ? 'Choose departure...' : 'Elige tu salida...' }}</option>
-              <option value="Viernes 1:00 PM">Viernes 18 Sep - 1:00 PM (CDMX -> Cuernavaca)</option>
-              <option value="Sabado 9:00 AM">Sábado 19 Sep - 9:00 AM (CDMX -> Cuernavaca)</option>
+              
+              <!-- El 'value' se queda igual para no romper la base de datos, solo cambiamos el texto visible -->
+              <option value="Viernes 1:00 PM">
+                {{ lang === 'en' ? 'Friday Sep 18 - 1:00 PM (CDMX -> Cuernavaca)' : 'Viernes 18 Sep - 1:00 PM (CDMX -> Cuernavaca)' }}
+              </option>
+              
+              <option value="Sabado 9:00 AM">
+                {{ lang === 'en' ? 'Saturday Sep 19 - 9:00 AM (CDMX -> Cuernavaca)' : 'Sábado 19 Sep - 9:00 AM (CDMX -> Cuernavaca)' }}
+              </option>
             </select>
           </div>
+          
           <div class="input-group">
             <label>{{ texts[lang].tickets }}</label>
             <select formControlName="boletos">
               <option *ngFor="let p of opcionesTickets" [value]="p">
-                {{ p }} {{ p === 1 ? 'Lugar' : 'Lugares' }}
+                <!-- Mostramos Seat/Seats en inglés y Lugar/Lugares en español dependiendo de la cantidad -->
+                {{ p }} {{ lang === 'en' ? (p === 1 ? 'Seat' : 'Seats') : (p === 1 ? 'Lugar' : 'Lugares') }}
               </option>
             </select>
           </div>
@@ -91,12 +100,17 @@
           <label class="seat-label">{{ lang === 'en' ? 'Select your seats' : 'Selecciona tus asientos' }}</label>
           
           <div class="seat-legend">
-            <div class="legend-item"><div class="seat-box disp"></div> Disponible</div>
-            <div class="legend-item"><div class="seat-box selec"></div> Seleccionado</div>
-            <div class="legend-item"><div class="seat-box ocup"></div> Ocupado</div>
+            <div class="legend-item">
+              <div class="seat-box disp"></div> {{ lang === 'en' ? 'Available' : 'Disponible' }}
+            </div>
+            <div class="legend-item">
+              <div class="seat-box selec"></div> {{ lang === 'en' ? 'Selected' : 'Seleccionado' }}
+            </div>
+            <div class="legend-item">
+              <div class="seat-box ocup"></div> {{ lang === 'en' ? 'Booked' : 'Ocupado' }}
+            </div>
           </div>
           
-          <!-- Contenedor relativo con la imagen de fondo -->
           <!-- Contenedor con la imagen real -->
           <div class="van-image-container">
             <!-- Esta es la imagen base -->
@@ -114,15 +128,32 @@
           </div>
 
           <p class="seat-counter">
-            Seleccionados: {{ asientosSeleccionados.length }} / {{ reservaForm.get('boletos')?.value }}
+            {{ lang === 'en' ? 'Selected:' : 'Seleccionados:' }} {{ asientosSeleccionados.length }} / {{ reservaForm.get('boletos')?.value }}
           </p>
         </div>
 
         <h3 class="section-title">2. {{ lang === 'en' ? 'Passengers Information' : 'Información de Pasajeros' }}</h3>
         
+        <!-- NUEVO: Checkbox para agrupar pasajeros -->
+        <div class="checkbox-wrapper" *ngIf="reservaForm.get('boletos')?.value > 1">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="mismoNombre">
+            {{ lang === 'en' ? 'Book all seats under one name' : 'Reservar todos los lugares bajo un solo nombre' }}
+          </label>
+        </div>
+
         <div formArrayName="pasajerosDetalle">
           <div class="passenger-card" *ngFor="let pas of pasajerosDetalles.controls; let i = index" [formGroupName]="i">
-            <h4 class="pax-title">{{ lang === 'en' ? 'Passenger' : 'Pasajero' }} {{ i + 1 }}</h4>
+            <!-- Modificamos el título para que tenga sentido si agrupa a todos -->
+            <h4 class="pax-title">
+              <ng-container *ngIf="!reservaForm.get('mismoNombre')?.value">
+                {{ lang === 'en' ? 'Passenger' : 'Pasajero' }} {{ i + 1 }}
+              </ng-container>
+              <ng-container *ngIf="reservaForm.get('mismoNombre')?.value">
+                {{ lang === 'en' ? 'Main Passenger (Titular)' : 'Pasajero Titular' }}
+              </ng-container>
+            </h4>
+            
             <div class="form-row">
               <div class="input-group">
                 <input type="text" formControlName="nombre" [placeholder]="lang === 'en' ? 'First Name' : 'Nombre'">

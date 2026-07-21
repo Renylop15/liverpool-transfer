@@ -114,6 +114,7 @@ export class ReservaComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]], codigoPais: ['+52', Validators.required],
       telefono: ['', Validators.required], tipoViaje: ['llegada', Validators.required],
       pasajeros: [1, [Validators.required, Validators.min(1), Validators.max(4)]],
+      destinoOtro: [''],
       vehiculo: ['', Validators.required], destino: ['', Validators.required],
       
       aeropuertoLlegada: [''], aerolinea: [''], noVuelo: [''], terminal: ['t1'],
@@ -133,9 +134,21 @@ export class ReservaComponent implements OnInit {
       this.reservationForm.disable();
     }
 
+    this.reservationForm.get('destino')?.valueChanges.subscribe(val => {
+      this.cotizacion = null; // Reinicia la cotización al cambiar de destino
+      const destinoOtroControl = this.reservationForm.get('destinoOtro');
+      
+      if (val === 'OTRO') {
+        destinoOtroControl?.setValidators(Validators.required);
+      } else {
+        destinoOtroControl?.clearValidators();
+        destinoOtroControl?.setValue(''); // Limpiamos el texto si se arrepiente y elige el hotel de la lista
+      }
+      destinoOtroControl?.updateValueAndValidity();
+    });
     // MAGIA DE UX: Encender y apagar validaciones según el tipo de viaje
     this.reservationForm.get('tipoViaje')?.valueChanges.subscribe(tipo => {
-      this.cotizacion = null;
+      this.cotizacion = null;    
       
       const idaFields = ['aeropuertoLlegada', 'aerolinea', 'noVuelo', 'fechaLlegada', 'horaLlegada'];
       const vueltaFields = ['aeropuertoSalida', 'aerolineaSalida', 'noVueloSalida', 'fechaSalida', 'horaSalida', 'horaRecogidaHotel'];
@@ -282,6 +295,7 @@ export class ReservaComponent implements OnInit {
       const isLlegada = form.tipoViaje === 'llegada';
       const isSalida = form.tipoViaje === 'salida';
       const isRound = form.tipoViaje === 'redondo';
+      const destinoFinal = form.destino === 'OTRO' ? form.destinoOtro : form.destino;
       
       const terminalTexto = form.terminal.toUpperCase();
       const terminalSalidaTexto = form.terminalSalida ? form.terminalSalida.toUpperCase() : '';
@@ -292,10 +306,35 @@ export class ReservaComponent implements OnInit {
 
       if (this.cotizacion === null) {
         const tipoAuto = form.vehiculo ? form.vehiculo.toLowerCase() : '';
-        if (tipoAuto.includes('suv')) {
-          this.cotizacion = isRound ? 4330.00 : 2500.00;
-        } else {
-          this.cotizacion = isRound ? 3328.00 : 1914.00;
+        const esSUV = tipoAuto.includes('suv');
+        
+        // 1. Identificamos qué aeropuerto usó de referencia (según si es llegada/redondo o solo salida)
+        const aeropuertoSeleccionado = (isLlegada || isRound) ? form.aeropuertoLlegada : form.aeropuertoSalida;
+
+        // 2. Calculamos el precio cruzando la información de la tabla
+        if (aeropuertoSeleccionado && aeropuertoSeleccionado.includes('AICM')) {
+          // TARIFAS CDMX
+          if (esSUV) {
+            this.cotizacion = isRound ? 5104.00 : 2552.00;
+          } else {
+            this.cotizacion = isRound ? 4176.00 : 2088.00;
+          }
+        } 
+        else if (aeropuertoSeleccionado && aeropuertoSeleccionado.includes('AIFA')) {
+          // TARIFAS AIFA
+          if (esSUV) {
+            this.cotizacion = isRound ? 8352.00 : 4176.00;
+          } else {
+            this.cotizacion = isRound ? 6496.00 : 3248.00;
+          }
+        } 
+        else if (aeropuertoSeleccionado && aeropuertoSeleccionado.includes('AIT')) {
+          // TARIFAS TOLUCA
+          if (esSUV) {
+            this.cotizacion = isRound ? 9512.00 : 4756.00;
+          } else {
+            this.cotizacion = isRound ? 7424.00 : 3712.00;
+          }
         }
 
         this.isSubmitting = false; 
@@ -304,7 +343,7 @@ export class ReservaComponent implements OnInit {
 
         // DATA PARA LA BASE DE DATOS
         const dataInsert = {
-            nombres: form.nombres, apellidos: form.apellidos, email: form.email, telefono: `${form.codigoPais} ${form.telefono}`, destino: form.destino,
+            nombres: form.nombres, apellidos: form.apellidos, email: form.email, telefono: `${form.codigoPais} ${form.telefono}`, destino: destinoFinal,
             asistencia: form.asistencia || 'Ninguna', cotizacion: this.cotizacion, estatus: 'COTIZADO', tipo_viaje: tipoTraducido, vehiculo: form.vehiculo, pasajeros: form.pasajeros,
             
             // LLEGADA (Guardado en campos de IDA)
@@ -333,12 +372,12 @@ export class ReservaComponent implements OnInit {
         
         const detalleVueltaHTML = (isSalida || isRound) ? `<div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #555;"><h3 style="color: #888; font-size: 11px; text-transform: uppercase; margin-top: 0; letter-spacing: 1px;">${this.lang === 'en' ? '✈️ Departure Flight' : '✈️ Vuelo de Salida'}</h3><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airport' : 'Aeropuerto'}:</strong> ${form.aeropuertoSalida}</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Airline & Flight' : 'Aerolínea y Vuelo'}:</strong> ${form.aerolineaSalida} - ${form.noVueloSalida} (T${terminalSalidaTexto})</p><p style="margin: 5px 0; color: #ddd; font-size: 14px;"><strong>${this.lang === 'en' ? 'Flight Time' : 'Despegue'}:</strong> ${form.fechaSalida} | ${form.horaSalida} hrs</p><p style="margin: 10px 0 0 0; color: #e11d48; font-size: 14px; font-weight: bold;"><strong>${this.lang === 'en' ? 'Hotel Pickup Time' : 'Hora de Recogida'}:</strong> ${form.horaRecogidaHotel} hrs</p></div>` : '';
         
-        const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion);
+        const cotizacionFormateada = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(this.cotizacion!);
 
         const templateCotizacionParams = {
           titulo_mensaje: this.lang === 'en' ? 'Your Trip Quote' : 'Tu Cotización de Viaje',
           mensaje_principal: this.lang === 'en' ? 'Here are the details of your requested quote.' : 'Aquí están los detalles de la cotización solicitada.',
-          nombre: nombreCompleto, email_destino: form.email, destino: form.destino, cotizacion: cotizacionFormateada, pasajeros: form.pasajeros, tipo_servicio: `${form.vehiculo} - ${tipoTraducido}`,
+          nombre: nombreCompleto, email_destino: form.email, destino: destinoFinal, cotizacion: cotizacionFormateada, pasajeros: form.pasajeros, tipo_servicio: `${form.vehiculo} - ${tipoTraducido}`,
           asistencia: form.asistencia || 'Ninguna', detalle_ida: detalleIdaHTML, detalle_vuelta: detalleVueltaHTML 
         };
 
@@ -346,7 +385,7 @@ export class ReservaComponent implements OnInit {
         localStorage.setItem('idioma_vancity', this.lang);
 
         emailjs.send('service_gepyy7k', 'template_yyc4gkw', templateCotizacionParams, '8BD-wbQdkJaPiLyLx').catch();
-        supabase.functions.invoke('openpay-checkout', { body: { tipoAccion: 'WHATSAPP_COTIZACION', nombre: nombreCompleto, email: form.email, monto: this.cotizacion, descripcion: `Traslado - ${form.destino}`, telefono: telLimpio, idioma: this.lang } }).catch();
+        supabase.functions.invoke('openpay-checkout', { body: { tipoAccion: 'WHATSAPP_COTIZACION', nombre: nombreCompleto, email: form.email, monto: this.cotizacion, descripcion: `Traslado - ${destinoFinal}`, telefono: telLimpio, idioma: this.lang } }).catch();
 
       } else {
           this.pagoIniciado = true; 

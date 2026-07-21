@@ -8,6 +8,7 @@
           <p class="stats" *ngIf="tabActiva === 'traslados'">Traslados: <strong>{{ reservasTraslados.length }}</strong></p>
           <p class="stats" *ngIf="tabActiva === 'experiencias'">Experiencias: <strong>{{ reservasExperiencias.length }}</strong></p>
           <p class="stats" *ngIf="tabActiva === 'chofer'">Choferes: <strong>{{ reservasChofer.length }}</strong></p>
+          <p class="stats" *ngIf="tabActiva === 'boda'">Boda Shuttle: <strong>{{ reservasBoda.length }}</strong></p>
         </div>
 
         <div class="action-buttons-group">
@@ -27,6 +28,9 @@
       </button>
       <button class="tab-btn" [class.active]="tabActiva === 'chofer'" (click)="cambiarTab('chofer')">
         🚗 Chofer Privado
+      </button>
+      <button class="tab-btn" [class.active]="tabActiva === 'boda'" (click)="cambiarTab('boda')">
+        💒 Transporte Boda
       </button>
     </div>
   </div>
@@ -192,6 +196,57 @@
         </tbody>
       </table>
       <div *ngIf="!cargando && reservasChofer.length === 0" class="no-results"><p>No se encontraron reservas de Chofer Privado.</p></div>
+    </div>
+
+    <!-- NUEVO CONTENEDOR: BODA -->
+    <div *ngIf="tabActiva === 'boda'">
+      <table *ngIf="!cargando && reservasBoda.length > 0">
+        <thead>
+          <tr>
+            <th>Registro</th>
+            <th>Titular / Contacto</th>
+            <th>Horario / Vehículo</th>
+            <th>Asientos</th>
+            <th>Acompañantes / Detalles</th>
+            <th>Tarifa</th>
+            <th>Estatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let boda of reservasBoda">
+            <td class="date-cell">
+              {{ boda.created_at | date:'dd/MMM/yy' }}<br>
+              <span>{{ boda.created_at | date:'HH:mm' }} hrs</span>
+            </td>
+            <td>
+              <strong>{{ boda.nombre }} {{ boda.apellido }}</strong><br>
+              <span class="email">{{ boda.correo_cliente }}</span><br>
+              <span class="phone">{{ boda.telefono }}</span><br>
+              <span class="pax">Boletos: {{ boda.pasajeros }}</span>
+            </td>
+            <td>
+              <span class="dest-text">{{ boda.fecha_servicio }}</span><br>
+              <span class="car-info" style="margin-top: 8px;">
+                 <strong>{{ boda.vehiculo || 'Van Compartida' }}</strong>
+              </span>
+            </td>
+            <td>
+              <span class="asientos-badge">{{ boda.asientosParsed }}</span>
+            </td>
+            <td>
+              <div *ngFor="let pax of boda.pasajerosParsed" class="pax-item">
+                <strong>{{ pax.nombre }} {{ pax.apellido }}</strong><br>
+                <span>{{ pax.correo }} | {{ pax.telefono }}</span>
+              </div>
+            </td>
+            <td class="price">${{ (boda.cotizacion || 0) | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [class.pagado]="boda.estatus === 'PAGADO'">{{ boda.estatus || 'N/A' }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="!cargando && reservasBoda.length === 0" class="no-results"><p>No se encontraron reservas de Boda Shuttle.</p></div>
     </div>
 
   </div>

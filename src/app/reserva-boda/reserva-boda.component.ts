@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { createClient } from '@supabase/supabase-js'; 
 import { RouterModule, ActivatedRoute } from '@angular/router'; 
+import emailjs from '@emailjs/browser';
 
 const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co'; 
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR'; 
@@ -52,15 +53,26 @@ export class ReservaBodaComponent implements OnInit {
     this.reservaForm = this.fb.group({
       boletos: [1, Validators.required],
       horario: ['', Validators.required],
+      mismoNombre: [false],
       pasajerosDetalle: this.fb.array([]) 
     });
 
     this.actualizarCamposPasajeros(1); 
 
+    // LÓGICA ACTUALIZADA PARA BOLETOS
     this.reservaForm.get('boletos')?.valueChanges.subscribe(cantidad => {
-      this.actualizarCamposPasajeros(parseInt(cantidad));
+      const usarMismoNombre = this.reservaForm.get('mismoNombre')?.value;
+      // Si el check está activo, mantenemos 1 solo formulario sin importar cuántos boletos sean
+      this.actualizarCamposPasajeros(usarMismoNombre ? 1 : parseInt(cantidad));
       this.cotizacion = null;
       this.limpiarAsientosSeleccionados();
+    });
+
+    // NUEVA LÓGICA PARA EL CHECKBOX
+    this.reservaForm.get('mismoNombre')?.valueChanges.subscribe(checked => {
+      const cantidadBoletos = parseInt(this.reservaForm.get('boletos')?.value || '1');
+      this.actualizarCamposPasajeros(checked ? 1 : cantidadBoletos);
+      this.cotizacion = null;
     });
 
     this.reservaForm.get('horario')?.valueChanges.subscribe(horario => {
@@ -274,27 +286,53 @@ export class ReservaBodaComponent implements OnInit {
   }
 
   async procederAlPago(nombre: string, email: string) {
-    const descripcionFinal = `Wedding Shuttle Tickets`;
-    const urlRetorno = window.location.origin + window.location.pathname;
+    // 1. Obtenemos los boletos y los asientos seleccionados
+    const boletos = this.reservaForm.get('boletos')?.value;
+    const asientosTexto = this.asientosSeleccionados.join(', '); // Ej: "11, 12"
+    
+    // 2. Separamos la descripción del banco y la del correo
+    const descripcionFinal = `Wedding Shuttle - ${boletos} Tickets`;
+    const descripcionParaCorreo = `Wedding Shuttle - ${boletos} Tickets (Asientos / Seats: ${asientosTexto})`;
+    
+    // 3. Agregamos el reserva_id a la URL de retorno
+    const urlRetorno = `${window.location.origin}${window.location.pathname}?reserva_id=${this.reservaGeneradaId}`;
+
+    const datosCorreo = {
+      nombre: nombre,
+      email_destino: email,
+      cotizacion: this.cotizacion,
+      tipo_servicio: descripcionParaCorreo // <-- Aquí inyectamos los asientos al correo
+    };
+    
+    localStorage.setItem('reserva_boda_vancity', JSON.stringify(datosCorreo));
+    localStorage.setItem('idioma_vancity', this.lang);
     
     const datosPago = { 
       monto: this.cotizacion, 
       nombre: nombre, 
       email: email, 
-      descripcion: descripcionFinal, 
+      descripcion: descripcionFinal, // <-- Openpay se queda con la versión corta
       redirectUrl: urlRetorno,
       reserva_id: this.reservaGeneradaId 
     };
 
     try {
+      this.pagoIniciado = true; 
       const { data, error } = await supabase.functions.invoke('openpay-checkout', { body: datosPago });
+      
       if (error || (data && data.error)) {
         alert(this.lang === 'en' ? 'Bank connection error.' : 'Error al conectar con el banco.');
-        this.loading = false; this.pagoIniciado = false; return;
+        this.loading = false; 
+        this.pagoIniciado = false; 
+        this.cdr.detectChanges(); 
+        return;
       }
+      
       window.location.href = data.checkoutLink; 
     } catch (err) {
-      this.loading = false; this.pagoIniciado = false;
+      this.loading = false; 
+      this.pagoIniciado = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -302,16 +340,57 @@ export class ReservaBodaComponent implements OnInit {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const openpayId = urlParams.get('id'); 
+      const reservaIdRecuperada = urlParams.get('reserva_id');
 
-      if (openpayId) {
+      if (openpayId && reservaIdRecuperada) {
         supabase.functions.invoke('openpay-checkout', { 
           body: { action: 'verify', transaction_id: openpayId } 
-        }).then(({ data, error }) => {
+        }).then(async ({ data, error }) => {
+          
           if (error || !data || data.status !== 'completed') {
              alert('El pago no pudo ser procesado o el banco declinó la autorización.');
              window.history.replaceState({}, document.title, window.location.pathname);
              return; 
           }
+
+          // 1. ACTUALIZAR ESTATUS EN SUPABASE
+          const { data: updateData, error: updateError } = await supabase
+            .from('reserva_boda')
+            .update({ estatus: 'PAGADO' })
+            .eq('id', reservaIdRecuperada)
+            .select('fecha_servicio');
+
+          if (!updateError && updateData && updateData.length > 0) {
+            const horarioPagado = updateData[0].fecha_servicio;
+            this.reservaForm.patchValue({ horario: horarioPagado });
+            await this.cargarAsientosOcupados(horarioPagado);
+          }
+
+          // --- NUEVO: ENVÍO DE CORREO DE CONFIRMACIÓN ---
+          const datosGuardados = localStorage.getItem('reserva_boda_vancity');
+          const idiomaGuardado = localStorage.getItem('idioma_vancity') || 'es';
+
+          if (datosGuardados) {
+            const datosCorreo = JSON.parse(datosGuardados);
+            
+            const templatePagoParams = {
+              titulo_mensaje: idiomaGuardado === 'en' ? '✅ Payment Confirmed' : '✅ Pago Confirmado',
+              mensaje_principal: idiomaGuardado === 'en' ? 'Thank you! Your shuttle seats are reserved.' : '¡Gracias! Tus lugares en la Van están reservados.',
+              nombre: datosCorreo.nombre, 
+              email_destino: datosCorreo.email_destino, 
+              folio: openpayId,
+              tipo_servicio: datosCorreo.tipo_servicio, 
+              monto: datosCorreo.cotizacion
+            };
+            
+            // Reutiliza tus IDs de servicio y plantilla de EmailJS
+            emailjs.send('service_gepyy7k', 'template_giiio1o', templatePagoParams, '8BD-wbQdkJaPiLyLx').catch(() => {});
+            
+            // Limpiamos los datos para no dejar basura en el navegador
+            localStorage.removeItem('reserva_boda_vancity');
+          }
+          // ----------------------------------------------
+
           this.showSuccessModal = true;
           this.cdr.detectChanges();
         });
@@ -321,6 +400,8 @@ export class ReservaBodaComponent implements OnInit {
 
   closeSuccessModal() {
     this.showSuccessModal = false;
+    localStorage.removeItem('reserva_boda_vancity');
+    localStorage.removeItem('idioma_vancity');
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 }

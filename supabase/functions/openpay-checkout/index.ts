@@ -55,7 +55,7 @@ serve(async (req) => {
       currency: "MXN",
       customer: { name: body.nombre, email: body.email },
       send_email: false,
-      redirect_url: body.redirectUrl || "https://igdsmxcity.vancity.mx/reserva" 
+      redirect_url: body.redirectUrl || "https://lab.vancity.mx/reserva" 
     };
 
     const openpayResponse = await fetch(`https://api.openpay.mx/v1/${MERCHANT_ID}/checkouts`, {
