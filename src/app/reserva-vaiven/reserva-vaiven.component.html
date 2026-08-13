@@ -1,0 +1,186 @@
+<nav class="vancity-navbar">
+  <div class="navbar-logo">
+    <img src="assets/logo.png" alt="Vancity Logo">
+  </div>
+  
+  <div class="navbar-actions">
+    <div class="lang-segmented">
+      <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
+      <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
+    </div>
+    <button type="button" class="btn-back" routerLink="/">
+      {{ lang === 'en' ? 'Back' : 'Regresar' }}
+    </button>
+  </div>
+</nav>
+
+<div class="page-backdrop">
+  <div class="split-card">
+    
+    <!-- Lado de la Imagen -->
+    <div class="image-side">
+      <div class="image-overlay">
+        <h2>Nescafé Vaivén</h2>
+        <p>{{ lang === 'en' ? 'Travel comfortably to Jardines de México.' : 'Viaja cómodamente a Jardines de México.' }}</p>
+      </div>
+    </div>
+
+    <!-- Lado del Formulario -->
+    <div class="form-side">
+        <!-- ENCABEZADO Y DESCRIPCIÓN -->
+        <div class="header">
+          <p>{{ lang === 'en' ? 'Vaivén Shuttle Reservation' : 'Reserva Transporte Vaivén' }}</p>
+          
+          <span class="subtitle-text">
+            {{ lang === 'en' ? 'Secure your seat in the shared Van.' : 'Asegura tu asiento en la Van compartida.' }}
+          </span>
+          
+          <div class="info-redondo">
+            <ng-container *ngIf="lang === 'en'">
+              <strong>Round Trip Included</strong>
+              <span>
+                Your purchase covers the outbound transfer from your selected pickup point and the return trip to the same location, departing maximum 1 hour after the event ends.
+              </span>
+            </ng-container>
+
+            <ng-container *ngIf="lang === 'es'">
+              <strong>Viaje Redondo o Sencillo</strong>
+              <span>
+                El costo aplica para viaje redondo o sencillo. Tu compra cubre el traslado de ida desde el punto seleccionado y el regreso al mismo punto máximo 1 hora al terminar el evento.
+              </span>
+            </ng-container>
+          </div>
+        </div>
+
+      <form [formGroup]="reservaForm" (ngSubmit)="onSubmit()">
+        
+        <h3 class="section-title">1. {{ lang === 'en' ? 'Shuttle Details' : 'Detalles del Traslado' }}</h3>
+        
+       <div class="form-row">
+          <div class="input-group">
+            <label>{{ lang === 'en' ? 'Select Pickup Point' : 'Selecciona el Punto de Encuentro' }}</label>
+            <select formControlName="punto_encuentro">
+              <option value="" disabled>{{ lang === 'en' ? 'Choose pickup point...' : 'Elige tu punto de abordaje...' }}</option>
+              <option value="Tepotzotlán Centro - 10:00 AM">Tepotzotlán Centro - 10:00 AM</option>
+              <option value="Fiesta Inn San Marcos - 10:30 AM">Fiesta Inn San Marcos - 10:30 AM</option>
+              <option value="Perinorte - 11:00 AM">Perinorte - 11:00 AM</option>
+              <option value="Mundo E - 11:20 AM">Mundo E - 11:20 AM</option>
+              <option value="Metro Mixcoac - 12:10 PM">Metro Mixcoac - 12:10 PM</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label>{{ texts[lang].tickets }}</label>
+            <select formControlName="boletos">
+              <option *ngFor="let p of opcionesTickets" [value]="p">
+                {{ p }} {{ lang === 'en' ? (p === 1 ? 'Seat' : 'Seats') : (p === 1 ? 'Lugar' : 'Lugares') }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- INDICADOR DE UNIDAD ACTUAL -->
+        <div class="unit-indicator" *ngIf="!loading">
+          <p>{{ lang === 'en' ? 'Assigning to Unit:' : 'Asignando a Unidad:' }} <strong>#{{ unidadActual }}</strong></p>
+        </div>
+        
+        <div class="seat-selection-wrapper">
+          <label class="seat-label">{{ lang === 'en' ? 'Select your seats' : 'Selecciona tus asientos' }}</label>
+          
+          <div class="seat-legend">
+            <div class="legend-item">
+              <div class="seat-box disp"></div> {{ lang === 'en' ? 'Available' : 'Disponible' }}
+            </div>
+            <div class="legend-item">
+              <div class="seat-box selec"></div> {{ lang === 'en' ? 'Selected' : 'Seleccionado' }}
+            </div>
+            <div class="legend-item">
+              <div class="seat-box ocup"></div> {{ lang === 'en' ? 'Booked' : 'Ocupado' }}
+            </div>
+          </div>
+          
+          <div class="van-image-container">
+            <img src="/assets/van-layout.png" alt="Layout de la Van" class="van-base-img">
+            
+            <div *ngFor="let asiento of asientos" 
+                 class="interactive-seat" 
+                 [ngClass]="asiento.estado"
+                 [style.top]="asiento.top"
+                 [style.left]="asiento.left"
+                 (click)="seleccionarAsiento(asiento)">
+              {{ asiento.numero }}
+            </div>
+          </div>
+
+          <p class="seat-counter">
+            {{ lang === 'en' ? 'Selected:' : 'Seleccionados:' }} {{ asientosSeleccionados.length }} / {{ reservaForm.get('boletos')?.value }}
+          </p>
+        </div>
+
+        <h3 class="section-title">2. {{ lang === 'en' ? 'Passengers Information' : 'Información de Pasajeros' }}</h3>
+        
+        <div class="checkbox-wrapper" *ngIf="reservaForm.get('boletos')?.value > 1">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="mismoNombre">
+            {{ lang === 'en' ? 'Book all seats under one name' : 'Reservar todos los lugares bajo un solo nombre' }}
+          </label>
+        </div>
+
+        <div formArrayName="pasajerosDetalle">
+          <div class="passenger-card" *ngFor="let pas of pasajerosDetalles.controls; let i = index" [formGroupName]="i">
+            <h4 class="pax-title">
+              <ng-container *ngIf="!reservaForm.get('mismoNombre')?.value">
+                {{ lang === 'en' ? 'Passenger' : 'Pasajero' }} {{ i + 1 }}
+              </ng-container>
+              <ng-container *ngIf="reservaForm.get('mismoNombre')?.value">
+                {{ lang === 'en' ? 'Main Passenger (Titular)' : 'Pasajero Titular' }}
+              </ng-container>
+            </h4>
+            
+            <div class="form-row">
+              <div class="input-group">
+                <input type="text" formControlName="nombre" [placeholder]="lang === 'en' ? 'First Name' : 'Nombre'">
+              </div>
+              <div class="input-group">
+                <input type="text" formControlName="apellido" [placeholder]="lang === 'en' ? 'Last Name' : 'Apellido'">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="input-group">
+                <input type="email" formControlName="correo" placeholder="Email">
+              </div>
+              <div class="input-group">
+                <input type="tel" formControlName="telefono" placeholder="Teléfono (WhatsApp)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-box" *ngIf="cotizacion !== null">
+          <h3>{{ lang === 'en' ? 'TOTAL FARE' : 'TARIFA TOTAL' }}</h3>
+          <p class="price">${{ cotizacion | number:'1.2-2' }} MXN</p>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || reservaForm.invalid || pagoIniciado">
+          <span *ngIf="cotizacion === null">
+            {{ lang === 'en' ? 'CALCULATE TOTAL' : 'COTIZAR TICKETS' }}
+          </span>
+          <span *ngIf="cotizacion !== null">
+            {{ pagoIniciado ? 'CONECTANDO...' : (lang === 'en' ? 'PROCEED TO SECURE PAYMENT' : 'PROCEDER AL PAGO SEGURO') }}
+          </span>
+        </button>
+        
+      </form>
+    </div> 
+  </div> 
+</div>
+
+<!-- Modal de Éxito -->
+<div class="custom-modal-overlay" *ngIf="showSuccessModal">
+  <div class="custom-modal-card success-card">
+    <div class="modal-icon">✅</div>
+    <h3 class="modal-title">{{ lang === 'en' ? 'Payment Successful!' : '¡Pago Exitoso!' }}</h3>
+    <p class="modal-text">Tus asientos han sido reservados con éxito en la Unidad {{unidadActual}}.</p>
+    <button type="button" class="modal-btn success-btn" (click)="closeSuccessModal()">Continuar</button>
+  </div>
+</div>
