@@ -18,10 +18,21 @@
 .lang-segmented button.active { background: #0b1d3a; color: white; box-shadow: 0 2px 8px rgba(11, 29, 58, 0.2); }
 
 .btn-back {
-  background: transparent; border: none; color: #0b1d3a; font-weight: 800; text-decoration: none;
-  font-size: 13px; cursor: pointer; display: flex; align-items: center; transition: color 0.3s;
+  background: transparent;
+  border: none;
+  color: #0b1d3a;
+  font-weight: 800;
+  text-decoration: none; /* Esto evita que el enlace se subraye */
+  font-size: 14px; /* Ajusta este valor si lo quieres un poco más grande o pequeño */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
 }
-.btn-back:hover { color: #1a3a6c; }
+
+.btn-back:hover {
+  color: #1a3a6c; /* Se aclara ligeramente al pasar el mouse, pero sin fondo */
+}
 
 .page-backdrop {
   display: flex; justify-content: center; align-items: center; min-height: 100vh;

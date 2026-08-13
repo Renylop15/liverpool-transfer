@@ -8,10 +8,10 @@
       <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
       <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
     </div>
-    <button type="button" class="btn-back" routerLink="/">
-      {{ lang === 'en' ? 'Back' : 'Regresar' }}
-    </button>
-  </div>
+    <a class="btn-back" href="https://kygwedding.vancity.mx">
+        {{ lang === 'en' ? 'Back' : 'Regresar' }}
+    </a>
+  </div>  
 </nav>
 
 <div class="page-backdrop">

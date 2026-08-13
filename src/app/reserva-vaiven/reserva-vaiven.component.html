@@ -8,9 +8,9 @@
       <button type="button" [class.active]="lang === 'es'" (click)="lang = 'es'">ESP</button>
       <button type="button" [class.active]="lang === 'en'" (click)="lang = 'en'">ENG</button>
     </div>
-    <button type="button" class="btn-back" routerLink="/">
+    <a class="btn-back" href="https://vaivenfestival.vancity.mx">
       {{ lang === 'en' ? 'Back' : 'Regresar' }}
-    </button>
+    </a>
   </div>
 </nav>
 
@@ -63,9 +63,9 @@
               <option value="" disabled>{{ lang === 'en' ? 'Choose pickup point...' : 'Elige tu punto de abordaje...' }}</option>
               <option value="Tepotzotlán Centro - 10:00 AM">Tepotzotlán Centro - 10:00 AM</option>
               <option value="Fiesta Inn San Marcos - 10:30 AM">Fiesta Inn San Marcos - 10:30 AM</option>
-              <option value="Perinorte - 11:00 AM">Perinorte - 11:00 AM</option>
+              <option value="Perinorte - 11:00 AM">Perinorte Hidrosina - 11:00 AM</option>
               <option value="Mundo E - 11:20 AM">Mundo E - 11:20 AM</option>
-              <option value="Metro Mixcoac - 12:10 PM">Metro Mixcoac - 12:10 PM</option>
+              <option value="Metro Mixcoac - 12:10 PM">Walmart Plateros - 12:10 PM</option>
             </select>
           </div>
           
