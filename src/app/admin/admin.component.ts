@@ -7,6 +7,9 @@ const supabaseUrl = 'https://chyuacdnyaduqnawsoii.supabase.co';
 const supabaseKey = 'sb_publishable_j34PDqBJtmzklQqnP6kL4A_AxNnerKR';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Actualizamos el tipo para incluir 'vaiven'
+type TabType = 'traslados' | 'experiencias' | 'chofer' | 'boda' | 'vaiven';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -18,9 +21,11 @@ export class AdminComponent implements OnInit {
   reservasTraslados: any[] = [];
   reservasExperiencias: any[] = []; 
   reservasChofer: any[] = []; 
-  reservasBoda: any[] = []; // <-- NUEVA TABLA BODA
+  reservasBoda: any[] = []; 
+  reservasVaiven: any[] = []; // <-- NUEVA TABLA VAIVÉN
+  
   cargando = true;
-  tabActiva: 'traslados' | 'experiencias' | 'chofer' | 'boda' = 'traslados'; // <-- 4 PESTAÑAS
+  tabActiva: TabType = 'traslados'; 
 
 constructor(private cdr: ChangeDetectorRef, private router: Router) {}
   async ngOnInit() {
@@ -29,7 +34,7 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
     }, 100);
   }
 
-  cambiarTab(tab: 'traslados' | 'experiencias' | 'chofer' | 'boda') {
+  cambiarTab(tab: TabType) {
     this.tabActiva = tab;
   }
 
@@ -55,27 +60,44 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
       if (err3) console.error('Error Chofer:', err3.message);
       else this.reservasChofer = dataChofer || [];
 
-      // 4. Cargamos Reservas Boda (CON PARSEO DE DATOS)
+      // 4. Cargamos Reservas Boda
       const { data: dataBoda, error: err4 } = await supabase.from('reserva_boda').select('*').order('created_at', { ascending: false });
       if (err4) {
         console.error('Error Boda:', err4.message);
       } else {
-        // Extraemos Asientos y JSON de Pasajeros para que no se vea amontonado
         this.reservasBoda = (dataBoda || []).map(boda => {
           let asientos = 'N/A';
           let listaPasajeros: any[] = [];
-          
           if (boda.itinerario_notas) {
             const matchAsientos = boda.itinerario_notas.match(/Asientos:\s*([^|]+)/);
             if (matchAsientos) asientos = matchAsientos[1].trim();
-
             const matchJSON = boda.itinerario_notas.match(/Pax Details:\s*(\[.*\])/);
             if (matchJSON) {
               try { listaPasajeros = JSON.parse(matchJSON[1]); } catch(e) {}
             }
           }
-
           return { ...boda, asientosParsed: asientos, pasajerosParsed: listaPasajeros };
+        });
+      }
+
+      // 5. Cargamos Reservas Vaivén (NUEVO)
+      const { data: dataVaiven, error: err5 } = await supabase.from('reservas_vaiven').select('*').order('created_at', { ascending: false });
+      if (err5) {
+        console.error('Error Vaivén:', err5.message);
+      } else {
+        this.reservasVaiven = (dataVaiven || []).map(vaiven => {
+          let asientos = 'N/A';
+          let listaPasajeros: any[] = [];
+          if (vaiven.itinerario_notas) {
+            // Mismo parseo que la boda, la lógica del texto es igual
+            const matchAsientos = vaiven.itinerario_notas.match(/Asientos:\s*([^|]+)/);
+            if (matchAsientos) asientos = matchAsientos[1].trim();
+            const matchJSON = vaiven.itinerario_notas.match(/Pax Details:\s*(\[.*\])/);
+            if (matchJSON) {
+              try { listaPasajeros = JSON.parse(matchJSON[1]); } catch(e) {}
+            }
+          }
+          return { ...vaiven, asientosParsed: asientos, pasajerosParsed: listaPasajeros };
         });
       }
 
@@ -101,7 +123,6 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
       dataToExport = this.reservasChofer;
       fileName = 'Vancity_Chofer_Privado.csv';
     } else if (this.tabActiva === 'boda') {
-      // Formateo específico para Excel en columnas separadas
       dataToExport = this.reservasBoda.map(b => {
         const nombresAcompanantes = b.pasajerosParsed.map((p: any) => `${p.nombre} ${p.apellido} (${p.correo})`).join(' | ');
         return {
@@ -119,6 +140,25 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
         };
       });
       fileName = 'Vancity_Boda_Shuttle.csv';
+    } else if (this.tabActiva === 'vaiven') {
+      // Exportación específica para Vaivén
+      dataToExport = this.reservasVaiven.map(v => {
+        const nombresAcompanantes = v.pasajerosParsed.map((p: any) => `${p.nombre} ${p.apellido} (${p.correo})`).join(' | ');
+        return {
+          Registro: v.created_at,
+          Titular: `${v.nombre} ${v.apellido}`,
+          Email: v.correo_cliente,
+          Telefono: v.telefono,
+          Boletos_Comprados: v.pasajeros,
+          Punto_Encuentro: v.punto_encuentro,
+          Unidad_Asignada: `Unidad ${v.unidad_asignada}`,
+          Asientos_Asignados: v.asientosParsed,
+          Lista_Pasajeros: nombresAcompanantes,
+          Tarifa: v.cotizacion,
+          Estatus: v.estatus
+        };
+      });
+      fileName = 'Vancity_Vaiven_Shuttle.csv';
     }
 
     if (dataToExport.length === 0) {
@@ -127,7 +167,6 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
     }
 
     const headers = Object.keys(dataToExport[0]).join(',');
-
     const rows = dataToExport.map(obj => 
       Object.values(obj).map(val => {
         let str = val !== null && val !== undefined ? String(val) : '';
@@ -137,7 +176,6 @@ constructor(private cdr: ChangeDetectorRef, private router: Router) {}
     );
 
     const csvContent = [headers, ...rows].join('\n');
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
